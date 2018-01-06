@@ -1,0 +1,9 @@
+@charset 'utf-8';
+
+// scssify will follow imports from _sass folder
+@import
+'marx/sanitize_lite',
+'marx/variables',
+'marx/base',
+'marx/typography',
+'marx/tables';

@@ -7,5 +7,5 @@ exec docker run -it --rm --init \
 -p 8087:4000 \
 -p 35729:35729 \
 -p 3000:3000 \
-my/jekyll:3.7.0 jekyll serve --livereload --incremental \
+my/jekyll:3.7.0 jekyll serve --livereload \
 -d /dist

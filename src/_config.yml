@@ -65,6 +65,9 @@ jekyll-minifier:
   simple_boolean_attributes: false  # Default: false
   compress_js_templates: false      # Default: false
 
+# https://www.sitepoint.com/inline-css-in-jekyll/
 # configure scssify filter
-sass:
-  style: compressed
+# I don't think I need to do this; it's already appearing to get minified anyway
+# (probably because of jekyll-minifier)
+# sass:
+#   style: compressed

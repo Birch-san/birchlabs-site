@@ -1,8 +1,12 @@
 @charset 'utf-8';
 
+// the "_lite" of this file refers to the fact that
+// I deleted items pertaining to form input.
+
 // scssify will follow imports from _sass folder
 @import
 'marx/sanitize_lite',
+'marx/overrides_alex',
 'marx/variables',
 'marx/base',
 'marx/typography',

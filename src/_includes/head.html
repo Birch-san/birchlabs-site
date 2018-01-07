@@ -12,12 +12,17 @@
   {% capture sass_styles %}
   {% include sass/marx_lite.scss %}
   {% include sass/skiplink.scss %}
+  {% if page.syntax_highlight %}
+    {% include sass/syntax.scss %}
+  {% endif %}
   {% endcapture %}
   
   <!-- Compile scss and inline it into page -->
   <style>
   {{ sass_styles | scssify }}
   </style>
+
+  <!-- <link rel="stylesheet" href="https://cdn.rawgit.com/mblode/marx/master/css/marx.min.css"> -->
 
   <link rel="canonical" href="{{ page.url | replace:'index.html','' | absolute_url }}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }}" href="{{ "/feed.xml" | relative_url }}">

@@ -5,6 +5,13 @@ permalink: /games
 nav_ix: 10
 ---
 
+<style type="text/css">
+img {
+	width: 142px;
+	height: 112px;
+}
+</style>
+
 <h1>Games</h1>
 
 {% assign games_by_category = site.games | group_by:"category" | sort:"category_ix" %}
@@ -15,6 +22,10 @@ nav_ix: 10
 	{% for game in games_in_category %}
 		<h3><small>{{ game.title }}</small></h3>
 		<aside>
+			<noscript>
+				<img src="{{ "/assets/games/" | append: game.img_path | relative_url }}"
+			alt="{{ game.title }}">
+			</noscript>
 			<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
 			data-src="{{ "/assets/games/" | append: game.img_path | relative_url }}"
 			alt="{{ game.title }}">
@@ -24,3 +35,19 @@ nav_ix: 10
 	  	</article>
   	{% endfor %}
 {% endfor %}
+
+<script type="text/javascript">
+(window.requestAnimationFrame
+	|| window.mozRequestAnimationFrame
+	|| window.webkitRequestAnimationFrame
+	|| window.msRequestAnimationFrame
+	|| window.addEventListener.bind(null, 'load')
+	)(function imgGet() {
+var imgDefer = document.getElementsByTagName('img');
+	for (var i=0; i<imgDefer.length; i++) {
+		if(imgDefer[i].getAttribute('data-src')) {
+			imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+		}
+	}
+});
+</script>

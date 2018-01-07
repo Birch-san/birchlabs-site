@@ -1,0 +1,26 @@
+---
+layout: default
+title: Games
+permalink: /games
+nav_ix: 10
+---
+
+<h1>Games</h1>
+
+{% assign games_by_category = site.games | group_by:"category" | sort:"category_ix" %}
+
+{% for category in games_by_category %}
+	<h2>{{ category.name }}</h2>
+	{% assign games_in_category = category.items | sort:"within_category_ix" %}
+	{% for game in games_in_category %}
+		<h3><small>{{ game.title }}</small></h3>
+		<aside>
+			<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+			data-src="{{ "/assets/games/" | append: game.img_path | relative_url }}"
+			alt="{{ game.title }}">
+		</aside>
+		<article>
+	  	{{ game.content }}
+	  	</article>
+  	{% endfor %}
+{% endfor %}

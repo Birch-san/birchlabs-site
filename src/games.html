@@ -14,10 +14,10 @@ img {
 
 <h1>Games</h1>
 
-{% assign games_by_category = site.games | group_by:"category" | sort:"category_ix" %}
+{% assign games_by_category = site.games | group_by:"category_ix" | sort:"name" %}
 
 {% for category in games_by_category %}
-	<h2>{{ category.name }}</h2>
+	<h2>{{ category.items.first.category }}</h2>
 	{% assign games_in_category = category.items | sort:"within_category_ix" %}
 	{% for game in games_in_category %}
 		<h3><small>{{ game.title }}</small></h3>

@@ -18,3 +18,21 @@ h1,h2,h3 {
 footer a {
 	color: #777;
 }
+
+@media screen and (min-width: $small-breakpoint + 1) {
+  aside {
+    // height: auto;
+    float: right;
+    // clear: right;
+    max-width: calc(40% - 1rem);
+    // display: block;
+    // width: 100%
+  }
+  article {
+    float: left;
+    max-width: calc(60% - 1rem);
+    // clear: left;
+    // width: 100%;
+    // display: block;
+  }
+}

@@ -22,12 +22,12 @@ img {
 	{% for game in games_in_category %}
 		<h3><small>{{ game.title }}</small></h3>
 		<aside>
+			{% assign src = "/assets/games/" | append: game.img_path | relative_url %}
 			<noscript>
-				<img src="{{ "/assets/games/" | append: game.img_path | relative_url }}"
-			alt="{{ game.title }}">
+				<img src="{{ src }}" alt="{{ game.title }}">
 			</noscript>
 			<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-			data-src="{{ "/assets/games/" | append: game.img_path | relative_url }}"
+			data-src="{{ src }}"
 			alt="{{ game.title }}">
 		</aside>
 		<article>

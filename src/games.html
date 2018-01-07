@@ -24,11 +24,12 @@ img {
 		<aside>
 			{% assign src = "/assets/games/" | append: game.img_path | relative_url %}
 			<noscript>
-				<img src="{{ src }}" alt="{{ game.title }}">
+				<img src="{{ src }}" alt="{{ game.title }}" {% if game.img_id %}id="{{ game.img_id }}"{% endif %}>
 			</noscript>
 			<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
 			data-src="{{ src }}"
-			alt="{{ game.title }}">
+			alt="{{ game.title }}"
+			{% if game.img_id %}id="{{ game.img_id }}"{% endif %}>
 		</aside>
 		<article>
 	  	{{ game.content }}

@@ -13,6 +13,17 @@ img {
 }
 </style>
 
+{% include /scrollspy.html %}
+
+<!-- <nav data-gumshoe-header>
+	<ul data-gumshoe>
+		<li class="active"><a class="active" href="#eenie">Eenie</a></li>
+		<li><a href="#meanie">Meanie</a></li>
+		<li><a href="#minnie">Minnie</a></li>
+		<li><a href="#moe">Moe</a></li>
+	</ul>
+</nav> -->
+
 <h1>Games</h1>
 
 {% assign games_by_category = site.games | group_by:"category_ix" | sort:"name" %}

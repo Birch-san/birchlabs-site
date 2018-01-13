@@ -3,7 +3,8 @@ layout: default
 title: Games
 permalink: /games
 nav_ix: 10
-footer_extra: "/footer_extra_elevator.html"
+footer_elevator: true
+scrollspy_header: true
 ---
 
 <style type="text/css">
@@ -13,23 +14,14 @@ img {
 }
 </style>
 
-{% include /scrollspy.html %}
-
-<!-- <nav data-gumshoe-header>
-	<ul data-gumshoe>
-		<li class="active"><a class="active" href="#eenie">Eenie</a></li>
-		<li><a href="#meanie">Meanie</a></li>
-		<li><a href="#minnie">Minnie</a></li>
-		<li><a href="#moe">Moe</a></li>
-	</ul>
-</nav> -->
-
 <h1>Games</h1>
 
 {% assign games_by_category = site.games | group_by:"category_ix" | sort:"name" %}
 
 {% for category in games_by_category %}
-	<h2>{{ category.items.first.category }}</h2>
+	<h2 id="{{ category.items.first.category | uri_escape }}">
+	{{ category.items.first.category }}
+	</h2>
 	{% assign games_in_category = category.items | sort:"within_category_ix" %}
 	{% for game in games_in_category %}
 		<h3><small>{{ game.title }}</small></h3>
@@ -66,3 +58,4 @@ var imgDefer = document.getElementsByTagName('img');
 </script>
 
 {% include /elevator.html %}
+{% include /scrollspy.html %}

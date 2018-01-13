@@ -5,13 +5,15 @@ article,
 section,
 aside,
 details,
-summary {
+summary,
+.middle {
   margin: 0 auto;
   margin-bottom: $md-pad;
   width: 100%;
 }
 
-main {
+main,
+.middle {
   display: block;
   margin: 0 auto;
   max-width: $large-breakpoint;

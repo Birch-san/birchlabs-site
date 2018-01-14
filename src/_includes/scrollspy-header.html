@@ -1,3 +1,7 @@
+<style>
+{% include sass/scrollspy.scss %}
+</style>
+
 {% if page.scrollspy_header %}
 <div data-gumshoe-header class="bs-docs-sidebar">
 	{% assign games_by_category = site.games | group_by:"category_ix" | sort:"name" %}
@@ -9,13 +13,13 @@
 			{% assign active_class = 'active' %}
 		{% endif %}
 		<li class="{{ active_class }} nav-item dropdown">
-			<a class="{{ active_class }} nav-link dropdown-toggle" href="#{{ category.items.first.category | uri_escape }}">
+			<a class="{{ active_class }} nav-link dropdown-toggle" href="#{{ category.items.first.category | slugify }}">
 			{{ category.items.first.category }}
 			<ul class="dropdown-menu"></ul>
 			{% assign games_in_category = category.items | sort:"within_category_ix" %}
 			{% for game in games_in_category %}
 				<li>
-					<a class="{{ active_class }} dropdown-item" href="#{{ game.title | uri_escape }}">
+					<a class="{{ active_class }} dropdown-item" href="#{{ game.title | slugify }}">{{ game.title }}</a>
 				</li>
 			{% endfor %}
 			</a>

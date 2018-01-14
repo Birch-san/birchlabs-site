@@ -5,6 +5,7 @@ permalink: /games
 nav_ix: 10
 footer_elevator: true
 scrollspy_header: true
+category_type: "game"
 ---
 
 <style type="text/css">
@@ -16,14 +17,17 @@ img {
 
 <h1>Games</h1>
 
-{% assign games_by_category = site.games | group_by:"category_ix" | sort:"name" %}
+{% assign category_name = page.category_type | append: "_categories" %}
+{% assign categories = site[category_name] %}
+{% assign categories_sorted = categories | sort:"category_ix" %}
 
-{% for category in games_by_category %}
+{% for category in categories_sorted %}
 	<h2 id="{{ category.items.first.category | slugify }}">
-	{{ category.items.first.category }}
+	{{ category.name }}
 	</h2>
-	{% assign games_in_category = category.items | sort:"within_category_ix" %}
-	{% for game in games_in_category %}
+	{% assign games_in_category = site.games | where:"category",category.name %}
+	{% assign sorted_games_in_category = games_in_category | sort:"within_category_ix" %}
+	{% for game in sorted_games_in_category %}
 		<h3 id="{{ game.title | slugify }}"><small>{{ game.title }}</small></h3>
 		<aside>
 			{% assign src = "/assets/games/" | append: game.img_path | relative_url %}

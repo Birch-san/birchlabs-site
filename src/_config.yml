@@ -33,7 +33,9 @@ plugins:
 
 collections:
   - games
+  - game_categories
   - experiments
+  - experiment_categories
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list

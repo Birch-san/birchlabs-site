@@ -4,21 +4,20 @@
 
 {% if page.scrollspy_header %}
 <div data-gumshoe-header class="bs-docs-sidebar">
-	{% assign games_by_category = site.games | group_by:"category_ix" | sort:"name" %}
+	{% assign category_name = page.category_type | append: "_categories" %}
+	{% assign categories = site[category_name] %}
+	{% assign categories_sorted = categories | sort:"category_ix" %}
 
 	<ul data-gumshoe class="nav nav-stacked fixed">
-	{% for category in games_by_category %}
-		{% assign active_class = '' %}
-		{% if category == games_by_category.first %}
-			{% assign active_class = 'active' %}
-		{% endif %}
+	{% for category in categories_sorted %}
 		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#{{ category.items.first.category | slugify }}">
-			{{ category.items.first.category }}
+			<a class="nav-link dropdown-toggle" href="#{{ category.name | slugify }}">
+			{{ category.name }}
 			</a>
 			<ul class="dropdown-menu">
-			{% assign games_in_category = category.items | sort:"within_category_ix" %}
-			{% for game in games_in_category %}
+			{% assign games_in_category = site.games | where:"category",category.name %}
+			{% assign sorted_games_in_category = games_in_category | sort:"within_category_ix" %}
+			{% for game in sorted_games_in_category %}
 				<li>
 					<a class="dropdown-item" href="#{{ game.title | slugify }}">{{ game.title }}</a>
 				</li>

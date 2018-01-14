@@ -1,7 +1,13 @@
 <script type="text/javascript">
 function onGumshoeLoad() {
-	gumshoe.init();
+	gumshoe.init({
+		offset: 40,
+		hierarchyDepth: 2
+	});
 }
+
+{% include /js/gumshoe.3.5.0.fork.js %}
+onGumshoeLoad();
 </script>
-<script type="text/javascript" async defer onload="onGumshoeLoad()"
-src="{{ "/assets/scrollspy/gumshoe.3.5.0.min.js" | relative_url }}"></script>
+<!-- <script type="text/javascript" async defer onload="onGumshoeLoad()"
+src="{{ "/assets/scrollspy/gumshoe.3.5.0.min.js" | relative_url }}"></script> -->

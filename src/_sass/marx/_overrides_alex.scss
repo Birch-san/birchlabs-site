@@ -40,3 +40,15 @@ footer a {
 footer p {
   margin-bottom: $md-pad !important;
 }
+
+a {
+  color: #1271db;
+
+  -webkit-transition: .25s ease;
+
+  transition: .25s ease;
+}
+
+a, a:focus, a:hover {
+  text-decoration: none;
+}

@@ -3,8 +3,11 @@
 </style>
 
 {% if page.scrollspy_header %}
+
 <div data-gumshoe-header class="bs-docs-sidebar">
-	{% assign category_name = page.category_type | append: "_categories" %}
+	{% assign project = site.project_types | where:"name",page.project_type | first %}
+
+	{% assign category_name = project.category_type | append: "_categories" %}
 	{% assign categories = site[category_name] %}
 	{% assign categories_sorted = categories | sort:"category_ix" %}
 
@@ -15,11 +18,11 @@
 			{{ category.name }}
 			</a>
 			<ul class="dropdown-menu">
-			{% assign games_in_category = site.games | where:"category",category.name %}
-			{% assign sorted_games_in_category = games_in_category | sort:"within_category_ix" %}
-			{% for game in sorted_games_in_category %}
+			{% assign projects_in_category = site[project.collection_name] | where:"category",category.name %}
+			{% assign sorted_projects_in_category = projects_in_category | sort:"within_category_ix" %}
+			{% for proj in sorted_projects_in_category %}
 				<li>
-					<a class="dropdown-item" href="#{{ game.title | slugify }}">{{ game.title }}</a>
+					<a class="dropdown-item" href="#{{ proj.title | slugify }}">{{ proj.title }}</a>
 				</li>
 			{% endfor %}
 			</ul>

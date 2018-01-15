@@ -1,65 +1,9 @@
 ---
-layout: default
+layout: projects
 title: Games
 permalink: /games
 nav_ix: 10
+project_type: "games"
 footer_elevator: true
 scrollspy_header: true
-category_type: "game"
 ---
-
-<style type="text/css">
-img {
-	width: 142px;
-	height: 112px;
-}
-</style>
-
-<h1>Games</h1>
-
-{% assign category_name = page.category_type | append: "_categories" %}
-{% assign categories = site[category_name] %}
-{% assign categories_sorted = categories | sort:"category_ix" %}
-
-{% for category in categories_sorted %}
-	<h2 id="{{ category.items.first.category | slugify }}">
-	{{ category.name }}
-	</h2>
-	{% assign games_in_category = site.games | where:"category",category.name %}
-	{% assign sorted_games_in_category = games_in_category | sort:"within_category_ix" %}
-	{% for game in sorted_games_in_category %}
-		<h3 id="{{ game.title | slugify }}"><small>{{ game.title }}</small></h3>
-		<aside>
-			{% assign src = "/assets/games/" | append: game.img_path | relative_url %}
-			<noscript>
-				<img src="{{ src }}" alt="{{ game.title }}" {% if game.img_id %}id="{{ game.img_id }}"{% endif %}>
-			</noscript>
-			<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-			data-src="{{ src }}"
-			alt="{{ game.title }}"
-			{% if game.img_id %}id="{{ game.img_id }}"{% endif %}>
-		</aside>
-		<article>
-	  	{{ game.content }}
-	  	</article>
-  	{% endfor %}
-{% endfor %}
-
-<script type="text/javascript">
-(window.requestAnimationFrame
-	|| window.mozRequestAnimationFrame
-	|| window.webkitRequestAnimationFrame
-	|| window.msRequestAnimationFrame
-	|| window.addEventListener.bind(null, 'load')
-	)(function imgGet() {
-var imgDefer = document.getElementsByTagName('img');
-	for (var i=0; i<imgDefer.length; i++) {
-		if(imgDefer[i].getAttribute('data-src')) {
-			imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
-		}
-	}
-});
-</script>
-
-{% include /elevator.html %}
-{% include /scrollspy.html %}

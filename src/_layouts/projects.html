@@ -1,0 +1,61 @@
+---
+layout: default
+---
+
+<style type="text/css">
+img {
+	width: 142px;
+	height: 112px;
+}
+</style>
+
+{% assign project = site.project_types | where:"name",page.project_type | first %}
+
+<h1>{{ project.title }}</h1>
+
+{% assign category_name = project.category_type | append: "_categories" %}
+{% assign categories = site[category_name] %}
+{% assign categories_sorted = categories | sort:"category_ix" %}
+
+{% for category in categories_sorted %}
+	<h2 id="{{ category.items.first.category | slugify }}">
+	{{ category.name }}
+	</h2>
+	{% assign projects_in_category = site[project.collection_name] | where:"category",category.name %}
+	{% assign sorted_projects_in_category = projects_in_category | sort:"within_category_ix" %}
+	{% for proj in sorted_projects_in_category %}
+		<h3 id="{{ proj.title | slugify }}"><small>{{ proj.title }}</small></h3>
+		<aside>
+			{% assign src = "/assets/" | append: project.assets_subdir | append: "/" | append: proj.img_path | relative_url %}
+			<noscript>
+				<img src="{{ src }}" alt="{{ proj.title }}" {% if proj.img_id %}id="{{ proj.img_id }}"{% endif %}>
+			</noscript>
+			<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+			data-src="{{ src }}"
+			alt="{{ proj.title }}"
+			{% if proj.img_id %}id="{{ proj.img_id }}"{% endif %}>
+		</aside>
+		<article>
+	  	{{ proj.content }}
+	  	</article>
+  	{% endfor %}
+{% endfor %}
+
+<script type="text/javascript">
+(window.requestAnimationFrame
+	|| window.mozRequestAnimationFrame
+	|| window.webkitRequestAnimationFrame
+	|| window.msRequestAnimationFrame
+	|| window.addEventListener.bind(null, 'load')
+	)(function imgGet() {
+var imgDefer = document.getElementsByTagName('img');
+	for (var i=0; i<imgDefer.length; i++) {
+		if(imgDefer[i].getAttribute('data-src')) {
+			imgDefer[i].setAttribute('src',imgDefer[i].getAttribute('data-src'));
+		}
+	}
+});
+</script>
+
+{% include /elevator.html %}
+{% include /scrollspy.html %}

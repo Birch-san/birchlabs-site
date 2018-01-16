@@ -1,0 +1,21 @@
+---
+layout: none
+name: "Invasion 5"
+supertitle: "Invasion 5"
+category_ix: 5
+has_content: true
+title: "In progress"
+img_path: "Invasion5.png"
+img_alt: "Invasion 5"
+---
+
+<p>
+	Invasion 5, long-awaited successor to Invasion 4. I wanted to do bigger battles than ever before, so I addressed Flash's graphics bottleneck (no more vectors; everything is now pre-rendered as bitmaps, then blitted to the screen). Also rewrote the horrible O(n*m) collision [n arrows, m soldiers] to work in O(n) time. Soldier coordinates are hashed into screen quadrants (20px wide columns), and projectiles apply the same hash to their own coordinates. A hash collision in this case represents a spatial collision, so an answer can be found very quickly.<p>Can handle thousands of interacting objects, where previous versions could only handle around 100. It's in a pretty finished state now, but the development process has been rocky. For a while I had to develop it in a virtual machine, and often my virtual machines would become forsaken, halting progress. This has been through easily 7 full rewrites by now, as I explored different graphics optimization approaches (damage-mapping, sprite pooling, spritesheet masks, strobing), and also ported from IDE to IDE and even from AS2 to AS3. The journey took long enough that now I have to think about moving it to JavaScript!
+</p>
+<p>There are new interface elements that you can click-and-hold, even for buying and upgrading. Time can be skipped or paused thanks to the new renderer (no movie clips)! In fact this is part of the new gameplay I envisioned: I've tried to encourage strategy within the game beyond just deploying all your units without thinking; there are new base defenses that work on timers, as well as new allies that you have to time your deployments effectively to benefit from (get through a few levels first).</p>
+<p>Music has been composed, and generals have been drawn, by the way; they're on the to-do list.</p>
+<p>
+	<a href="{{ "/Invasion5.swf" | relative_url }}">Play AS1</a> early AS1 version, mainly to demonstrate the language difference. Some new features missing.<br>
+	<a href="{{ "/Invasion-5.html" | relative_url }}">Play AS3</a> Latest version, actually almost finished,<br>
+	<a href="{{ "/Invasion5CP.swf" | relative_url }}">Play AS3</a> stress-test to show engine speed
+</p>

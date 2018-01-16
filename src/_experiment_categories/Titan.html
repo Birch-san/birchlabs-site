@@ -1,0 +1,19 @@
+---
+layout: none
+name: "Rope Physics in JavaScript"
+supertitle: "Rope Physics in JavaScript"
+category_ix: 2
+has_content: true
+title: "Engine"
+img_path: "CirnoRope2.png"
+img_alt: "Rope Physics"
+---
+
+<p>After watching Attack on Titan, and seeing the 3D fan-games that had been produced of it, I decided to see if I could make my own. I also felt it was a chance to make the jump to JavaScript and HTML5 after all my time in Flash, so consider this my first HTML5 work. I wanted to do real rope, so I recruited a physics engine. I used Box2D for this, and I found multiple versions had been made for JavaScript. Some looked machine-ported from C, others looked machine-ported from AS3, and only one distribution existed with full documentation, so I used this to start with. When I found out that it didn't support rope joints, I had to delve into the muddier machine-ported alternatives instead.</p>
+<p>The rope is modeled as boxes chained by revolute, distance-constrained joints (or 'rope' joints). I felt that even with a small number of these joints, the rope action was pretty realistic, but it wasn't curved enough. I solved this problem by writing a custom renderer. First I tried cubic B&eacute;zier curve interpolation between the joints, but this occasionally got the wrong solution and jerked around a bit. Quadratic interpolation had similar problems, and missed out some end joints. In the end, simple linear interpolation was the best option, and I just left the physics resolution high.</p>
+<p>A lot of this work was made easier by Grant Skinner's wonderful CreateJS library. It makes JS graphics work a lot like working with AS3. Gskinner is an old hand from the Flash days, and I'm glad he's trying to unify the experiences.</p>
+<p>Two versions are provided for your amusement: one uses the well-supported box2djs, in which I was able to get everything to fall realistically (but the rope breaks apart if you use the jetpack), and also the box2d-html5 machine port, where objects fall quite weirdly, but the rope has real rope joints and the jetpack works a bit better.</p>
+<p>
+	<a href="{{ "/Titan/index.html" | relative_url }}">Play</a> (Box2d-js)<br>
+	<a href="{{ "/Titan2/index.html" | relative_url }}">Play</a> (Box2d-html5)<br>
+</p>

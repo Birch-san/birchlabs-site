@@ -1,8 +1,13 @@
 img {
 	width: 166px;
 	height: 103px;
-	
+
 	outline-color: lightgray;
     outline-style: solid;
     outline-width: thin;
+}
+
+/* categories are expected to be empty */
+.bs-docs-sidebar .dropdown-toggle.active ~ .dropdown-menu {
+	display: none !important;
 }

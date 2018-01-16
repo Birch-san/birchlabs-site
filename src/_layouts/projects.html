@@ -38,6 +38,8 @@ layout: default
 			title = proj.title
 			content = proj.content
 			heading_level = "h3"
+			img_alt = proj.img_alt
+			href = proj.href
 		%}
   	{% endfor %}
   	{% if category.has_content %}
@@ -48,7 +50,9 @@ layout: default
 			title = category.title
 			content = category.content
 			heading_level = "h2"
+			img_alt = category.img_alt
 			supertitle = category.supertitle
+			href = category.href
 		%}
 	{% endif %}
 {% endfor %}

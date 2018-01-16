@@ -1,0 +1,17 @@
+---
+layout: none
+name: "Tower Defense"
+supertitle: "Tower Defense"
+category_ix: 6
+has_content: true
+title: "Possible game"
+img_path: "Tower.png"
+img_alt: "Tower Defense"
+---
+
+<p>I was getting pretty sick of seeing slow Tower Defense games on the internet, which could take about a hundred units, tops, before they started to slow down. If you just put a bit more effort into it, you can make it literally about 100 times faster than that. This uses my most flexible (maybe even 'finished') sprite engine so far - on the dev side, it's almost exactly the same as working with movie clips. Supports having multiple animations (walk, run, shoot, die, etc), filters and rotation (these are all pre-rendered, since rotating bitmaps is slow and ugly). The end result is that it's a much more complicated game engine, but just as easy to use. And it _screams_. Hitting over 24 fps with about 7,000 animated, eased route-following units onscreen.</p>
+<p>The route-finding is, mathematically, pretty complicated. The bobs aren't just taking the most efficient route round. Nor are they sticking to 'always on inside', or 'always on outside'. Nor are they going perpendicular to a curved route at a set radius. What they're doing is forming a natural curved turning circle through their eased rotation, and aiming to hit a diagonal projected out from the waypoint. This is made more difficult by factors such as concave/convex angles having to be treated differently to each other, and also having to change logic when you transfer from one type of angle to the other. Seeing just the waypoint ahead isn't enough; you need to look two ahead, to see which way it turns afterward. I do wonder if the corner-handling of the Orbit gravity experiments would be better-suited to this, though. It's a lot harder to implement, though, and would probably be more processor intensive (and considering you're aiming for thousands of units, you really don't want to be  doing something the 'slow way' thousands of times).<br>
+</p>
+<p>
+	<a href="{{ "/Tower.swf" | relative_url }}">Play AS3</a>
+</p>

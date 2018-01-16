@@ -14,7 +14,7 @@
 	<ul data-gumshoe class="nav nav-stacked fixed">
 	{% for category in categories_sorted %}
 		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#{{ category.name | slugify }}">
+			<a class="nav-link dropdown-toggle" href="#{{ category.href | default:category.name | slugify }}">
 			{{ category.name }}
 			</a>
 			<ul class="dropdown-menu">

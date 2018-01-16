@@ -1,15 +1,24 @@
-<{{ include.heading_level }} id="{{ include.supertitle | default:include.title | slugify }}">
+{% assign head_id = include.supertitle | default:include.title %}
+{% if include.href %}
+	{% assign head_id = include.href %}
+{% endif %}
+
+<{{ include.heading_level }} id="{{ head_id | slugify }}">
 	{{ include.supertitle }}
 	<small>{{ include.title }}</small>
 </{{ include.heading_level }}>
 <aside>
 	{% assign src = "/assets/" | append: project.assets_subdir | append: "/" | append: include.img_path | relative_url %}
+	{% assign alt = include.supertitle | default:include.title %}
+	{% if include.img_alt %}
+		{% assign alt = include.img_alt %}
+	{% endif %}
 	<noscript>
-		<img src="{{ src }}" alt="{{ include.supertitle | default:include.title }}" {% if include.img_id %}id="{{ include.img_id }}"{% endif %}>
+		<img src="{{ src }}" alt="{{ alt }}" {% if include.img_id %}id="{{ include.img_id }}"{% endif %}>
 	</noscript>
 	<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
 	data-src="{{ src }}"
-	alt="{{ include.supertitle | default:include.title }}"
+	alt="{{ alt }}"
 	{% if include.img_id %}id="{{ include.img_id }}"{% endif %}>
 </aside>
 <article>

@@ -1,0 +1,17 @@
+---
+layout: none
+name: "SAT theorem"
+supertitle: "SAT theorem"
+category_ix: 3
+has_content: true
+title: "Fun with Geometry"
+img_path: "SurfaceNormals.png"
+img_alt: "Surface Normals"
+---
+
+<p>
+This is an implementation of the Separating Axis Theorem. Metanet produced a <a href="http://www.metanetsoftware.com/technique/tutorialA.html">really interesting paper</a> on how they used this to implement the collision detection and response in N.</p>
+<p>Basically, axes are created from the normals of each of the triangle's surfaces. The rectangle's bounds are projected onto these axes. If there exists any axis upon which there is no intersection, then the shapes do not intersect. However if there is an intersection, you can use the depth and direction to calculate an appropriate collision response! This is better than standard Flash hitTest where you have very little information about which direction the collision occurred from.</p>
+<p>
+	<a href="{{ "/SurfaceNormals6.swf" | relative_url }}">Play</a>
+</p>

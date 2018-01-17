@@ -43,12 +43,60 @@ footer p {
 
 a {
   color: #1271db;
-
-  -webkit-transition: .25s ease;
-
-  transition: .25s ease;
 }
 
 a, a:focus, a:hover {
   text-decoration: none;
+}
+nav a {
+  color: $text;
+  border-bottom: .2rem solid transparent;
+
+  -webkit-transition: border-color .25s ease;
+  transition: border-color .25s ease;
+
+  &:hover,
+  &:focus {
+    color: $text;
+    border-color: rgba(0,0,0,.2);
+    text-decoration: none;
+  }
+}
+
+.middle {
+  padding-bottom: 0px !important;
+}
+
+nav > ul {
+  display: flex;
+  flex-wrap: wrap;
+  // justify-content: space-evenly;
+
+  margin-top: 16px;
+
+  padding-left: 0px;
+  padding-right: 0px;
+
+  // &>li>a,
+  // &>li>b {
+  //   // padding-left: 1em;
+  //   // padding-right: 1em;
+  // }
+
+  &>li {
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+
+    &>a,
+    &>b {
+      // increase hit area
+      padding-top: 0.25em;
+      padding-bottom: 0.25em;
+    }
+  }
+
+  // &>li:last-child {
+  //   margin-right: 0em;
+  // }
+  // justify-content: 
 }

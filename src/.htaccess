@@ -48,6 +48,7 @@ Header set Cache-Control "max-age=600, public"
 
 # Force non www. version of domain to be used
 RewriteEngine on
+RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} ^gamesgamesgames.co.uk [NC,OR]
 RewriteCond %{HTTP_HOST} ^www.gamesgamesgames.co.uk [NC,OR]
 RewriteCond %{HTTP_HOST} ^www.birchlabs.co.uk [NC]

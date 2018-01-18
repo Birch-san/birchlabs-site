@@ -52,7 +52,7 @@ RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} ^gamesgamesgames.co.uk [NC,OR]
 RewriteCond %{HTTP_HOST} ^www.gamesgamesgames.co.uk [NC,OR]
 RewriteCond %{HTTP_HOST} ^www.birchlabs.co.uk [NC]
-RewriteRule ^(.*)$ https://birchlabs.co.uk/$1 [L,R=301,NC]
+RewriteRule (.*) https://birchlabs.co.uk%{REQUEST_URI} [L,R=301,NC]
 
 # if file does not exist, but _can_ be found in /legacy: redirect to /legacy
 # %{DOCUMENT_ROOT} resolves to:

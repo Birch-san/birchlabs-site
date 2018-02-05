@@ -1,0 +1,9 @@
+<figure class="image" style="padding-top: 4px;">
+	<img src="{{ "/assets/posts/" | append:include.url | relative_url }}" width="{{ include.width }}" height="{{ include.height }}" alt="{{ include.description }}" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); margin-left: auto; margin-right: auto; display: block; max-height: 100%; max-width: {{ include.max-width }}px; height: auto;">
+	<figcaption style="padding-top: 16px; color: #555;">
+		<em>
+
+			— {{ include.description }}
+		</em>
+	</figcaption>
+</figure>

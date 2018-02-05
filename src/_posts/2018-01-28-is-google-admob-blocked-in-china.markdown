@@ -38,7 +38,7 @@ Evidence is documented in full in this [imgur album](https://imgur.com/a/MOUk1) 
 
 * Of note, we were also able to view Google AdMob ads placed by other parties on websites that we visited, so it's not just in-app AdMob services that work, either.
 
-{% include blog-image.html url="2018-01-28-is-google-admob-blocked-in-china/ct_iphone_portrait_without_vpn_success.jpg" description="China Telecom permitting a portrait-mode banner ad on iPhone." %}
+{% include blog-height-limited-image.html width="640" height="1136" max-height="600" url="2018-01-28-is-google-admob-blocked-in-china/ct_iphone_portrait_without_vpn_success.jpg" description="China Telecom permitting a portrait-mode banner ad on iPhone." %}
 
 ## Tester 2: using an iPad with China Mobile on my App Store app
 
@@ -48,13 +48,13 @@ Evidence is documented in full in this [imgur album](https://imgur.com/a/MOUk1) 
 
 * We didn't test with VPNs.
 
-{% include blog-image.html url="2018-01-28-is-google-admob-blocked-in-china/cm_ipad_portrait_success.jpg" description="China Mobile permitting a portrait-mode banner ad on iPad." %}
+{% include blog-height-limited-image.html width="1078" height="1596" max-height="600" url="2018-01-28-is-google-admob-blocked-in-china/cm_ipad_portrait_success.jpg" description="China Mobile permitting a portrait-mode banner ad on iPad." %}
 
 ## Tester 3: using an iPhone with China Unicom on my App Store app
 
 * Portrait and landscape iPhone banner ads were blocked on China Unicom, yet worked over VPN.
 
-{% include blog-image.html url="2018-01-28-is-google-admob-blocked-in-china/cu_iphone_portrait_error_without_vpn.jpg" description="China Unicom blocking a portrait-mode banner ad on iPhone (landscape was also blocked). Blockade was lifted immediately upon connecting to a VPN." %}
+{% include blog-height-limited-image.html width="728" height="1295" max-height="600" url="2018-01-28-is-google-admob-blocked-in-china/cu_iphone_portrait_error_without_vpn.jpg" description="China Unicom blocking a portrait-mode banner ad on iPhone (landscape was also blocked). Blockade was lifted immediately upon connecting to a VPN." %}
 
 ## Does the Google AdMob pane register any clicks?
 

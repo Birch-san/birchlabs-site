@@ -19,11 +19,11 @@ From **LinguaBrowse** v1.3.1, users can now tap non-dictionary form words withou
 
 Non-dictionary form words are everywhere, as I demonstrate by showing all the tooltips that **LinguaBrowse** would present for eight separate instances of non-dictionary form words in a single page of an arbitrary Wikipedia article:
 
-{% include blog-image.html url="2018-01-28-word-post-processing/superimposition.png" description="(Superimposed image of eight separate use cases; in real usage, only one tooltip would be shown at a time) LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word." %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="(Superimposed image of eight separate use cases; in real usage, only one tooltip would be shown at a time) LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word." %}
 
 By selecting the dictionary form that appears in the tooltip after tapping a word, we can choose to look up that form instead. Thus, we get a far more informative dictionary definition than had we been forced to look it up by its inflected form:
 
-{% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %}
+{% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %}
 
 This new addition is a big milestone and will significantly enhance support for pretty much every language in **LinguaBrowse**'s catalogue except for the Chinese languages (Mandarin and Cantonese compound nouns are handled sufficiently well by the initial tokenising pass, and their verbs and adjectives simply don't inflect!).
 
@@ -45,13 +45,13 @@ Now, thanks to [NSLinguisticTagger](https://developer.apple.com/library/mac/docu
 
 <!-- {% include blog-image.html url="2018-01-28-word-post-processing/german1.png" description="Compound noun handling (German). To my best understanding, this is the correct way to split up the word 'Straßenbahnkrawalle' into its constituent dictionary forms. Keen-eyed readers may notice that these options are presented all in lower case despite capital letters conveying meaning in German. This behaviour is down to a possible Cocoa frameworks bug that I never got to the bottom of, wherein NSMutableOrderedSet seems to ignore custom 'Hashable' and 'Equatable' methods – it's a long story – that's the correct data structure for the job, so for now, I regrettably won't be improving upon the situation. Although it may confuse users a little bit, it has no impact on dictionary lookup, as all LinguaBrowse dictionaries are case-insensitive." %} -->
 
-{% include blog-image.html url="2018-01-28-word-post-processing/german1.png" description="Compound noun handling (German)." %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-width="480" description="Compound noun handling (German)." %}
 
 The menu gives you the option of looking up, firstly, the full word (in case you really do want a holistic definition), then each subsequent distinct sub-part. All sub-parts are provided in dictionary form where possible (NSLinguisticTagger only supports lemmatisation from iOS 11, and even then, it's rather hit-or-miss in practice), or at least provided as-is (the 'stem', which is extracted much more reliably and is available to older versions of iOS).
 
 German is not the only language featuring unspaced compound nouns. Agglutinative languages, such as Japanese, Chinese, and Thai, lack spaces altogether, so their compound nouns are implicitly unspaced, and determining where to split them up is a real challenge. I can't comment on Thai (I don't speak a word of it!), but my first-pass processing with CFStringTokenizer (for Chinese) and [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) (for Japanese) did actually identify the word boundaries in Japanese and Chinese very competently to begin with. However, post-processing still serves a purpose in Japanese, as I found that any words written in *katakana* (a script principly used for transcribing loan words) were mistakenly being interpreted by mecab as single, continuous words (interestingly, CFStringTokenizer – which I had thought was simply a more locked-down implementation of mecab, because Apple has indeed been using mecab under the hood since at least Mac OS 10.5 <sup>[[1]](https://web.archive.org/web/20160305113404/http://chasen.org/~taku/blog/archives/2008/07/mac_os_x_leropa.html)[[2]](https://web.archive.org/web/20170708060425/http://d.hatena.ne.jp:80/kazama/20080115/p1)</sup> – *does* break them up correctly). Now, words like メディアセンター (メディア + センター; 'media' + 'centre') can be looked up piece-by-piece:
 
-{% include blog-image.html url="2018-01-28-word-post-processing/katakana.png" description="Compound noun handling (Japanese)" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-width="480" description="Compound noun handling (Japanese)" %}
 
 ## Inflected words
 
@@ -70,15 +70,15 @@ Actually, this last example can't be handled via NSLinguisticTagger (which so fa
 So now, when tapping on an inflected word, users will be given the opportunity to look it up either as-is, or by its lemma (whenever NSLinguisticTagger can determine it):
 
 
-{% include blog-image.html url="2018-01-28-word-post-processing/plural.png" description="Plurals handling" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/plural.png" width="1095" max-width="480" height="236" description="Plurals handling" %}
 
-{% include blog-image.html url="2018-01-28-word-post-processing/pp.png" description="Conjugation handling (past participle)" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/pp.png" width="1088" height="190" max-width="480" description="Conjugation handling (past participle)" %}
 
-{% include blog-image.html url="2018-01-28-word-post-processing/pt.png" description="Conjugation handling (past tense)" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/pt.png" width="1083" height="222" max-width="480" description="Conjugation handling (past tense)" %}
 
-{% include blog-image.html url="2018-01-28-word-post-processing/gerund.png" description="Conjugation handling (gerunds)" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/gerund.png" width="1063" max-width="480" height="254" description="Conjugation handling (gerunds)" %}
 
-{% include blog-image.html url="2018-01-28-word-post-processing/conjugation.png" description="Conjugation handling (present tense)" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/conjugation.png" width="1101" max-width="480" height="247" description="Conjugation handling (present tense)" %}
 
 ## Contractions
 
@@ -86,7 +86,7 @@ A contraction is when a word is shortened from its original form, usually mirror
 
 While before, tapping on a contracted word would input all of it into the dictionary, now one can choose to input just the noun, removing the contraction. Regrettably, NSLinguisticTagger does not lemmatise "l'" back to its full form "le" or "la", however, but *it sure would be nice to add by some other means in future*.
 
-{% include blog-image.html url="2018-01-28-word-post-processing/contraction.png" description="Contractions handling" %}
+{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-width="480" description="Contractions handling" %}
 
 For contractions, this update is only really relevant to languages with Latin alphabet scripts, but I might as well comment on contractions in other scripts, and how **LinguaBrowse** would fare against them, while we're here.
 

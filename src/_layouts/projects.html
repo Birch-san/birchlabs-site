@@ -22,6 +22,7 @@ layout: default
 {% assign categories = site[category_name] %}
 {% assign categories_sorted = categories | sort:"category_ix" %}
 
+<div class="project">
 {% for category in categories_sorted %}
 	{% unless category.has_content %}
 	<h2 id="{{ category.title | slugify }}">
@@ -56,6 +57,7 @@ layout: default
 		%}
 	{% endif %}
 {% endfor %}
+</div>
 
 <script type="text/javascript">
 (window.requestAnimationFrame

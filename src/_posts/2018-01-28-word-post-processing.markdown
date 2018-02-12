@@ -9,29 +9,40 @@ author: Jamie Birch
 
 ## Introduction
 
-### The web browser for foreign languages: LinguaBrowse
+### A web browser for foreign languages: LinguaBrowse
 
-**LinguaBrowse** is a free iOS app for reading native-level foreign-language texts (in any of around 30 languages) on the internet. It allows users to look up any unknown word on a web-page simply by tapping on it – no more wrestling with selection boxes and switching to external dictionary apps. It works by processing the text of a page into tokens using Apple's [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8) (except for Japanese and Korean, for which I use [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) – but that's a whole other story), then effectively making each token into a tappable button.
+**[LinguaBrowse](https://itunes.apple.com/us/app/linguabrowse/id1281350165?ls=1&mt=8)** is an iOS app for reading native-level foreign-language texts on the internet. It allows users to look up any unknown word on a web-page simply by tapping on it, so users don't have to wrestle with any text selection boxes nor constantly switch out to a dictionary app. This tap-to-define functionality employs two of Apple's Natural Language Processing tools:
 
-In previous versions, word lookup might fail due to the looked-up token not being in dictionary form. This issue was partially hidden because some of the iOS system dictionaries can handle non-dictionary form words by virtue of having a built-in lemmatiser (Oxford dictionaries use what they call their [Lemmatron](https://developer.oxforddictionaries.com/documentation?__prclt=OId2cMb0)). However, as a developer, I cannot depend upon this:
+* [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/1542136-cfstringtokenizercopybeststringl), which I use to initially process the text of a page into tokens (which I expose as tappable buttons that prompt a dictionary lookup). It is absolutely all-terrain, supporting [the following languages](https://developer.apple.com/documentation/corefoundation/1542136-cfstringtokenizercopybeststringl): Arabic, Bulgarian, Croatian, Czech, Danish, Dutch, English, Finnish, French, German, Hindi, Greek, Hebrew, Hungarian, Icelandic, Italian, Japanese, Korean, Mandarin, Norwegian Bokmål, Polish, Portuguese, Romanian, Russian, Slovak, Spanish, Swedish, Thai, Turkish, and Ukrainian.
 
-* most language pairs don't have system dictionaries – all bilingual system dictionaries are based on English, so, for example, there is no French ↔ Spanish dictionary for French speakers learning Spanish;
 
-* even if a system dictionary is available, there is no guarantee that the user has installed one for their system.
+* [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/), to subsequently convert any individually-selected token into dictionary form (if necessary). This principally relies upon its lemmatisation functionality, available [from iOS 11](https://developer.apple.com/videos/play/wwdc2017/208/) for English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish. However, it's also useful for its tokenisation functionality, as it will subtokenise certain grammatical features that CFStringTokenizer won't (eg. compound nouns and contractions).
 
-From **LinguaBrowse** v1.3.1, users can now tap non-dictionary form words without the lookup failing, as post-processing is performed on the word by Apple's [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/), which is more aggressive at tokenising and can thus break up words into further sub-parts. Whenever an inflected word or compound noun is tapped, a tooltip will appear to allow users to look up the word as-is, or by its dictionary form (where available – this is an [iOS 11 addition](https://developer.apple.com/videos/play/wwdc2017/208/) to its capabilities, affecting English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish), or sub-part (where appropriate).
+I also use [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) in the place of NSLinguisticTagger for better Japanese and Korean support.
+
+<!-- LinguaBrowse begins by processing the text of a page into (mostly) word-sized tokens using [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8), then effectively making each token into a tappable button. Upon tap, the user may search that token as-is in a dictionary. -->
+
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/ChineseLookup.png" width="621" height="1104" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese ↔ English (shown with permission from the Oxford Dictionaries API team)." %}
+
+For Mandarin, which lacks any inflections, just the initial processing with CFStringTokenizer suffices; every token maps to a dictionary-form word, and so any token the user taps upon can be looked up in a dictionary as-is. However, most other languages have grammatical obstacles such as inflections that would cause lookup of the word as-is to fail (or return poor results).
+
+<!-- (with their [Lemmatron](https://developer.oxforddictionaries.com/documentation?__prclt=OId2cMb0)) -->
+
+<!-- \* *Technically, some of the iOS system dictionaries, such as the Oxford ones, have built-in lemmatisers to handle non-dictionary form words, but most language pairs don't have a system dictionary, nor can we depend upon them having been installed.* -->
+
+{% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %}
 
 ### Looking up non-dictionary form words
 
-Non-dictionary form words are everywhere, as I demonstrate by showing all the tooltips that **LinguaBrowse** would present for eight separate instances of non-dictionary form words in a single page of an arbitrary Wikipedia article:
+For other languages, we need to normalise words to dictionary form before looking them up in the dictionary. For this, I use Apple's [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/). It offers lemmatisation (reducing words to dictionary form) starting from [iOS 11](https://developer.apple.com/videos/play/wwdc2017/208/) for English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish; but it's also useful for its tokenisation, which is curiously more aggressive than that of CFStringTokenizer, helping to usefully break up grammatical features like compound nouns and contractions. I also bundle [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) to extend lemmatisation support to Japanese and Korean.
+
+Non-dictionary form words are everywhere, as I demonstrate by showing all the tooltips that LinguaBrowse would present for eight separate instances of non-dictionary form words in a single page of an arbitrary Wikipedia article:
 
 {% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="(Superimposed image of eight separate use cases; in real usage, only one tooltip would be shown at a time) LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word." %}
 
 By selecting the dictionary form that appears in the tooltip after tapping a word, we can choose to look up that form instead. Thus, we get a far more informative dictionary definition than had we been forced to look it up by its inflected form:
 
-{% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %}
-
-This new addition is a big milestone and will significantly enhance support for pretty much every language in **LinguaBrowse**'s catalogue except for the Chinese languages (Mandarin and Cantonese compound nouns are handled sufficiently well by the initial tokenising pass, and their verbs and adjectives simply don't inflect!).
+This new addition is a big milestone and will significantly enhance support for pretty much every language in LinguaBrowse's catalogue except for the Chinese languages (Mandarin and Cantonese compound nouns are handled sufficiently well by the initial tokenising pass, and their verbs and adjectives simply don't inflect!).
 
 
 ## Processing of non-dictionary form words, in detail

@@ -11,38 +11,57 @@ author: Jamie Birch
 
 ### A web browser for foreign languages: LinguaBrowse
 
-**[LinguaBrowse](https://itunes.apple.com/us/app/linguabrowse/id1281350165?ls=1&mt=8)** is an iOS app for reading native-level foreign-language texts on the internet. It allows users to look up any unknown word on a web-page simply by tapping on it, so users don't have to wrestle with any text selection boxes nor constantly switch out to a dictionary app. This tap-to-define functionality employs two of Apple's Natural Language Processing tools:
+**[LinguaBrowse](https://itunes.apple.com/us/app/linguabrowse/id1281350165?ls=1&mt=8)** is an iOS app for reading native-level foreign-language texts on the internet. It allows users to look up any unknown word on a web-page simply by tapping on it, so users don't have to wrestle with any text selection boxes nor constantly switch out to a dictionary app.
 
-* [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/1542136-cfstringtokenizercopybeststringl), which I use to initially process the text of a page into tokens (which I expose as tappable buttons that prompt a dictionary lookup). It is absolutely all-terrain, supporting [the following languages](https://developer.apple.com/documentation/corefoundation/1542136-cfstringtokenizercopybeststringl): Arabic, Bulgarian, Croatian, Czech, Danish, Dutch, English, Finnish, French, German, Hindi, Greek, Hebrew, Hungarian, Icelandic, Italian, Japanese, Korean, Mandarin, Norwegian Bokmål, Polish, Portuguese, Romanian, Russian, Slovak, Spanish, Swedish, Thai, Turkish, and Ukrainian.
+In this post, I'll detail all the language processing that goes on under the hood to facilitate this multilingual tap-to-define functionality. 
 
 
-* [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/), to subsequently convert any individually-selected token into dictionary form (if necessary). This principally relies upon its lemmatisation functionality, available [from iOS 11](https://developer.apple.com/videos/play/wwdc2017/208/) for English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish. However, it's also useful for its tokenisation functionality, as it will subtokenise certain grammatical features that CFStringTokenizer won't (eg. compound nouns and contractions).
+<!-- {% include blog-height-limited-image.html url="2018-01-28-word-post-processing/ChineseLookup.png" width="621" height="1104" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese ↔ English (shown with permission from the Oxford Dictionaries API team)." %} -->
 
-I also use [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) in the place of NSLinguisticTagger for better Japanese and Korean support.
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/ChineseLookup2.png" width="688" height="1223" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese ↔ English (shown with permission from the Oxford Dictionaries API team)." %}
+
+### NLP tools used by LinguaBrowse
+
+The tap-to-define functionality employs two of Apple's Natural Language Processing tools:
+
+* [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/1542136-cfstringtokenizercopybeststringl), which I use to initially process the text of a page into tokens (that the user can tap upon to prompt a dictionary lookup) and for adding transcriptions to non-Latin scripts (e.g. adding pīnyīn to Mandarin).
+
+* [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/), to subsequently convert any tapped token into dictionary form (if necessary) before lookup.
+
+* [CFStringTransform](https://developer.apple.com/documentation/corefoundation/1542411-cfstringtransform), to convert traditional Chinese characters into Simplified form (because the iOS Chinese ↔ English system dictionary expects Simplified Chinese). In an old part of my codebase, I'm also using it to transliterate Thai for some reason.
+
+I substitute NSLinguisticTagger with [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) to provide lemmatisation support for Japanese and Korean.
 
 <!-- LinguaBrowse begins by processing the text of a page into (mostly) word-sized tokens using [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8), then effectively making each token into a tappable button. Upon tap, the user may search that token as-is in a dictionary. -->
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/ChineseLookup.png" width="621" height="1104" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese ↔ English (shown with permission from the Oxford Dictionaries API team)." %}
+### What is CFStringTokenizer useful for?
 
-For Mandarin, which lacks any inflections, just the initial processing with CFStringTokenizer suffices; every token maps to a dictionary-form word, and so any token the user taps upon can be looked up in a dictionary as-is. However, most other languages have grammatical obstacles such as inflections that would cause lookup of the word as-is to fail (or return poor results).
+CFStringTokenizer makes sense of texts: it can [figure out the predominant language](https://developer.apple.com/documentation/corefoundation/1542136-cfstringtokenizercopybeststringl), add [Latin transcriptions](https://developer.apple.com/documentation/corefoundation/kcfstringtokenizerattributelatintranscription) to words, and [split up texts up into smaller units](https://developer.apple.com/documentation/corefoundation/cfstringtokenizer/1588024-tokenization_modifiers), such as paragraphs, sentences, or words (this is a godsend for languages without spaces). In LinguaBrowse, I use it just for tokenising texts into arrays of words and adding transcriptions.
+
+For Mandarin, which lacks any inflections, every token output by CFStringTokenizer will map to a dictionary-form word, and can thus be looked up in a dictionary as-is. However, most other languages have grammatical obstacles such as inflections that would cause lookup of the word as-is to fail (or return poor results). This is where NSLinguisticTagger comes in.
 
 <!-- (with their [Lemmatron](https://developer.oxforddictionaries.com/documentation?__prclt=OId2cMb0)) -->
 
 <!-- \* *Technically, some of the iOS system dictionaries, such as the Oxford ones, have built-in lemmatisers to handle non-dictionary form words, but most language pairs don't have a system dictionary, nor can we depend upon them having been installed.* -->
 
-{% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %}
+<!-- {% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %} -->
 
-### Looking up non-dictionary form words
 
-For other languages, we need to normalise words to dictionary form before looking them up in the dictionary. For this, I use Apple's [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/). It offers lemmatisation (reducing words to dictionary form) starting from [iOS 11](https://developer.apple.com/videos/play/wwdc2017/208/) for English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish; but it's also useful for its tokenisation, which is curiously more aggressive than that of CFStringTokenizer, helping to usefully break up grammatical features like compound nouns and contractions. I also bundle [mecab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) to extend lemmatisation support to Japanese and Korean.
+### What is NSLinguisticTagger useful for?
 
-Non-dictionary form words are everywhere, as I demonstrate by showing all the tooltips that LinguaBrowse would present for eight separate instances of non-dictionary form words in a single page of an arbitrary Wikipedia article:
+NSLinguisticTagger has a lot of overlapping functionality with CFStringTokenizer: again, it can [tokenise texts into smaller units](https://developer.apple.com/documentation/foundation/nslinguistictaggerunit), [identify the dominant language](https://developer.apple.com/documentation/foundation/nslinguistictagger/2875117-dominantlanguage) for said units, but it can also do so much more. It can also [identify the dominant script](https://developer.apple.com/documentation/foundation/nsorthography) (such as Cyrillic or Simplified Chinese) of a unit, [identify part-of-speech](https://developer.apple.com/documentation/foundation/nslinguistictagscheme) of a word – including classifying by sub-types, as in [named entity recognition](https://developer.apple.com/documentation/foundation/nslinguistictagscheme/1415135-nametype) – and even [identify the lemma](https://developer.apple.com/documentation/foundation/nslinguistictagscheme/1416890-lemma) (dictionary form) of a word.
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="(Superimposed image of eight separate use cases; in real usage, only one tooltip would be shown at a time) LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word." %}
+[As of iOS 11](https://developer.apple.com/videos/play/wwdc2017/208/), it's multi-threaded, it can tokenise all iOS/macOS system languages and identify 52 different languages – however, only eight languages are supported for lemmatisation, part-of-speech identification, and named entity recognition: English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish.
 
-By selecting the dictionary form that appears in the tooltip after tapping a word, we can choose to look up that form instead. Thus, we get a far more informative dictionary definition than had we been forced to look it up by its inflected form:
+So why not use NSLinguisticTagger for everything? Well, unless things have changed with the iOS 11 optimisations, CFStringTokenizer is historically [orders of magnitude faster](https://medium.com/@sorenlind/three-ways-to-enumerate-the-words-in-a-string-using-swift-7da5504f0062) at tokenising the same given length of string (although may perform comparably for small strings), and its tokenising time scales far better with input string length. So I decided to leave the tokenising to CFStringTokeniser, and the tagging to NSLinguisticTagger!
 
-This new addition is a big milestone and will significantly enhance support for pretty much every language in LinguaBrowse's catalogue except for the Chinese languages (Mandarin and Cantonese compound nouns are handled sufficiently well by the initial tokenising pass, and their verbs and adjectives simply don't inflect!).
+<!-- ### Looking up non-dictionary form words -->
+
+With NSLinguisticTagger, we can support those eight extra languages by allowing users to look up words by their dictionary forms.
+
+<!-- For other languages, non-dictionary form words are everywhere, and looking them up as-is is unlikely to return a result. Thus, I provide users a tooltip so that they can either look up the token returned by CFStringTokenizer as-is, or by a dictionary form elucidated by NSLinguisticTagger. Here's a few different examples, superimposed, of how often this can help even in just one paragraph:
+
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word (superimposed image of several use cases; in real usage, only one tooltip would be displayed at a time)." %} -->
 
 
 ## Processing of non-dictionary form words, in detail

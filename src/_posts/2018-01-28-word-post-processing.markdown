@@ -30,7 +30,9 @@ The tap-to-define functionality employs two of Apple's Natural Language Processi
 
 * [CFStringTransform](https://developer.apple.com/documentation/corefoundation/1542411-cfstringtransform), to convert traditional Chinese characters into Simplified form (because the iOS Chinese ↔ English system dictionary expects Simplified Chinese). In an old part of my codebase, I'm also using it to transliterate Thai for some reason.
 
-I substitute NSLinguisticTagger with [MeCab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) to provide lemmatisation support for Japanese and Korean.
+I substitute CFStringTokenizer and NSLinguisticTagger with [MeCab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) to provide lemmatisation support for Japanese and Korean. This is the tool that Apple have used since at least Mac OS 10.5 for Japanese tokenising<sup>[[1]](https://web.archive.org/web/20160305113404/http://chasen.org/~taku/blog/archives/2008/07/mac_os_x_leropa.html)[[2]](https://web.archive.org/web/20170708060425/http://d.hatena.ne.jp:80/kazama/20080115/p1)</sup>, and I [have heard](https://stackoverflow.com/a/8285221/5951226) it's even the exact tokenizer used in CFStringTokenizer for Japanese. Whether the older NSLinguisticTagger ('NS' indicating NeXTSTEP, and 'CF' indicating Core Foundation) uses it too is another question altogether.
+
+<!-- NSLinguisticTagger also helps in Japanese, if compound nouns fail to split; I experience this for some *katakana* loan words, possibly because my bundled MeCab may be using a different dictionary to that of CFStringTokenizer (which likely uses MeCab under the hood in any case, as Apple have been employing it since at least Mac OS 10.5<sup>[[1]](https://web.archive.org/web/20160305113404/http://chasen.org/~taku/blog/archives/2008/07/mac_os_x_leropa.html)[[2]](https://web.archive.org/web/20170708060425/http://d.hatena.ne.jp:80/kazama/20080115/p1)</sup>). -->
 
 <!-- LinguaBrowse begins by processing the text of a page into (mostly) word-sized tokens using [CFStringTokenizer](https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8), then effectively making each token into a tappable button. Upon tap, the user may search that token as-is in a dictionary. -->
 
@@ -64,17 +66,17 @@ With NSLinguisticTagger, we can support those eight extra languages by allowing 
 {% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word (superimposed image of several use cases; in real usage, only one tooltip would be displayed at a time)." %} -->
 
 
-## Grammatical features requiring NLP
+## Aiding dictionary lookup with NLP
 
 ### Introduction
 
-I'd like to highlight a few of the troublesome grammatical features across different languages that LinguaBrowse has had to account for when accommodating dictionary lookup, picking a few languages for context:
+I'd like to highlight a few of the troublesome grammatical features posing problems to dictionary lookup that have required me to call upon a mixture of NLP tools to surmount:
 
-1. [compound nouns](#compound-nouns) (*w.r.t.* German and Japanese)
+1. [compound nouns](#compound-nouns) (examples from English, German, and Japanese)
 
-2. [inflected words](#inflected-words) (*w.r.t.* French and English)
+2. [inflected words](#inflected-words) (examples from English)
 
-3. [contractions](#contractions) (*w.r.t.* French, English, Italian, Japanese, and Chinese)
+3. [contractions](#contractions) (examples from French, English, Italian, and – as a bonus – Japanese and Chinese)
 
 ### 1. Compound nouns
 
@@ -98,13 +100,13 @@ I'm going to classify compound nouns into two types: those delimited by spaces (
 
 For space-delimited compound nouns, looking up each consituent part is often enough to deduce the meaning: For example, the meaning of 'deputy head' is easy to infer from its parts. However, just as often, the meanings of the constituent parts are unhelpful (e.g. for words like 'vice principal'). In these cases, LinguaBrowse's online dictionaries provide linkes to entries for any compound nouns deriving from a looked-up word.
 
-For undelimited compound nouns, at least in English, it is best to look up the whole word as-is. For example, the word 'greenhouse' can only be understood as its whole. However, an ability to define the constituent parts will often be of help to learners. No clearer is this fact than in German, where compound nouns can grow as long as 'Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz' (meaning the "law for the delegation of monitoring beef labelling")! Let's see how such words are handled in LinguaBrowse, then:
+For undelimited compound nouns, at least in English, it is best to look up the whole word as-is. For example, the word 'greenhouse' can only be understood as its whole. However, an ability to define the constituent parts will often be of help to learners. No clearer is this fact than in German, where compound nouns can grow as long as 'Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz' (meaning the "law for the delegation of monitoring beef labelling")! Thus, we can handle them as follows:
 
 {% include blog-width-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-width="480" description="Compound noun handling (German)." %}
 
-Note how the user has the option of looking up the whole word as-is, or its sub parts, which are each in dictionary form where available.
+In this example, the user has the option of looking up the whole word as-is, or by its sub parts, which are each in dictionary form where available.
 
-It also helps in Japanese, if compound nouns fail to split; I experience this for some *katakana* loan words, possibly because my bundled MeCab may be using a different dictionary to that of CFStringTokenizer (which likely uses MeCab under the hood in any case, as Apple have been employing it since at least Mac OS 10.5<sup>[[1]](https://web.archive.org/web/20160305113404/http://chasen.org/~taku/blog/archives/2008/07/mac_os_x_leropa.html)[[2]](https://web.archive.org/web/20170708060425/http://d.hatena.ne.jp:80/kazama/20080115/p1)</sup>).
+I also use NSLinguisticTagger in Japanese for some *katakana* compound nouns that MeCab fails to split properly (perhaps it uses a different dictionary to NSLinguisticTagger/CFStringTokenizer):
 
 {% include blog-width-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-width="480" description="Compound noun handling (Japanese)" %}
 
@@ -138,7 +140,7 @@ Actually, this last example can't be handled via NSLinguisticTagger (which so fa
 
 For most cases, the simple answer is to just return the lemma given by NSLinguisticTagger. And if NSLinguisticTagger doesn't support lemmatisation for the given language, then we'll just have to look up the word as-is and hope the dictionary can give us a best-effort result.
 
-However, a radical option does exist: Provide your own lemmatisers. I've done so for Japanese and Korean, by bundling MeCab. MeCab was traditionally developed for Japanese tokenisation, but after finding a project to [adapt MeCab for Korean usage](https://bitbucket.org/eunjeon/mecab-ko), I incorporated the code into [my own fork](https://github.com/shirakaba/iPhone-libmecab/tree/korean) of an iOS wrapper for MeCab. I have lofty dreams of incorporating lemmatisers for every language under the sun, but for now, it's a stretch goal.
+However, a radical option does exist: Bundle your own extra lemmatisers into the app. I've done so for Japanese and Korean, with MeCab. While it was traditionally developed for Japanese tokenisation, I found a project to [adapt MeCab for Korean usage](https://bitbucket.org/eunjeon/mecab-ko), I incorporated the code into [my own fork](https://github.com/shirakaba/iPhone-libmecab/tree/korean) of an iOS wrapper for MeCab. I have lofty dreams of incorporating lemmatisers for every language under the sun, but for now, it's a stretch goal.
 
 <!-- In non-agglutinative languages (i.e. languages with spaces delimiting all non-compound words), the handling is intuitive: each inflected word simply maps to a token.
 
@@ -197,47 +199,45 @@ Thanks to NSLinguisticTagger, we can now separate the contraction into its parts
 
 #### What about languages with non-Latin scripts?
 
-Contractions look rather different in languages with non-Latin scripts. In my examples from Japanese and Chinese, they don't exhibit any of the same regularity and ubiquity (making them less of a common problem to surmount), and don't necessarily pose a great problem to tokenisation, nor interfere with word lookup.
+As for languages with non-Latin scripts, I'll give some examples from Japanese and Chinese for flavour:
 
-##### Japanese 
+##### Japanese
 
-Japanese has quite a few contractions:
+* やっぱり ➡ やっぱ
 
-* やっぱ (from やっぱり, or more strictly 矢っ張り)
+* 何だと言って／何で有っても ➡ 何だって
 
-* 何だって (from 何だと言って or 何で有っても)
+* ありがとうございます ➡ あざす
 
-* あざす (from ありがとうございます)
-
-* I suspect 'こんな' comes from 'このような'!
-
-These are tokenised differently on a case-by-case basis, whether by CFStringTokenizer or by mecab: sometimes they'll break up the word into sub-parts ('何だって' breaks into '何' and 'だって'), and other times they'll recognise the full word (as with 'やっぱ') – it fully depends on how the word was handled in the tokeniser's training set (if indeed at all, given how colloquial some of them are). But whether the tokenisation leaves you with sub-parts or the full word, it's usually enough to get a decent term for a dictionary search.
-
- The only improvement I could make upon this would be to upgrade mecab from using Naist's JDic dictionary to the superior Unidic (which has first-class lemmatisation support and uses a monstrously larger corpus). However, I'd need a spare month (and ideally a Japanese-speaking C++ programmer to consult) to even attempt this upgrade, and I don't even know what Unidic's licensing is.
+* Many nouns, as listed in this [utterly uncited article](https://en.wikipedia.org/wiki/Japanese_abbreviated_and_contracted_words)
 
 ##### Chinese
 
-Fascinatingly, I found that Chinese [has contractions](http://web.archive.org/web/20170708194353/http://chinesehacks.com/vocabulary/syllable-contractions/) too! Here are some examples from the linked article, which I must note focuses on Taiwan Mandarin and references webspeak, but nonetheless:
+[These examples](http://web.archive.org/web/20170708194353/http://chinesehacks.com/vocabulary/syllable-contractions/) are predominantly from Taiwan Mandarin, and may be restricted to net-speak:
 
-* 知道 (zhīdào) -> 造 (zào)
+* 知道 (zhīdào) ➡ 造 (zào)
 
-* 时候 (shíhòu) -> 兽 (shòu)
+<!-- * 时候 (shíhòu) ➡ 兽 (shòu) -->
 
-* 我一直 (wǒ yīzhí) -> 伟直 (wěi zhí)
+<!-- * 我一直 (wǒ yīzhí) ➡ 伟直 (wěi zhí) -->
 
-* 什么时候 (Shénme shíhòu) -> 神兽 (shénshòu)
+* 什么时候 (shénme shíhòu) ➡ 神兽 (shénshòu)
 
-* 我会 (Wǒ huì) -> 伟 (wěi)
+* 我会 (wǒ huì) ➡ 伟 (wěi)
 
-* 今天 (jīntiān) -> 间 (jiān)
+* 今天 (jīntiān) ➡ 间 (jiān)
 
-I don't know to what degree each of these examples are colloquial/slang or are limited to Taiwan Mandarin (although I do believe that at least 圕, a three-syllable contraction of 图书馆, is acceptable in 'standard', i.e. Beijing, Mandarin), and so the question of whether they are handled well falls down to:
+[These ones](http://languagelog.ldc.upenn.edu/nll/?p=3330) may be more mainstream:
 
-* how well CFStringTokenizer can discern where to place its word boundaries (which depends upon the training set that it was originally trained upon – most likely not a 'net speak' corpus – and the other words that happen to be found amongst it in the target sentence, making this a difficult question to answer definitively);
+* [圕](https://en.wiktionary.org/wiki/圕) (tuān) ➡ 图书馆 (túshūguǎn)
 
-* the quality of the dictionary used, to explain that the word may have an alternative meaning to its canonical ones if being employed as a contraction.
+* [千克](https://en.wiktionary.org/wiki/兛) (qiānkè) ➡ 兛 (qiānkè)
 
-In any case, I suspect that this case would be too niche to need handling in practice.
+* [千瓦](https://en.wiktionary.org/wiki/瓩) (qiānwǎ) ➡ 瓩 (qiānwǎ)
+
+In both these languages' cases, handling of the contractions requires both a well-trained tokeniser (to correctly identify the word boundary and ideally produce the dictionary form) and a good dictionary (to correctly interpret the word when looked up); there's not much more that can be done on the developer's end if relying upon just CFStringTokenizer and NSLinguisticTagger. At best, I could try to upgrade my MeCab's Japanese dictionary from NAIST's JDic to NINJAL's UniDic (which is trained on a monstrously larger corpus<sup>[\[1\]](https://link.springer.com/article/10.1007/s10579-013-9261-0)[\[2\]](http://pj.ninjal.ac.jp/corpus_center/bccwj/en/)</sup>).
+
+Realistically, though, I think we'll be able to live without special handling for Japanese and Chinese contractions.
 
 ### Wrap-up
 

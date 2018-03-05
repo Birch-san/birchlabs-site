@@ -172,18 +172,21 @@ So now, when tapping on an inflected word, users are given the opportunity to lo
 
 A contraction is when a word is shortened from its original form, usually mirroring how the word is spoken in practice. English is chock-full of these:
 
+* "shoulda" ➡ "should have"
+* "gotta" ➡ "got to"
 * "it's" ➡ "it is"
 * "let's" ➡ "let us"
 * "they're" ➡ "they are"
 * "y'all" ➡ "you all"
 * "fish 'n' chips" ➡ "fish and chips"
 
-The indefinite articles of French and Italian also induce a lot of this:
+The definite articles of French and Italian also induce a lot of this:
 
 * French: "l'occasion" ➡ "la occasion"
 * French: "l'aspect" ➡ "le aspect"
 * Italian: "l'occasione" ➡ "la occasione"
 * Italian: "l'aspetto" ➡ "lo aspetto"
+
 
 A significant problem to learners here is that this obscures the gender of the noun, preventing one from learning how to use the word in other contexts.
 
@@ -191,17 +194,19 @@ I'm focusing just on contractions in languages with Latin scripts here, but I'll
 
 #### How should they be processed to aid dictionary lookup?
 
-While most English contractions will be listed in a dictionary as-is (due to them being an accepted form of the word), Italian and French dictionaries will typically omit the indefinite articles from the lookup key in favour of categorising it as 'masculine' or 'feminine'. So only a forgiving dictionary would facilitate lookup of such words.
+While most English contractions will be listed in a dictionary as-is (due to them being an accepted form of the word), contractions based on definite articles, such as those common in Italian and French, will often have the definite articles omitted. Instead, the dictionaries may just categorise the word as 'masculine' or 'feminine'. So only a forgiving dictionary would facilitate lookup of such words.
 
-Thanks to NSLinguisticTagger, we can now separate the contraction into its parts, allowing search by part of the word. Regrettably, NSLinguisticTagger does *not* lemmatise "l'" back to its full form 'le' or 'la' to show gender, but *it sure would be nice to add by some other means in future*.
+Thanks to NSLinguisticTagger, we can now separate definite-article contractions into their parts, allowing search by part of the word. Regrettably, NSLinguisticTagger does *not* lemmatise "l'" back to its full form 'le' or 'la' to show gender, but *it sure would be nice to add by some other means in future*.
 
 {% include blog-height-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-height="175" description="Contractions handling" %}
 
 #### What about languages with non-Latin scripts?
 
-As for languages with non-Latin scripts, I'll give some examples from Japanese and Chinese for flavour:
+Contractions look rather different in languages with non-Latin scripts, and pose different problems to text processing. I'll introduce contractions in two different agglutinative languages, Japanese and Chinese, then comment on how they should be both handled.
 
 ##### Japanese
+
+Japanese contractions are pretty commonplace due to Japanese having a phonetic alphabet.
 
 * やっぱり ➡ やっぱ
 
@@ -212,6 +217,8 @@ As for languages with non-Latin scripts, I'll give some examples from Japanese a
 * Many nouns, as listed in this [utterly uncited article](https://en.wikipedia.org/wiki/Japanese_abbreviated_and_contracted_words)
 
 ##### Chinese
+
+Chinese contractions are harder to come by because, as far as I gather, they exist only within slang. Lacking a dedicated phonetic alphabet (apart from [Bopomofo](https://en.wikipedia.org/wiki/Bopomofo), which is not used stand-alone), Chinese does not lend itself well to phonetic contractions. Nonetheless, they do exist.
 
 [These examples](http://web.archive.org/web/20170708194353/http://chinesehacks.com/vocabulary/syllable-contractions/) are predominantly from Taiwan Mandarin, and may be restricted to net-speak:
 
@@ -227,7 +234,7 @@ As for languages with non-Latin scripts, I'll give some examples from Japanese a
 
 * 今天 (jīntiān) ➡ 间 (jiān)
 
-[These ones](http://languagelog.ldc.upenn.edu/nll/?p=3330) may be more mainstream:
+[These ones](http://languagelog.ldc.upenn.edu/nll/?p=3330) are perhaps historical:
 
 * [圕](https://en.wiktionary.org/wiki/圕) (tuān) ➡ 图书馆 (túshūguǎn)
 
@@ -237,7 +244,7 @@ As for languages with non-Latin scripts, I'll give some examples from Japanese a
 
 In both these languages' cases, handling of the contractions requires both a well-trained tokeniser (to correctly identify the word boundary and ideally produce the dictionary form) and a good dictionary (to correctly interpret the word when looked up); there's not much more that can be done on the developer's end if relying upon just CFStringTokenizer and NSLinguisticTagger. At best, I could try to upgrade my MeCab's Japanese dictionary from NAIST's JDic to NINJAL's [UniDic](http://pj.ninjal.ac.jp/corpus_center/unidic/) (which is trained on a monstrously larger corpus<sup>[\[1\]](https://link.springer.com/article/10.1007/s10579-013-9261-0)[\[2\]](http://pj.ninjal.ac.jp/corpus_center/bccwj/en/)</sup>).
 
-Realistically, though, I think we'll be able to live without special handling for Japanese and Chinese contractions.
+Realistically, though, I think we'll be able to live without special handling for such contractions! There will always be cases where the user will have to pick up slack for automatic study tools, and this is one of the less criminal ones.
 
 ### Wrap-up
 

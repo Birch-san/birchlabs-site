@@ -72,11 +72,11 @@ With NSLinguisticTagger, we can support those eight extra languages by allowing 
 
 I'd like to highlight a few of the troublesome grammatical features posing problems to dictionary lookup that have required me to call upon a mixture of NLP tools to surmount:
 
-1. [compound nouns](#compound-nouns) (examples from English, German, and Japanese)
+1. [compound nouns](#1-compound-nouns) (examples from English, German, and Japanese)
 
-2. [inflected words](#inflected-words) (examples from English)
+2. [inflected words](#2-inflected-words) (examples from English)
 
-3. [contractions](#contractions) (examples from French, English, Italian, and – as a bonus – Japanese and Chinese)
+3. [contractions](#3-contractions) (examples from French, English, Italian, and – as a bonus – Japanese and Chinese)
 
 ### 1. Compound nouns
 
@@ -102,13 +102,13 @@ For space-delimited compound nouns, looking up each consituent part is often eno
 
 For undelimited compound nouns, at least in English, it is best to look up the whole word as-is. For example, the word 'greenhouse' can only be understood as its whole. However, an ability to define the constituent parts will often be of help to learners. No clearer is this fact than in German, where compound nouns can grow as long as 'Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz' (meaning the "law for the delegation of monitoring beef labelling")! Thus, we can handle them as follows:
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-width="480" description="Compound noun handling (German)." %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-height="225" description="Compound noun handling (German)." %}
 
 In this example, the user has the option of looking up the whole word as-is, or by its sub parts, which are each in dictionary form where available.
 
 I also use NSLinguisticTagger in Japanese for some *katakana* compound nouns that MeCab fails to split properly (perhaps it uses a different dictionary to NSLinguisticTagger/CFStringTokenizer):
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-width="480" description="Compound noun handling (Japanese)" %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-height="185" description="Compound noun handling (Japanese)" %}
 
 
 ### 2. Inflected words
@@ -195,7 +195,7 @@ While most English contractions will be listed in a dictionary as-is (due to the
 
 Thanks to NSLinguisticTagger, we can now separate the contraction into its parts, allowing search by part of the word. Regrettably, NSLinguisticTagger does *not* lemmatise "l'" back to its full form 'le' or 'la' to show gender, but *it sure would be nice to add by some other means in future*.
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-width="480" description="Contractions handling" %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-height="175" description="Contractions handling" %}
 
 #### What about languages with non-Latin scripts?
 
@@ -235,7 +235,7 @@ As for languages with non-Latin scripts, I'll give some examples from Japanese a
 
 * [千瓦](https://en.wiktionary.org/wiki/瓩) (qiānwǎ) ➡ 瓩 (qiānwǎ)
 
-In both these languages' cases, handling of the contractions requires both a well-trained tokeniser (to correctly identify the word boundary and ideally produce the dictionary form) and a good dictionary (to correctly interpret the word when looked up); there's not much more that can be done on the developer's end if relying upon just CFStringTokenizer and NSLinguisticTagger. At best, I could try to upgrade my MeCab's Japanese dictionary from NAIST's JDic to NINJAL's UniDic (which is trained on a monstrously larger corpus<sup>[\[1\]](https://link.springer.com/article/10.1007/s10579-013-9261-0)[\[2\]](http://pj.ninjal.ac.jp/corpus_center/bccwj/en/)</sup>).
+In both these languages' cases, handling of the contractions requires both a well-trained tokeniser (to correctly identify the word boundary and ideally produce the dictionary form) and a good dictionary (to correctly interpret the word when looked up); there's not much more that can be done on the developer's end if relying upon just CFStringTokenizer and NSLinguisticTagger. At best, I could try to upgrade my MeCab's Japanese dictionary from NAIST's JDic to NINJAL's [UniDic](http://pj.ninjal.ac.jp/corpus_center/unidic/) (which is trained on a monstrously larger corpus<sup>[\[1\]](https://link.springer.com/article/10.1007/s10579-013-9261-0)[\[2\]](http://pj.ninjal.ac.jp/corpus_center/bccwj/en/)</sup>).
 
 Realistically, though, I think we'll be able to live without special handling for Japanese and Chinese contractions.
 

@@ -55,7 +55,15 @@ NSLinguisticTagger has a lot of overlapping functionality with CFStringTokenizer
 
 [As of iOS 11](https://developer.apple.com/videos/play/wwdc2017/208/), it's multi-threaded, it can tokenise all iOS/macOS system languages and identify 52 different languages – however, only eight languages are supported for lemmatisation, part-of-speech identification, and named entity recognition: English, French, Italian, German, Spanish, Portuguese, Russian, and Turkish.
 
-So why not use NSLinguisticTagger for everything? Well, unless things have changed with the iOS 11 optimisations, CFStringTokenizer is historically [orders of magnitude faster](https://medium.com/@sorenlind/three-ways-to-enumerate-the-words-in-a-string-using-swift-7da5504f0062) at tokenising the same given length of string (although may perform comparably for small strings), and its tokenising time scales far better with input string length. So I decided to leave the tokenising to CFStringTokeniser, and the tagging to NSLinguisticTagger!
+#### Isn't CFStringTokenizer redundant?
+
+If NSLinguisticTagger can do tokenising, why introduce NSLinguisticTagger at all? 
+
+1. CFStringTokenizer produces more word-sized tokens (see the sections to come on [compound nouns](#1-compound-nouns) and [contractions](#3-contractions))
+
+2. Unless things have changed with the aforementioned iOS 11 optimisations, CFStringTokenizer is historically [orders of magnitude faster](https://medium.com/@sorenlind/three-ways-to-enumerate-the-words-in-a-string-using-swift-7da5504f0062) at tokenising the same given length of string (although may perform comparably for small strings), and its tokenising time scales far better with input string length.
+
+Thus, I decided to leave the whole-page text tokenising to CFStringTokeniser, and everything else to NSLinguisticTagger!
 
 <!-- ### Looking up non-dictionary form words -->
 
@@ -102,13 +110,13 @@ For space-delimited compound nouns, looking up each consituent part is often eno
 
 For undelimited compound nouns, at least in English, it is best to look up the whole word as-is. For example, the word 'greenhouse' can only be understood as its whole. However, an ability to define the constituent parts will often be of help to learners. No clearer is this fact than in German, where compound nouns can grow as long as 'Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz' (meaning the "law for the delegation of monitoring beef labelling")! Thus, we can handle them as follows:
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-height="225" description="Compound noun handling (German)." %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-height="150" description="Compound noun handling (German)." %}
 
 In this example, the user has the option of looking up the whole word as-is, or by its sub parts, which are each in dictionary form where available.
 
 I also use NSLinguisticTagger in Japanese for some *katakana* compound nouns that MeCab fails to split properly (perhaps it uses a different dictionary to NSLinguisticTagger/CFStringTokenizer):
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-height="185" description="Compound noun handling (Japanese)" %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-height="122" description="Compound noun handling (Japanese)" %}
 
 
 ### 2. Inflected words
@@ -198,7 +206,7 @@ While most English contractions will be listed in a dictionary as-is (due to the
 
 Thanks to NSLinguisticTagger, we can now separate definite-article contractions into their parts, allowing search by part of the word. Regrettably, NSLinguisticTagger does *not* lemmatise "l'" back to its full form 'le' or 'la' to show gender, but *it sure would be nice to add by some other means in future*.
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-height="175" description="Contractions handling" %}
+{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-height="117" description="Contractions handling" %}
 
 #### What about languages with non-Latin scripts?
 
@@ -242,6 +250,8 @@ Chinese contractions are harder to come by because, as far as I gather, they exi
 
 * [千瓦](https://en.wiktionary.org/wiki/瓩) (qiānwǎ) ➡ 瓩 (qiānwǎ)
 
+#### How should they be processed to aid dictionary lookup?
+
 In both these languages' cases, handling of the contractions requires both a well-trained tokeniser (to correctly identify the word boundary and ideally produce the dictionary form) and a good dictionary (to correctly interpret the word when looked up); there's not much more that can be done on the developer's end if relying upon just CFStringTokenizer and NSLinguisticTagger. At best, I could try to upgrade my MeCab's Japanese dictionary from NAIST's JDic to NINJAL's [UniDic](http://pj.ninjal.ac.jp/corpus_center/unidic/) (which is trained on a monstrously larger corpus<sup>[\[1\]](https://link.springer.com/article/10.1007/s10579-013-9261-0)[\[2\]](http://pj.ninjal.ac.jp/corpus_center/bccwj/en/)</sup>).
 
 Realistically, though, I think we'll be able to live without special handling for such contractions! There will always be cases where the user will have to pick up slack for automatic study tools, and this is one of the less criminal ones.
@@ -252,9 +262,9 @@ Hopefully this real-world application has given some clarity about the overlappi
 
 If you liked this dev note, you can get notified of future ones (and progress updates on LinguaBrowse) at:
 
-* [Reddit](http://www.reddit.com/r/LinguaBrowse)
+* <a href="http://www.reddit.com/r/LinguaBrowse">Reddit</a>
 
-* [Twitter](https://twitter.com/LinguaBrowse?lang=en)
+* <a href="https://twitter.com/LinguaBrowse?lang=en">Twitter</a>
 
-* [Facebook](https://www.facebook.com/LinguaBrowse)
+* <a href="https://www.facebook.com/LinguaBrowse">Facebook</a>
 

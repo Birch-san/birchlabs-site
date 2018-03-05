@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Looking up non-dictionary form words in thirty languages"
-date:   2018-01-28 14:16:43 -0000
+date:   2018-03-05 14:16:43 -0000
 categories: blog Jamie LinguaBrowse
 syntax_highlight: true
 author: Jamie Birch

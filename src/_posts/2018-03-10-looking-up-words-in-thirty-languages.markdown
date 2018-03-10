@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Looking up non-dictionary form words in thirty languages"
-date:   2018-03-05 14:16:43 -0000
+title:  "Looking up non-dictionary form words in thirty languages (via iOS NLP tools)"
+date:   2018-03-10 14:16:43 -0000
 categories: blog Jamie LinguaBrowse
 syntax_highlight: true
 author: Jamie Birch
@@ -11,14 +11,16 @@ author: Jamie Birch
 
 ### A web browser for foreign languages: LinguaBrowse
 
-**[LinguaBrowse](https://itunes.apple.com/us/app/linguabrowse/id1281350165?ls=1&mt=8)** is an iOS app for reading native-level foreign-language texts on the internet. It allows users to look up any unknown word on a web-page simply by tapping on it, so users don't have to wrestle with any text selection boxes nor constantly switch out to a dictionary app.
+**[LinguaBrowse](https://itunes.apple.com/us/app/linguabrowse/id1281350165?ls=1&mt=8)** is an iOS app for reading native-level foreign-language texts on the internet. It allows users to look up any unknown word on a web-page in a popup dictionary, simply by tapping on it; so users don't have to wrestle with any text selection boxes nor constantly switch out to a dictionary app.
+
+<!-- (producing a popup dictionary, ie. [UIReferenceLibraryViewController](https://developer.apple.com/documentation/uikit/uireferencelibraryviewcontroller)) -->
 
 In this post, I'll detail all the language processing that goes on under the hood to facilitate this multilingual tap-to-define functionality. 
 
 
-<!-- {% include blog-height-limited-image.html url="2018-01-28-word-post-processing/ChineseLookup.png" width="621" height="1104" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese ↔ English (shown with permission from the Oxford Dictionaries API team)." %} -->
+<!-- {% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/ChineseLookup.png" width="621" height="1104" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese <-> English (shown with permission from the Oxford Dictionaries API team)." %} -->
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/ChineseLookup2.png" width="688" height="1223" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary for Chinese ↔ English (shown with permission from the Oxford Dictionaries API team)." %}
+{% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/ChineseLookup2.png" width="688" height="1223" max-height="600" description="Tap-to-define for a Chinese word. Here using the iOS system dictionary, UIReferenceLibraryViewController, for Chinese <-> English (shown with permission from the Oxford Dictionaries API team)." %}
 
 ### NLP tools used by LinguaBrowse
 
@@ -28,7 +30,7 @@ The tap-to-define functionality employs two of Apple's Natural Language Processi
 
 * [NSLinguisticTagger](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSLinguisticTagger_Class/), to subsequently convert any tapped token into dictionary form (if necessary) before lookup.
 
-* [CFStringTransform](https://developer.apple.com/documentation/corefoundation/1542411-cfstringtransform), to convert traditional Chinese characters into Simplified form (because the iOS Chinese ↔ English system dictionary expects Simplified Chinese). In an old part of my codebase, I'm also using it to transliterate Thai for some reason.
+* [CFStringTransform](https://developer.apple.com/documentation/corefoundation/1542411-cfstringtransform), to convert traditional Chinese characters into Simplified form (because the iOS Chinese <-> English system dictionary expects Simplified Chinese). In an old part of my codebase, I'm also using it to transliterate Thai for some reason.
 
 I substitute CFStringTokenizer and NSLinguisticTagger with [MeCab](https://github.com/shirakaba/iPhone-libmecab/tree/korean) to provide lemmatisation support for Japanese and Korean. This is the tool that Apple have used since at least Mac OS 10.5 for Japanese tokenising<sup>[[1]](https://web.archive.org/web/20160305113404/http://chasen.org/~taku/blog/archives/2008/07/mac_os_x_leropa.html)[[2]](https://web.archive.org/web/20170708060425/http://d.hatena.ne.jp:80/kazama/20080115/p1)</sup>, and I [have heard](https://stackoverflow.com/a/8285221/5951226) it's even the exact tokenizer used in CFStringTokenizer for Japanese. Whether the older NSLinguisticTagger ('NS' indicating NeXTSTEP, and 'CF' indicating Core Foundation) uses it too is another question altogether.
 
@@ -46,7 +48,7 @@ For Mandarin, which lacks any inflections, every token output by CFStringTokeniz
 
 <!-- \* *Technically, some of the iOS system dictionaries, such as the Oxford ones, have built-in lemmatisers to handle non-dictionary form words, but most language pairs don't have a system dictionary, nor can we depend upon them having been installed.* -->
 
-<!-- {% include blog-image.html url="2018-01-28-word-post-processing/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %} -->
+<!-- {% include blog-image.html url="2018-03-10-looking-up-words-in-thirty-languages/lookup_50.png" width="1125" height="665" description="Comparison between dictionary definitions on Glosbe (https://glosbe.com) given for the inflected form of a word (left), which at best is able to provide a Google translation, and the dictionary form (right), which is able to directly provide high-quality definitions and other useful information." %} -->
 
 
 ### What is NSLinguisticTagger useful for?
@@ -71,7 +73,7 @@ With NSLinguisticTagger, we can support those eight extra languages by allowing 
 
 <!-- For other languages, non-dictionary form words are everywhere, and looking them up as-is is unlikely to return a result. Thus, I provide users a tooltip so that they can either look up the token returned by CFStringTokenizer as-is, or by a dictionary form elucidated by NSLinguisticTagger. Here's a few different examples, superimposed, of how often this can help even in just one paragraph:
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word (superimposed image of several use cases; in real usage, only one tooltip would be displayed at a time)." %} -->
+{% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/superimposition.png" width="640" height="1136" max-height="600" description="LinguaBrowse can now handle all manner of conjugations, contractions, and other grammatical features that would otherwise impede dictionary lookup of a word (superimposed image of several use cases; in real usage, only one tooltip would be displayed at a time)." %} -->
 
 
 ## Aiding dictionary lookup with NLP
@@ -110,13 +112,13 @@ For space-delimited compound nouns, looking up each consituent part is often eno
 
 For undelimited compound nouns, at least in English, it is best to look up the whole word as-is. For example, the word 'greenhouse' can only be understood as its whole. However, an ability to define the constituent parts will often be of help to learners. No clearer is this fact than in German, where compound nouns can grow as long as 'Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz' (meaning the "law for the delegation of monitoring beef labelling")! Thus, we can handle them as follows:
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/german1.png" width="771" height="225" max-height="150" description="Compound noun handling (German)." %}
+{% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/german1.png" width="771" height="225" max-height="150" description="Compound noun handling (German)." %}
 
 In this example, the user has the option of looking up the whole word as-is, or by its sub parts, which are each in dictionary form where available.
 
 I also use NSLinguisticTagger in Japanese for some *katakana* compound nouns that MeCab fails to split properly (perhaps it uses a different dictionary to NSLinguisticTagger/CFStringTokenizer):
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/katakana.png" width="575" height="185" max-height="122" description="Compound noun handling (Japanese)" %}
+{% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/katakana.png" width="575" height="185" max-height="122" description="Compound noun handling (Japanese)" %}
 
 
 ### 2. Inflected words
@@ -162,17 +164,17 @@ From iOS 11, NSLinguisticTagger purports to supports lemmatisation (provision of
 
 So now, when tapping on an inflected word, users are given the opportunity to look it up either as-is, or by its lemma (whenever NSLinguisticTagger can determine it). A plethora of examples from English, all superimposed into one image:
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/superimposition.png" width="640" height="1136" max-height="600" description="Inflected word handling for several use cases (superimposed image; in real usage, only one tooltip would be displayed at a time)." %}
+{% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/superimposition.png" width="640" height="1136" max-height="600" description="Inflected word handling for several use cases (superimposed image; in real usage, only one tooltip would be displayed at a time)." %}
 
-<!-- {% include blog-width-limited-image.html url="2018-01-28-word-post-processing/plural.png" width="1095" max-width="480" height="236" description="Plurals handling" %}
+<!-- {% include blog-width-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/plural.png" width="1095" max-width="480" height="236" description="Plurals handling" %}
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/pp.png" width="1088" height="190" max-width="480" description="Conjugation handling (past participle)" %}
+{% include blog-width-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/pp.png" width="1088" height="190" max-width="480" description="Conjugation handling (past participle)" %}
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/pt.png" width="1083" height="222" max-width="480" description="Conjugation handling (past tense)" %}
+{% include blog-width-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/pt.png" width="1083" height="222" max-width="480" description="Conjugation handling (past tense)" %}
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/gerund.png" width="1063" max-width="480" height="254" description="Conjugation handling (gerunds)" %}
+{% include blog-width-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/gerund.png" width="1063" max-width="480" height="254" description="Conjugation handling (gerunds)" %}
 
-{% include blog-width-limited-image.html url="2018-01-28-word-post-processing/conjugation.png" width="1101" max-width="480" height="247" description="Conjugation handling (present tense)" %} -->
+{% include blog-width-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/conjugation.png" width="1101" max-width="480" height="247" description="Conjugation handling (present tense)" %} -->
 
 ### 3. Contractions
 
@@ -180,20 +182,20 @@ So now, when tapping on an inflected word, users are given the opportunity to lo
 
 A contraction is when a word is shortened from its original form, usually mirroring how the word is spoken in practice. English is chock-full of these:
 
-* "shoulda" ➡ "should have"
-* "gotta" ➡ "got to"
-* "it's" ➡ "it is"
-* "let's" ➡ "let us"
-* "they're" ➡ "they are"
-* "y'all" ➡ "you all"
-* "fish 'n' chips" ➡ "fish and chips"
+* "shoulda" -> "should have"
+* "gotta" -> "got to"
+* "it's" -> "it is"
+* "let's" -> "let us"
+* "they're" -> "they are"
+* "y'all" -> "you all"
+* "fish 'n' chips" -> "fish and chips"
 
 The definite articles of French and Italian also induce a lot of this:
 
-* French: "l'occasion" ➡ "la occasion"
-* French: "l'aspect" ➡ "le aspect"
-* Italian: "l'occasione" ➡ "la occasione"
-* Italian: "l'aspetto" ➡ "lo aspetto"
+* French: "l'occasion" -> "la occasion"
+* French: "l'aspect" -> "le aspect"
+* Italian: "l'occasione" -> "la occasione"
+* Italian: "l'aspetto" -> "lo aspetto"
 
 
 A significant problem to learners here is that this obscures the gender of the noun, preventing one from learning how to use the word in other contexts.
@@ -206,7 +208,7 @@ While most English contractions will be listed in a dictionary as-is (due to the
 
 Thanks to NSLinguisticTagger, we can now separate definite-article contractions into their parts, allowing search by part of the word. Regrettably, NSLinguisticTagger does *not* lemmatise "l'" back to its full form 'le' or 'la' to show gender, but *it sure would be nice to add by some other means in future*.
 
-{% include blog-height-limited-image.html url="2018-01-28-word-post-processing/contraction.png" width="611" height="175" max-height="117" description="Contractions handling" %}
+{% include blog-height-limited-image.html url="2018-03-10-looking-up-words-in-thirty-languages/contraction.png" width="611" height="175" max-height="117" description="Contractions handling" %}
 
 #### What about languages with non-Latin scripts?
 
@@ -216,11 +218,11 @@ Contractions look rather different in languages with non-Latin scripts, and pose
 
 Japanese contractions are pretty commonplace due to Japanese having a phonetic alphabet.
 
-* やっぱり ➡ やっぱ
+* やっぱり -> やっぱ
 
-* 何だと言って／何で有っても ➡ 何だって
+* 何だと言って／何で有っても -> 何だって
 
-* ありがとうございます ➡ あざす
+* ありがとうございます -> あざす
 
 * Many nouns, as listed in this [utterly uncited article](https://en.wikipedia.org/wiki/Japanese_abbreviated_and_contracted_words)
 
@@ -230,25 +232,25 @@ Chinese contractions are harder to come by because, as far as I gather, they exi
 
 [These examples](http://web.archive.org/web/20170708194353/http://chinesehacks.com/vocabulary/syllable-contractions/) are predominantly from Taiwan Mandarin, and may be restricted to net-speak:
 
-* 知道 (zhīdào) ➡ 造 (zào)
+* 知道 (zhīdào) -> 造 (zào)
 
-<!-- * 时候 (shíhòu) ➡ 兽 (shòu) -->
+<!-- * 时候 (shíhòu) -> 兽 (shòu) -->
 
-<!-- * 我一直 (wǒ yīzhí) ➡ 伟直 (wěi zhí) -->
+<!-- * 我一直 (wǒ yīzhí) -> 伟直 (wěi zhí) -->
 
-* 什么时候 (shénme shíhòu) ➡ 神兽 (shénshòu)
+* 什么时候 (shénme shíhòu) -> 神兽 (shénshòu)
 
-* 我会 (wǒ huì) ➡ 伟 (wěi)
+* 我会 (wǒ huì) -> 伟 (wěi)
 
-* 今天 (jīntiān) ➡ 间 (jiān)
+* 今天 (jīntiān) -> 间 (jiān)
 
 [These ones](http://languagelog.ldc.upenn.edu/nll/?p=3330) are perhaps historical:
 
-* [圕](https://en.wiktionary.org/wiki/圕) (tuān) ➡ 图书馆 (túshūguǎn)
+* [圕](https://en.wiktionary.org/wiki/圕) (tuān) -> 图书馆 (túshūguǎn)
 
-* [千克](https://en.wiktionary.org/wiki/兛) (qiānkè) ➡ 兛 (qiānkè)
+* [千克](https://en.wiktionary.org/wiki/兛) (qiānkè) -> 兛 (qiānkè)
 
-* [千瓦](https://en.wiktionary.org/wiki/瓩) (qiānwǎ) ➡ 瓩 (qiānwǎ)
+* [千瓦](https://en.wiktionary.org/wiki/瓩) (qiānwǎ) -> 瓩 (qiānwǎ)
 
 #### How should they be processed to aid dictionary lookup?
 
@@ -268,3 +270,6 @@ If you liked this dev note, you can get notified of future ones (and progress up
 
 * <a href="https://www.facebook.com/LinguaBrowse">Facebook</a>
 
+You can also try out the LinguaBrowse app via:
+
+{% include app-store-badge.html app="LinguaBrowse" %}

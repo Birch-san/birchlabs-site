@@ -9,16 +9,23 @@ nav_ix: 40
 
   <h1 class="page-heading">Blog</h1>
 
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        {% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}
-        <span class="post-meta">{{ post.date | date: date_format }}</span>&nbsp;
+  {% for author in site.authors %}
+    {% assign posts_of_author = site.posts | where:"author",author.name %}
+    {% assign post_count = posts_of_author | size %}
+    {% if post_count > 0 %}
+      <h2>{{ author.shortname }}</h2>
+      <ul class="post-list">
+        {% for post in posts_of_author %}
+        <li>
+          {% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}
+          <span class="post-meta">{{ post.date | date: date_format }}</span>&nbsp;
 
-        <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-      </li>
-    {% endfor %}
-  </ul>
+          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endfor %}
 
   <!-- <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p> -->
 

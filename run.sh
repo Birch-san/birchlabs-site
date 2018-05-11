@@ -3,9 +3,8 @@
 exec docker run -it --rm --init \
 -v "$PWD/src":/srv/jekyll:delegated \
 -v "$PWD/container_gem_cache":/usr/local/bundle:delegated \
--v "$PWD/dist":/dist \
+-v "$PWD/dist":/dist:delegated \
 -p 8087:4000 \
 -p 35729:35729 \
 -p 3000:3000 \
-jekyll/jekyll:3.7.0 jekyll serve --livereload \
--d /dist
+jekyll/jekyll:3.8.0 jekyll serve --livereload -d /dist

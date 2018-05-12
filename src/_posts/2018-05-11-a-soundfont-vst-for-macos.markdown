@@ -42,5 +42,27 @@ Findings:
 - C++ tooling is not as great as I'd expected
 - Applications can be really small if you don't use Electron
 
-A brief overview of how juicysfplugin works:
+In this article, I'll expand on the interesting parts of this project.
+
+# How juicysfplugin works
+
+We have a responsibility to output (for example) 44.1 thousand samples of audio every second.
+We promise to deliver this in 512-sample blocks. To keep up with the demand, we have to render a block every 11.6ms. This also means we run at a latency of 11.6ms behind real-time.
+
+Additionally, we're given a buffer of MIDI messages each time this happens. In order:
+
+1. Audio plugin host invokes our `processBlock()` callback
+  - input param: MidiBuffer
+  - output param: AudioBuffer
+  - must return within ~11.6ms
+2. We send the MidiBuffer to our internal "keyboard"
+  - tracks "which keys are pressed"
+  - adds in MIDI messages for keys of _on-screen keyboard_
+  - updates on-screen keyboard to show union of external and internal MIDI sources
+3. We send the updated MidiBuffer to the JUCE Synthesiser (not fluidsynth)
+  - informs each note's "voice" of state changes
+  - our voice implementation passes `startNote()`, `stopNote()` to fluidsynth
+4. We ask fluidsynth to output 512 samples of audio into AudioBuffer
+  - fluidsynth has its own clock, so it knows this block starts where the previous one ended
+  - fluidsynth has its own sample rate, which we keep updated
 

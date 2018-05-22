@@ -55,14 +55,10 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
   - input param: MidiBuffer
   - output param: AudioBuffer
   - must return within ~11.6ms
-2. We send the MidiBuffer to our internal "keyboard"
-  - tracks "which keys are pressed"
-  - adds in MIDI messages for keys of _on-screen keyboard_
-  - updates on-screen keyboard to show union of external and internal MIDI sources
-3. We send the updated MidiBuffer to the JUCE Synthesiser (not fluidsynth)
+2. We send the MidiBuffer to the JUCE Synthesiser (not fluidsynth)
   - informs each note's "voice" of state changes
   - our voice implementation passes `startNote()`, `stopNote()` to fluidsynth
-4. We ask fluidsynth to output 512 samples of audio into AudioBuffer
+3. We ask fluidsynth to output 512 samples of audio into AudioBuffer
   - fluidsynth has its own clock, so it knows this block starts where the previous one ended
   - fluidsynth has its own sample rate, which we keep updated
 

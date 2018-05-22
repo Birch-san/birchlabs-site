@@ -7,13 +7,13 @@ syntax_highlight: true
 author: Alex Birch
 ---
 
-Soundfonts are great for making music quickly. Violins, drums, game beeps. You can explore their many instruments for ideas. Good sound, no learning or configuration required.
+Soundfonts are great for making music quickly. With no learning or configuration, you can play samples from a variety of instruments and not-instruments.
 
 I enjoyed soundfonts on FL Studio Windows. Mac version coming soon. Brilliant!
 
 No soundfont plugin.
 
-I went to the FL Studio forums. There was an argument, started by me. A gauntlet was thrown down:
+I went to the FL Studio forums. There was an argument, started by me. I was given some advice:
 
 > You know how to code? […] Well enough to know both what's easy and rewarding? If so, then consider [making it yourself].
 

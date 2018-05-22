@@ -13,7 +13,7 @@ I enjoyed soundfonts on FL Studio Windows. Mac version coming soon. Brilliant!
 
 No soundfont plugin.
 
-I went to the FL Studio forums. There was an argument, started by me. I was given some advice:
+I went to the FL Studio forums. There was an argument, started by me. A user encouraged me:
 
 > You know how to code? […] Well enough to know both what's easy and rewarding? If so, then consider [making it yourself].
 

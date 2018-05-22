@@ -62,3 +62,6 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
   - fluidsynth has its own clock, so it knows this block starts where the previous one ended
   - fluidsynth has its own sample rate, which we keep updated
 
+Summary:  
+MIDI messages go in. We render the MIDI messages through the fluidsynth synthesiser. Then we output audio.
+

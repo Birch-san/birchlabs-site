@@ -13,7 +13,7 @@ I enjoyed soundfonts on FL Studio Windows. Mac version coming soon. Brilliant!
 
 No soundfont plugin.
 
-I went to the FL Studio forums. There was an argument, started by me. A user encouraged me:
+I went to the FL Studio forums to petition that a soundfont plugin be written for macOS. I received encouragement from a fellow user:
 
 > You know how to code? […] Well enough to know both what's easy and rewarding? If so, then consider [making it yourself].
 
@@ -65,3 +65,32 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
 Summary:  
 MIDI messages go in. We render the MIDI messages through the fluidsynth synthesiser. Then we output audio.
 
+# C++ is hard
+
+I assumed I'd be okay. I had some grounding in C, and hoped also that my experiences in higher-level languages would count for something.
+
+Reality hit, though.
+
+## It's not like C
+
+Pointer arithmetic mostly disappears, since containers know the length of strings and vectors, and since iterators hide some details.
+
+Moreover, C++ replaces a lot of pointer use-cases with _references_ — which have a more constrained semantic.
+
+C++ is object-oriented. No more need for malloc; declare some class members, and the constructor will allocate memory for you.
+
+## It's not like Java
+
+C++ has no formal "interface". But you get a similar effect using multiple inheritance and dynamic binding. Caveats: interface-like classes need a virtual destructor, and derived classes must re-declare any methods they intend to override.
+
+## New responsibilities
+
+In C++, you are responsible for ownership of memory. You need to think about who will destroy an object when it's no longer needed.
+
+There's a maxim to help you keep on top of this: SBRM ([Scope-Bound Resource Management](https://stackoverflow.com/questions/2321511/what-is-meant-by-resource-acquisition-is-initialization-raii)). Rely on the fact that C++ will invoke the destructor of any object which goes out-of-scope. Ensure that your classes release all their resources during destruction, and at no other time.
+
+If you wish to transfer memory out of the scope in which it was created — for example, returning a heap-allocated object from a factory method — you need a plan to ensure that said object gets destroyed when it leaves its _new_ scope. One approach here is to use the standard library's [smart pointers](https://stackoverflow.com/questions/395123/raii-and-smart-pointers-in-c).
+
+Passing objects around requires some awareness, since you risk accidentally incurring unnecessary copy operations. In [special cases](https://en.wikipedia.org/wiki/Copy_elision#Return_value_optimization), the compiler may save you a copy.
+
+## Wacky syntax

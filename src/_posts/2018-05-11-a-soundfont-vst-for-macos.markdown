@@ -48,16 +48,8 @@ As such, this was not an audio programming challenge. Instead it was a software 
 Findings:
 
 - C++ is hard
-- Linking binaries is hard
-- Linking binaries **on Mac** is hard
-- Async programming is hard in an unfamiliar language
-- UI programming is hard when you have to manage memory
-- JUCE is a nice application framework
-- Licenses create a lot of work even if you're already GPL
-- Standard library has some neat stuff
-- C++ is pretty fun
-- C++ tooling is not as great as I'd expected
-- Applications can be really small if you don't use Electron
+- Linking binaries is hard (on macOS)
+
 
 ## How juicysfplugin works
 

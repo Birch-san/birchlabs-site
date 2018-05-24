@@ -44,7 +44,7 @@ Findings:
 
 In this article, I'll expand on the interesting parts of this project.
 
-# How juicysfplugin works
+## How juicysfplugin works
 
 We have a responsibility to output (for example) 44.1 thousand samples of audio every second.
 We promise to deliver this in 512-sample blocks. To keep up with the demand, we have to render a block every 11.6ms. This also means we run at a latency of 11.6ms behind real-time.
@@ -65,13 +65,13 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
 Summary:  
 MIDI messages go in. We render the MIDI messages through the fluidsynth synthesiser. Then we output audio.
 
-# C++ is hard
+## C++ is hard
 
 I assumed I'd be okay. I had some grounding in C, and hoped also that my experiences in higher-level languages would count for something.
 
 Reality hit, though.
 
-## It's not like C
+### It's not like C
 
 Pointer arithmetic mostly disappears, since containers know the length of strings and vectors, and since iterators hide some details.
 
@@ -79,11 +79,13 @@ Moreover, C++ replaces a lot of pointer use-cases with _references_ — which ha
 
 C++ is object-oriented. No more need for malloc; declare some class members, and the constructor will allocate memory for you.
 
-## It's not like Java
+C++'s complexity partially [stems from](https://youtu.be/RT46MpK39rQ?t=29m51s) its goal of maintaining compatibility with C.
+
+### It's not like Java
 
 C++ has no formal "interface". But you get a similar effect using multiple inheritance and dynamic binding. Caveats: interface-like classes need a virtual destructor, and derived classes must re-declare any methods they intend to override.
 
-## New responsibilities
+### New responsibilities
 
 In C++, you are responsible for ownership of memory. You need to think about who will destroy an object when it's no longer needed.
 
@@ -93,4 +95,38 @@ If you wish to transfer memory out of the scope in which it was created — for 
 
 Passing objects around requires some awareness, since you risk accidentally incurring unnecessary copy operations. In [special cases](https://en.wikipedia.org/wiki/Copy_elision#Return_value_optimization), the compiler may save you a copy.
 
-## Wacky syntax
+### It's a big language
+
+In languages like Java 7 or ES5, I feel reasonably comfortable saying, "I've used most of the language's features". I would also believe a fellow professional if they told me the same. But C++ is _vast_.
+
+C++ has many features, and you may not use everything. For example, [proxy classes](https://stackoverflow.com/questions/994488/what-is-proxy-class-in-c#994925) and [expression templates](https://en.wikipedia.org/wiki/Expression_templates) may be more interesting to library developers, as they hide complexity from callers. [Variants](https://bitbashing.io/std-visit.html) are interesting if you're building an unmarshaller. [SFINAE](http://en.cppreference.com/w/cpp/language/sfinae) is interesting if you're [building a marshaller](https://jguegant.github.io/blogs/tech/sfinae-introduction.html) or a language runtime.
+
+I was exposed to ideas I hadn't thought of before. Like overloading on _the run-time value_ of arguments ([SFINAE](http://en.cppreference.com/w/cpp/language/sfinae), Substitution Failure Is Not An Error):
+
+```cpp
+template <int I> void div(char(*)[I % 2 == 0] = 0) {
+    // this overload is selected when I is even
+}
+template <int I> void div(char(*)[I % 2 == 1] = 0) {
+    // this overload is selected when I is odd
+}
+```
+
+The most arcane thing I've seen so far involves variadic templates, variadic `using` declarations (C++17), and user-defined template deduction (C++17, Clang 5):
+
+```cpp
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+```
+
+It creates a class whose constructor accepts a list of [_function objects_](https://stackoverflow.com/questions/356950/c-functors-and-their-uses), and copies each of their declared `operator()` overloads. Useful for [making visitors](https://bitbashing.io/std-visit.html) (C++17). Explained in detail [here](https://stackoverflow.com/questions/46604950/what-does-operator-mean-in-code-of-c).
+
+### Lots of gotchas
+
+Many things happen implicitly. Narrowing conversions, 
+
+#### Wacky syntax
+
+
+
+###

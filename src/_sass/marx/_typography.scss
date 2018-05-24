@@ -123,6 +123,13 @@ blockquote {
 
 figcaption {
   font-family: $serif;
+  font-style: italic;
+  padding-left: $md-pad;
+}
+
+figure {
+  padding-left: $md-pad;
+  margin-bottom: $md-pad;
 }
 
 u {

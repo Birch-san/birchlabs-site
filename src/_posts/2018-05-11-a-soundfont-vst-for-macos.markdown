@@ -9,15 +9,11 @@ author: Alex Birch
 
 Soundfonts are great for making music quickly. With no learning or configuration, you can play samples from a variety of instruments and not-instruments.
 
-I enjoyed soundfonts on FL Studio Windows. Mac version coming soon. Brilliant!
+I wanted to make soundfont music on FL Studio Mac.
 
-No soundfont plugin.
+There was a nice soundfont plugin for FL Studio Windows, but the (third-party) source code was lost, and would not be ported.  
 
-I went to the FL Studio forums to petition that a soundfont plugin be written for macOS. I received encouragement from a fellow user:
-
-> You know how to code? […] Well enough to know both what's easy and rewarding? If so, then consider [making it yourself].
-
-I have now finished.
+So, I made my own plugin.
 
 [juicysfplugin](https://github.com/Birch-san/juicysfplugin) - a soundfont VST for macOS
 
@@ -28,26 +24,14 @@ You can run it inside a plugin host (GarageBand, FL Studio, Sibelius, …), or i
 
 It's my first C++ program.
 
-I did not need to write a _synthesizer_ — I was able to delegate the backend to [fluidsynth](http://www.fluidsynth.org/).  
-As such, this was not an audio programming challenge. Instead it was a software integration challenge.
-
-Findings:
-
-- C++ is hard
-- Linking binaries is hard (on macOS)
+I'd like to say I made a synthesizer, but really [fluidsynth](http://www.fluidsynth.org/) does the synthesis for me.  
+So, this is a story of software integration.
 
 <figure>
-  <video width="583" height="285" controls>
-    <!-- https://en.wikipedia.org/wiki/HTML5_video -->
-    <!-- brew install MP4Box -->
-    <!-- https://stackoverflow.com/a/48991053/5257399 -->
-    <!-- ffmpeg -i trimmed.mov -vcodec copy -acodec copy trimmed.mp4 -->
-    <!-- ffmpeg -i trimmed.mov -c:v libvpx -crf 10 -b:v 1M -c:a libvorbis trimmed.webm -->
-    <!-- I've put webm first solely to save bandwidth in this case. ordinarily I'd prefer to use webm as the _fallback_. -->
-    <source src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/trimmed.webm" | relative_url }}" type='video/webm; codecs="vp8.0, vorbis"'>
-    <source src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/trimmed.mp4" | relative_url }}" type='video/mp4; codecs="avc1.4D0020,mp4a.40.2"'>
-  </video>
-  <figcaption>juicysfplugin hosted in FL Studio</figcaption>
+  <audio controls preload="none">
+    <source src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/TheBox_compressed_less.mp3" | relative_url }}" type="audio/mpeg">
+  </audio>
+  <figcaption>demo track (with Soundgoodizer compressor)</figcaption>
 </figure>
 
 ## How juicysfplugin works

@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/tlnagy/jekyll-postfiles.git
+  revision: ce0532f9c8938fba197c075863ccf54475000ff2
+  ref: ce0532f
+  specs:
+    jekyll-postfiles (2.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -72,6 +79,7 @@ DEPENDENCIES
   jekyll (~> 3.7.0)
   jekyll-feed (~> 0.6)
   jekyll-minifier (~> 0.1.5)
+  jekyll-postfiles!
   tzinfo-data
 
 BUNDLED WITH

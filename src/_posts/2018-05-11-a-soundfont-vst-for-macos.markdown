@@ -63,6 +63,14 @@ I needed to dynamically link the fluidsynth library into my executable. Basic li
 
 But this creates a non-portable release.
 
+{% include posts/2018-05-11-a-soundfont-vst-for-macos/unbundled.svg %}
+
+<!-- <img
+width="800"
+height="400"
+srcset="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/unbundled.svg" | relative_url }}"
+src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/unbundled.png" | relative_url }}"> -->
+
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 
 ```
@@ -99,11 +107,11 @@ install_name_tool -change \
 
 # @loader_path points to our binary's location:
 # juicysfplugin.app/Contents/MacOS/juicysfplugin
-
-# @executable_path is similar, but if our plugin is hosted inside
-# another app (e.g. GarageBand): @executable_path will
-# resolve to GarageBand's binary, not ours. Undesirable.
 ```
+
+{% include posts/2018-05-11-a-soundfont-vst-for-macos/bundled1.svg %}
+
+<!-- <img width="800" height="400" src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/juicysfplugin diagrams0001.png" | relative_url }}"> -->
 
 We read the object file again to verify that we successfully relinked:
 

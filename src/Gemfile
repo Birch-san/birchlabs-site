@@ -21,6 +21,7 @@ gem "jekyll", "~> 3.7.0"
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.6"
   gem "jekyll-minifier", "~> 0.1.5"
+  gem 'jekyll-postfiles', :git => 'git://github.com/tlnagy/jekyll-postfiles.git', ref: 'ce0532f' # branch: tn/copy-folders
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

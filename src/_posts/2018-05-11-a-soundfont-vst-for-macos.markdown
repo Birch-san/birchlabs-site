@@ -95,7 +95,7 @@ Let's rewrite that link, to search relative to `@loader_path`:
 install_name_tool -change \
 /usr/local/lib/libfluidsynth.1.7.2.dylib         `# rewrite this link` \
 @loader_path/../Frameworks/libfluidsynth.1.7.2.dylib `# to this` \
-~/juicysfplugin.app/Contents/MacOS/juicysfplugin     `# in this file`
+~/juicysfplugin.app/Contents/MacOS/juicysfplugin `# in this object file`
 
 # @loader_path points to our binary's location:
 # juicysfplugin.app/Contents/MacOS/juicysfplugin
@@ -124,7 +124,7 @@ dyld: Library not loaded: /usr/local/opt/glib/lib/libglib-2.0.0.dylib
   Reason: image not found
 ```
 
-glib doesn't exist on their system. They never brew-installed it.
+fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it.
 
 We need to find all of fluidsynth's dependencies, copy them into our .app, and relink fluidsynth.  
 We do this recursively.

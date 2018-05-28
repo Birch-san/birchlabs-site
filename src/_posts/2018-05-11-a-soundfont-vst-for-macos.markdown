@@ -57,3 +57,78 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
 Summary:  
 MIDI messages go in. We render the MIDI messages through the fluidsynth synthesiser. Then we output audio.
 
+## Integrating fluidsynth
+
+I needed to dynamically link the fluidsynth library into my executable. Basic linker flags suffice: `-lfluidsynth -L/usr/local/lib` (that's the brew libraries directory).
+
+But this creates a non-portable release.
+
+Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
+
+```
+dyld: Library not loaded: /usr/local/lib/libfluidsynth.1.7.2.dylib
+  Referenced from: ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
+  Reason: image not found
+```
+
+The fluidsynth library doesn't exist on their system. They never brew-installed it.
+
+Rather than tell users to prepare their environment, let's _bundle_ the library into our .app.  
+We copy libfluidsynth into `juicysfplugin.app/Contents/Frameworks` (using a shell script, or XCode's "copy files" build phase).
+
+We need to relink our binary to use the bundled libfluidsynth.
+
+### Relinking
+
+Where does `juicysfplugin.app/Contents/MacOS/juicysfplugin` currently look for libfluidsynth?
+
+```bash
+otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
+juicysfplugin.app/Contents/MacOS/juicysfplugin:
+  /usr/local/lib/libfluidsynth.1.7.2.dylib (compatibility version 1.0.0, current version 1.7.2)
+  …
+```
+
+Let's rewrite that link, to search relative to `@loader_path`:
+
+```bash
+install_name_tool -change \
+/usr/local/lib/libfluidsynth.1.7.2.dylib         `# rewrite this link` \
+@loader_path/../Frameworks/libfluidsynth.1.7.2.dylib `# to this` \
+~/juicysfplugin.app/Contents/MacOS/juicysfplugin     `# in this file`
+
+# @loader_path points to our binary's location:
+# juicysfplugin.app/Contents/MacOS/juicysfplugin
+
+# @executable_path is similar, but if our plugin is hosted inside
+# another app (e.g. GarageBand): @executable_path will
+# resolve to GarageBand's binary, not ours. Undesirable.
+```
+
+We read the object file again to verify that we successfully relinked:
+
+```bash
+otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
+juicysfplugin.app/Contents/MacOS/juicysfplugin:
+  @loader_path/../Frameworks/libfluidsynth.1.7.2.dylib (compatibility version 1.0.0, current version 1.7.2)
+  …
+```
+
+### It goes deeper
+
+We run our relinked .app on another computer. The first error is gone, but we're onto a new error:
+
+```
+dyld: Library not loaded: /usr/local/opt/glib/lib/libglib-2.0.0.dylib
+  Referenced from: ~/juicysfplugin.app/Contents/Frameworks/libfluidsynth.1.7.2.dylib
+  Reason: image not found
+```
+
+glib doesn't exist on their system. They never brew-installed it.
+
+We need to find all of fluidsynth's dependencies, copy them into our .app, and relink fluidsynth.  
+We do this recursively.
+
+Tedious.
+
+I automated it. So did openage and KeePassXC.

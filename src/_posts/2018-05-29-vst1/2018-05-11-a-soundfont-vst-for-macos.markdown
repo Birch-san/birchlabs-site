@@ -174,3 +174,106 @@ type="image/svg+xml"></object>
 
  <!-- Others have wondered [the same problem](https://stackoverflow.com/questions/9263256/why-is-install-name-tool-and-otool-necessary-for-mach-o-libraries-in-mac-os-x). -->
 
+The chain of brew dependencies can go pretty deep. For example, libsndfile (which adds support for [SF3 soundfonts](https://musescore.org/en/node/151611)) introduces this many links:
+
+```
+juicysfplugin
+  libsndfile
+    libFLAC
+    libogg
+    libvorbis
+      libogg
+    libvorbisenc
+      libvorbis
+      libogg
+```
+
+<!--
+Full list:
+
+juicysfplugin
+  libgthread
+    libglib…
+  libglib
+    libiconv
+    libpcre
+    libintl…
+  libintl
+    libiconv
+  libsndfile
+    libFLAC
+    libogg
+    libvorbis
+      libogg
+    libvorbisenc
+      libvorbis…
+      libogg
+-->
+
+### Don't mess up
+
+When relinking a library with `install_name_tool [-change old new] file`, beware: you must match **exactly**.  
+i.e. find the link matching `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dylib` and rewrite it.
+
+You cannot match on leaf name `libglib-2.0.0.dylib` or library name, `glib`.
+
+You cannot match on an equivalent symlink path `/usr/local/opt/glib/lib/libglib-2.0.0.dylib`.
+
+If your command matches nothing: there is no error message, and the exit code says success as usual.
+
+If you are automating this in a parameterised way, don't be tempted to re-use absolute paths; fluidsynth and gthread disagree on whether glib lives in `/usr/local/opt` or `/usr/local/Cellar`.
+
+## Alternatives
+
+Trawling the dependency list and relinking all non-system libraries with `install_name_tool` is manual and non-scalable.  
+For this small project, it was a [local optimum](https://en.wikipedia.org/wiki/Local_optimum) of effort/reward.
+
+But if you want to distribute your macOS application without using `install_name_tool`, there are some other routes you could try.
+
+### Provide an installer
+
+An installer can ensure that the brew dependency exists in the expected location. No relinking required.
+
+### Distribute via brew
+
+Brew already provides a distribution mechanism and semantics for expressing dependencies. You could take advantage of that if users are comfortable with command-line installation.
+
+### Provide a runtime fallback for dynamic linking
+
+Don't actually do this, but you can abuse the dynamic linker, [dyld](https://www.unix.com/man-page/osx/1/dyld/).
+
+> The dynamic linker uses the following environment variables. They affect any program that uses the dynamic linker.  
+> **DYLD_FALLBACK_LIBRARY_PATH**  
+> It is used as the default location for libraries not found in their install path. By default, it is set to `$(HOME)/lib:/usr/local/lib:/lib:/usr/lib.`
+
+When resolution fails for `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dylib`, dyld will search for the leaf name `libglib-2.0.0.dylib` under each of those fallback library paths.
+
+So, you could provide a folder of libs and instruct the user to add that folder to their DYLD_FALLBACK_LIBRARY_PATH.
+
+```bash
+# add to your .profile or similar
+export DYLD_FALLBACK_LIBRARY_PATH="$HOME/Downloads/juicysfplugin/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+```
+
+### Fix the install name of the dependency before you link to it
+
+<!--
+https://github.com/conda/conda-build/issues/279
+https://stackoverflow.com/questions/9263256/why-is-install-name-tool-and-otool-necessary-for-mach-o-libraries-in-mac-os-x
+https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/UsingDynamicLibraries.html
+https://stackoverflow.com/questions/10363687/xcode-4-dylib-install-name-tool?rq=1
+https://stackoverflow.com/questions/27506450/clang-change-dependent-shared-library-install-name-at-link-time
+https://stackoverflow.com/questions/10021428/macos-how-to-link-a-dynamic-library-with-a-relative-path-using-gcc-ld
+https://stackoverflow.com/questions/194485/how-do-i-create-a-dynamic-library-dylib-with-xcode
+-->
+
+## Reflection
+
+Maybe there's a more idiomatic way to do this. But I've seen [others](https://stackoverflow.com/questions/17535604/deploying-cocoa-application-and-its-c-dylib-how-to-pack-them) do [the same](https://stackoverflow.com/questions/637081/how-can-i-link-a-dynamic-library-in-xcode).
+
+I get the impression that "bundling software for distribution" is not well-supported on macOS.
+
+
+
+
+

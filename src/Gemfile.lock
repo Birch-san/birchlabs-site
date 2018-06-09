@@ -1,10 +1,3 @@
-GIT
-  remote: git://github.com/tlnagy/jekyll-postfiles.git
-  revision: ce0532f9c8938fba197c075863ccf54475000ff2
-  ref: ce0532f
-  specs:
-    jekyll-postfiles (2.1.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -44,6 +37,8 @@ GEM
       htmlcompressor (~> 0.3)
       jekyll (~> 3.5)
       uglifier (~> 3.2)
+    jekyll-postfiles (3.0.0)
+      jekyll (~> 3.6)
     jekyll-sass-converter (1.5.1)
       sass (~> 3.4)
     jekyll-watch (2.0.0)
@@ -79,8 +74,8 @@ DEPENDENCIES
   jekyll (~> 3.7.0)
   jekyll-feed (~> 0.6)
   jekyll-minifier (~> 0.1.5)
-  jekyll-postfiles!
+  jekyll-postfiles (~> 3.0.0)
   tzinfo-data
 
 BUNDLED WITH
-   1.16.1
+   1.16.2

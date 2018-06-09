@@ -76,7 +76,7 @@ Open juicysfplugin.app on another computer, and you get [this error](https://sta
 <div class="language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
-<code>dyld: <span class="err">Library not loaded:</span> <span class="nb">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>
+<code>dyld: <span class="ne">Library not loaded:</span> <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>
   Referenced from: ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
   Reason: image not found
 </code></pre>
@@ -94,24 +94,32 @@ We need to relink our binary to use the bundled libfluidsynth.
 
 Where does `juicysfplugin.app/Contents/MacOS/juicysfplugin` currently look for libfluidsynth?
 
-```bash
-otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
 juicysfplugin.app/Contents/MacOS/juicysfplugin:
-  /usr/local/lib/libfluidsynth.1.7.2.dylib (compatibility version 1.0.0, current version 1.7.2)
+  <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
   …
-```
+</code></pre>
+  </div>
+</div>
 
 Let's rewrite that link, to search relative to `@loader_path`:
 
-```bash
-install_name_tool -change \
-/usr/local/lib/libfluidsynth.1.7.2.dylib         `# rewrite this link` \
-@loader_path/../Frameworks/libfluidsynth.1.7.2.dylib `# to this` \
-~/juicysfplugin.app/Contents/MacOS/juicysfplugin `# in this object file`
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code>install_name_tool <span class="nt">-change</span> <span class="se">\</span>
+<span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>         <span class="sb">`</span><span class="c"># rewrite this link</span><span class="sb">` \</span>
+<span class="nb">@loader_path/../Frameworks/</span><span class="k">libfluidsynth.1.7.2.dylib</span> <span class="sb">`</span><span class="c"># to this</span><span class="sb">` \</span>
+~/juicysfplugin.app/Contents/MacOS/juicysfplugin     <span class="sb">`</span><span class="c"># in this obj file</span><span class="sb">`</span>
 
-# @loader_path points to our binary's location:
-# juicysfplugin.app/Contents/MacOS/juicysfplugin
-```
+<span class="c"># @loader_path points to our binary's location:</span>
+<span class="c"># juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
+</code></pre>
+  </div>
+</div>
 
 <object
 width="800"
@@ -121,12 +129,16 @@ type="image/svg+xml"></object>
 
 We read the object file again to verify that we successfully relinked:
 
-```bash
-otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
 juicysfplugin.app/Contents/MacOS/juicysfplugin:
-  @loader_path/../Frameworks/libfluidsynth.1.7.2.dylib (compatibility version 1.0.0, current version 1.7.2)
+  <span class="nb">@loader_path/../Frameworks/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
   …
-```
+</code></pre>
+  </div>
+</div>
 
 ### It goes deeper
 
@@ -135,7 +147,7 @@ We run our relinked .app on another computer. The first error is gone, but we're
 <div class="language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
-<code>dyld: <span class="err">Library not loaded:</span> <span class="nb">/usr/local/opt/glib/lib/</span><span class="k">libglib-2.0.0.dylib</span>
+<code>dyld: <span class="ne">Library not loaded:</span> <span class="err">/usr/local/opt/glib/lib/</span><span class="k">libglib-2.0.0.dylib</span>
   Referenced from: ~/juicysfplugin.app/Contents/Frameworks/libfluidsynth.1.7.2.dylib
   Reason: image not found
 </code></pre>

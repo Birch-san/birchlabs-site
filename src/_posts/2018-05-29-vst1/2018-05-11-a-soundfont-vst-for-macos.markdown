@@ -88,7 +88,7 @@ The fluidsynth library doesn't exist on their system. They never brew-installed 
 Rather than tell users to prepare their environment, let's _bundle_ the library into our .app.  
 We copy libfluidsynth into `juicysfplugin.app/Contents/Frameworks` (using a shell script, or XCode's "copy files" build phase).
 
-We need to relink our binary to use the bundled libfluidsynth.
+**We need to relink our binary to use the bundled libfluidsynth.**
 
 ### Relinking
 
@@ -156,9 +156,21 @@ We run our relinked .app on another computer. The first error is gone, but we're
 
 fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it.
 
+<object
+width="800"
+height="400"
+data="{{ relative }}part_bundled.svg"
+type="image/svg+xml"></object>
+
 We need to find all of fluidsynth's dependencies, copy them into our .app, and relink fluidsynth.  
 We do this recursively.
 
 Tedious.
+
+<object
+width="800"
+height="400"
+data="{{ relative }}bundled_again.svg"
+type="image/svg+xml"></object>
 
 I automated it. So did openage and KeePassXC.

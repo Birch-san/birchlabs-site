@@ -22,6 +22,11 @@
   {% include sass/syntax.scss %}
   {% endif %}
   {% endcapture %}
+
+  <!-- https://ricostacruz.com/til/relative-paths-in-jekyll -->
+  <!-- https://stackoverflow.com/questions/22067173/how-to-make-automatic-prefixes-for-relative-urls-calling-css-assets-from-any-su -->
+  {% capture lvl %}{{ page.url | append:'X' | split:'/' | size }}{% endcapture %}
+  {% capture relative %}{% for i in (3..lvl) %}../{% endfor %}{% endcapture %}
   
   <!-- Compile scss and inline it into page -->
   <style>

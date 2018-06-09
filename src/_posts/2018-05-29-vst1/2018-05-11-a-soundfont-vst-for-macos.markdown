@@ -17,7 +17,7 @@ So, I made my own plugin.
 
 [juicysfplugin](https://github.com/Birch-san/juicysfplugin) - a soundfont VST for macOS
 
-<img width="436" height="362" src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/demo.png" | relative_url }}">
+<img width="436" height="362" src="{{ relative }}demo.png">
 
 juicysfplugin is an AU/VST/VST3 audio plugin written in [JUCE framework](https://juce.com/).  
 You can run it inside a plugin host (GarageBand, FL Studio, Sibelius, …), or it can self-host as a .app.
@@ -29,7 +29,7 @@ So, this is a story of software integration.
 
 <figure>
   <audio controls preload="none">
-    <source src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/TheBox_compressed_less.mp3" | relative_url }}" type="audio/mpeg">
+    <source src="{{ relative }}TheBox_compressed_less.mp3" type="audio/mpeg">
   </audio>
   <figcaption>demo track (with Soundgoodizer compressor)</figcaption>
 </figure>
@@ -59,17 +59,17 @@ MIDI messages go in. We render the MIDI messages through the fluidsynth synthesi
 
 ## Integrating fluidsynth
 
-I needed to dynamically link the fluidsynth library into my executable. Basic linker flags suffice: `-lfluidsynth -L/usr/local/lib` (that's the brew libraries directory).
+I needed to dynamically link the fluidsynth library into my executable. Basic linker flags suffice:  
+`-lfluidsynth -L/usr/local/lib` (that's the brew libraries directory).
 
 But this creates a non-portable release.
 
-{% include posts/2018-05-11-a-soundfont-vst-for-macos/unbundled.svg %}
-
-<!-- <img
+<!-- nominally 800x400 -->
+<object
 width="800"
 height="400"
-srcset="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/unbundled.svg" | relative_url }}"
-src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/unbundled.png" | relative_url }}"> -->
+data="{{ relative }}unbundled.svg"
+type="image/svg+xml"></object>
 
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 
@@ -109,9 +109,11 @@ install_name_tool -change \
 # juicysfplugin.app/Contents/MacOS/juicysfplugin
 ```
 
-{% include posts/2018-05-11-a-soundfont-vst-for-macos/bundled1.svg %}
-
-<!-- <img width="800" height="400" src="{{ "/assets/posts/2018-05-11-a-soundfont-vst-for-macos/juicysfplugin diagrams0001.png" | relative_url }}"> -->
+<object
+width="800"
+height="400"
+data="{{ relative }}bundled1.svg"
+type="image/svg+xml"></object>
 
 We read the object file again to verify that we successfully relinked:
 

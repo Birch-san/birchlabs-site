@@ -73,11 +73,15 @@ type="image/svg+xml"></object>
 
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 
-```
-dyld: Library not loaded: /usr/local/lib/libfluidsynth.1.7.2.dylib
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code>dyld: <span class="err">Library not loaded:</span> <span class="nb">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>
   Referenced from: ~/juicysfplugin.app/Contents/MacOS/juicysfplugin
   Reason: image not found
-```
+</code></pre>
+  </div>
+</div>
 
 The fluidsynth library doesn't exist on their system. They never brew-installed it.
 
@@ -128,11 +132,15 @@ juicysfplugin.app/Contents/MacOS/juicysfplugin:
 
 We run our relinked .app on another computer. The first error is gone, but we're onto a new error:
 
-```
-dyld: Library not loaded: /usr/local/opt/glib/lib/libglib-2.0.0.dylib
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code>dyld: <span class="err">Library not loaded:</span> <span class="nb">/usr/local/opt/glib/lib/</span><span class="k">libglib-2.0.0.dylib</span>
   Referenced from: ~/juicysfplugin.app/Contents/Frameworks/libfluidsynth.1.7.2.dylib
   Reason: image not found
-```
+</code></pre>
+  </div>
+</div>
 
 fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it.
 

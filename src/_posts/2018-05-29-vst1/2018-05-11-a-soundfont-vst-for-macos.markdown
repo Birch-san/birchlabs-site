@@ -31,7 +31,7 @@ So, this is a story of software integration.
   <audio controls preload="none">
     <source src="{{ relative }}TheBox_compressed_less.mp3" type="audio/mpeg">
   </audio>
-  <figcaption>demo track (with Soundgoodizer compressor)</figcaption>
+  <figcaption class="centered">demo track (with Soundgoodizer compressor)</figcaption>
 </figure>
 
 ## How juicysfplugin works
@@ -162,10 +162,7 @@ height="400"
 data="{{ relative }}part_bundled.svg"
 type="image/svg+xml"></object>
 
-We need to find all of fluidsynth's dependencies, copy them into our .app, and relink fluidsynth.  
-We do this recursively.
-
-Tedious.
+The bundle & relink dance must be done for all dependencies, _recursively_.
 
 <object
 width="800"
@@ -173,4 +170,7 @@ height="400"
 data="{{ relative }}bundled_again.svg"
 type="image/svg+xml"></object>
 
-I automated it. So did openage and KeePassXC.
+[I automated it](https://github.com/Birch-san/juicysfplugin/blob/74012df2ed8bb5423f3bcc76bff054ac02823596/Builds/MacOSX/relink-build-for-distribution.sh). I am [not the only one](https://github.com/essandess/matryoshka-name-tool).
+
+ <!-- Others have wondered [the same problem](https://stackoverflow.com/questions/9263256/why-is-install-name-tool-and-otool-necessary-for-mach-o-libraries-in-mac-os-x). -->
+

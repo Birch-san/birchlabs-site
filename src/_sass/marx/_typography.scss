@@ -127,6 +127,11 @@ figcaption {
   padding-left: $md-pad;
 }
 
+figcaption.centered {
+  text-align: center;
+  padding-left: 0;
+}
+
 figure {
   padding-left: $md-pad;
   margin-bottom: $md-pad;

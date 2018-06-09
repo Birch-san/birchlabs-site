@@ -217,7 +217,7 @@ i.e. find the link matching `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dyl
 
 You cannot match on leaf name `libglib-2.0.0.dylib` or library name, `glib`.
 
-You cannot match on an equivalent symlink path `/usr/local/opt/glib/lib/libglib-2.0.0.dylib`.
+You cannot match on an equivalent symlink path `/usr/local/opt/glib/lib/libglib-2.0.0.dylib`
 
 If your command matches nothing: there is no error message, and the exit code says success as usual.
 
@@ -232,9 +232,9 @@ But if you want to distribute your macOS application without using `install_name
 
 ### Provide an installer
 
-An installer can ensure that the brew dependency exists in the expected location. No relinking required.
+Users could run an installer, to copy dependencies to `/usr/local/Cellar`, like brew does (or the installer could properly brew install them). No relinking required.
 
-### Distribute via brew
+### Distribute application via brew
 
 Brew already provides a distribution mechanism and semantics for expressing dependencies. You could take advantage of that if users are comfortable with command-line installation.
 
@@ -243,8 +243,9 @@ Brew already provides a distribution mechanism and semantics for expressing depe
 Don't actually do this, but you can abuse the dynamic linker, [dyld](https://www.unix.com/man-page/osx/1/dyld/).
 
 > The dynamic linker uses the following environment variables. They affect any program that uses the dynamic linker.  
+> 
 > **DYLD_FALLBACK_LIBRARY_PATH**  
-> It is used as the default location for libraries not found in their install path. By default, it is set to `$(HOME)/lib:/usr/local/lib:/lib:/usr/lib.`
+> &nbsp;&nbsp;It is used as the default location for libraries not found in their install path. By default, it is set to `$(HOME)/lib:/usr/local/lib:/lib:/usr/lib.`
 
 When resolution fails for `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dylib`, dyld will search for the leaf name `libglib-2.0.0.dylib` under each of those fallback library paths.
 

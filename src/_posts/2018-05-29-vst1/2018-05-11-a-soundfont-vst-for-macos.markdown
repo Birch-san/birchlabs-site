@@ -86,7 +86,7 @@ Open juicysfplugin.app on another computer, and you get [this error](https://sta
 The fluidsynth library doesn't exist on their system. They never brew-installed it.
 
 Rather than tell users to prepare their environment, let's _bundle_ the library into our .app.  
-We copy libfluidsynth into `juicysfplugin.app/Contents/Frameworks` (using a shell script, or XCode's "copy files" build phase).
+We copy libfluidsynth into `juicysfplugin.app/Contents/lib` (using a shell script, or XCode's "copy files" build phase).
 
 **We need to relink our binary to use the bundled libfluidsynth.**
 
@@ -112,8 +112,8 @@ Let's rewrite that link, to search relative to `@loader_path`:
     <pre class="highlight">
 <code>install_name_tool <span class="nt">-change</span> <span class="se">\</span>
 <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>         <span class="sb">`</span><span class="c"># rewrite this link</span><span class="sb">` \</span>
-<span class="nb">@loader_path/../Frameworks/</span><span class="k">libfluidsynth.1.7.2.dylib</span> <span class="sb">`</span><span class="c"># to this</span><span class="sb">` \</span>
-~/juicysfplugin.app/Contents/MacOS/juicysfplugin     <span class="sb">`</span><span class="c"># in this obj file</span><span class="sb">`</span>
+<span class="nb">@loader_path/../lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>    <span class="sb">`</span><span class="c"># to this</span><span class="sb">` \</span>
+~/juicysfplugin.app/Contents/MacOS/juicysfplugin <span class="sb">`</span><span class="c"># in this obj file</span><span class="sb">`</span>
 
 <span class="c"># @loader_path points to our binary's location:</span>
 <span class="c"># juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
@@ -134,7 +134,7 @@ We read the object file again to verify that we successfully relinked:
     <pre class="highlight">
 <code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
 juicysfplugin.app/Contents/MacOS/juicysfplugin:
-  <span class="nb">@loader_path/../Frameworks/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
+  <span class="nb">@loader_path/../lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
   …
 </code></pre>
   </div>
@@ -148,7 +148,7 @@ We run our relinked .app on another computer. The first error is gone, but we're
   <div class="highlight">
     <pre class="highlight">
 <code>dyld: <span class="ne">Library not loaded:</span> <span class="err">/usr/local/opt/glib/lib/</span><span class="k">libglib-2.0.0.dylib</span>
-  Referenced from: ~/juicysfplugin.app/Contents/Frameworks/libfluidsynth.1.7.2.dylib
+  Referenced from: ~/juicysfplugin.app/Contents/lib/libfluidsynth.1.7.2.dylib
   Reason: image not found
 </code></pre>
   </div>

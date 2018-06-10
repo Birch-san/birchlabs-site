@@ -223,6 +223,11 @@ If your command matches nothing: there is no error message, and the exit code sa
 
 If you are automating this in a parameterised way, don't be tempted to re-use absolute paths; fluidsynth and gthread disagree on whether glib lives in `/usr/local/opt` or `/usr/local/Cellar`.
 
+#### There's no debugger
+
+There used to be a [helpful environment variable](https://nickdesaulniers.github.io/blog/2016/11/20/static-and-dynamic-libraries/), `LD_DEBUG`, which let you watch runtime link resolution.  
+Unfortunately, [Apple removed it](https://www.reddit.com/r/C_Programming/comments/5kypa9/ld_preload_support_removed_from_osx_10122s/). Probably [at source-level](https://stackoverflow.com/questions/17106383/ld-debug-on-freebsd).
+
 ## Alternatives
 
 Trawling the dependency list and relinking all non-system libraries with `install_name_tool` is manual and non-scalable.  
@@ -237,6 +242,20 @@ Users could run an installer, to copy dependencies to `/usr/local/Cellar`, like 
 ### Distribute application via brew
 
 Brew already provides a distribution mechanism and semantics for expressing dependencies. You could take advantage of that if users are comfortable with command-line installation.
+
+### Statically link
+
+Static linking burns a library into your executable. This means there's no possibility for the library to be in the wrong place or missing.
+
+That said, static linking is fiddly. You would compile the source of libfluidsynth, libsndfile **and so on** into object files. Then you would collect them into one big archive, libfluidsynth.a. Then you would compile the source of juicysfplugin, and statically link its object code to libfluidsynth.a.
+
+The problem is the "and so on". Eventually there's a dependency in the tree which **cannot be statically linked**. macOS [does not provide static versions of libSystem.dylib](https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x#846194). GNU libc [is not designed to be statically linked](https://stackoverflow.com/a/26306630/5257399).
+
+Mercifully, the user is guaranteed to have system libraries, so we can link to those dynamically. But for anything else: we would have to change the way we build objects in libfluidsynth.a (i.e. omit unused dependencies, or configure alternatives which can be statically linked).
+
+Supposing you succeed, you still have a new problem: licensing. By statically linking, you've created a derivative work in your name, instead of distributing the original artefact.  
+If you statically link to a GPL library, you must release under GPL license: the source for both your work and the library. Statically linking to LGPL: you may instead release just the compiled object code for your work.  
+Note: I am not a lawyer, and I inferred the above from [this discussion](https://stackoverflow.com/questions/10130143/gpl-lgpl-and-static-linking).
 
 ### Provide a runtime fallback for dynamic linking
 

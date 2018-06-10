@@ -31,7 +31,7 @@ So, this is a story of software integration.
   <audio controls preload="none">
     <source src="{{ relative }}TheBox_compressed_less.mp3" type="audio/mpeg">
   </audio>
-  <figcaption class="centered">demo track (with Soundgoodizer compressor)</figcaption>
+  <figcaption>demo track (with Soundgoodizer compressor)</figcaption>
 </figure>
 
 ## How juicysfplugin works

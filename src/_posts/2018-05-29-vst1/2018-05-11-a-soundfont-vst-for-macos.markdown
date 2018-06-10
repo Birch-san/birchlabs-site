@@ -228,7 +228,69 @@ If you are automating this in a parameterised way, don't be tempted to re-use ab
 There used to be a [helpful environment variable](https://nickdesaulniers.github.io/blog/2016/11/20/static-and-dynamic-libraries/), `LD_DEBUG`, which let you watch runtime link resolution.  
 Unfortunately, [Apple removed it](https://www.reddit.com/r/C_Programming/comments/5kypa9/ld_preload_support_removed_from_osx_10122s/). Probably [at source-level](https://stackoverflow.com/questions/17106383/ld-debug-on-freebsd).
 
-## Alternatives
+There is _some_ tracing you can enable in the runtime linker. You can see how it expands the variable @rpath, and whether that succeeded.
+
+```
+DYLD_PRINT_RPATHS=1 …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+RPATH successful expansion of @rpath/lib/libfluidsynth.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib
+…
+
+DYLD_PRINT_LIBRARIES=1 …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+dyld: loaded: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib
+…
+```
+
+It will tell you which expansions of @rpath fail (here I deliberately wrote in a link to a non-existent file):
+
+```
+DYLD_PRINT_RPATHS=1 …/juicysfplugin.app/Contents/MacOS/juicysfplugin          
+RPATH failed to expanding     @rpath/lib/notlibfluidsynth.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/notlibfluidsynth.dylib
+dyld: Library not loaded: @rpath/lib/notlibfluidsynth.dylib
+  Referenced from: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+  Reason: image not found
+```
+
+You can get _some_ feedback regarding how it searches _fallback locations_.  
+I copied `notlibfluidsynth.dylib` into `~/tmp` (a directory I specify as a fallback location), and it succeeds, and tells you which location it used:
+
+```
+DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH" …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+dyld: loaded: ~/tmp/notlibfluidsynth.dylib
+…
+
+# and observe how it traces a failed rpath expansion, 
+# yet continues successfully
+DYLD_PRINT_RPATHS=1 DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH" …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+RPATH failed to expanding     @rpath/lib/notlibfluidsynth.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/notlibfluidsynth.dylib
+RPATH successful expansion of @rpath/lib/libgthread-2.0.0.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/libgthread-2.0.0.dylib
+…
+```
+
+The linker provides other `DYLD_PRINT_*` variables, like `DYLD_PRINT_STATISTICS_DETAILS`, `DYLD_PRINT_ENV`, `DYLD_PRINT_OPTS`. I recommend you check them out in `man dyld`. You can see the environment and options with which your process is launched, or read statistics of how it spent its time before calling `main()`.
+
+##### DTrace won't help here
+
+I wanted to trace the dylib lookups using [DTrace](http://dtrace.org/blogs/brendan/2011/10/10/top-10-dtrace-scripts-for-mac-os-x/):
+
+```bash
+sudo dtrace 2>/dev/null -n '
+syscall::*stat*:entry,
+syscall::open:entry,
+syscall::open_nocancel:entry,
+syscall::open_extended:entry
+/(execname == "dyld" || execname == "juicysfplugin") && strstr(copyinstr(arg0), "dylib") > 0/
+{
+  printf("%s %s", execname, copyinstr(arg0));
+}' -c '…/juicysfplugin.app/Contents/MacOS/juicysfplugin'
+```
+
+But sadly, dtrace doesn't seem to start tracing until after the process launches. Moreover, we cannot attach to dyld. Not just because of [System Integrity Protection](https://stackoverflow.com/questions/33476432/is-there-a-workaround-for-dtrace-cannot-control-executables-signed-with-restri), but also because dyld is not a user-land process. We do not see it in pgrep, nor is it a short-lived process that we can observe using execsnoop.
+
+And all of this is modulated by the fact that dyld has a cache, so it may not do syscalls. We can turn this off with `DYLD_SHARED_REGION=avoid`, but passing that environment to the dtrace cmd is difficult; `dtrace -c` is [very broken on macOS](https://8thlight.com/blog/colin-jones/2017/02/02/dtrace-gotchas-on-osx.html).
+
+## Alternatives to manually rewriting dynamic links
 
 Trawling the dependency list and relinking all non-system libraries with `install_name_tool` is manual and non-scalable.  
 For this small project, it was a [local optimum](https://en.wikipedia.org/wiki/Local_optimum) of effort/reward.
@@ -276,6 +338,8 @@ export DYLD_FALLBACK_LIBRARY_PATH="$HOME/Downloads/juicysfplugin/lib:$DYLD_FALLB
 ```
 
 ### Fix the install name of the dependency before you link to it
+
+
 
 <!--
 https://github.com/conda/conda-build/issues/279

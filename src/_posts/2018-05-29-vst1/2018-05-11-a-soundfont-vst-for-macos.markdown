@@ -281,7 +281,7 @@ I wanted to trace the dylib lookups using [DTrace](http://dtrace.org/blogs/brend
 
 ```bash
 sudo dtrace 2>/dev/null -n '
-// print file lookups and opens containing "dylib"
+// print lookups and opens of filepaths matching "dylib"
 // attempted by processes "juicysfplugin" or "dyld"
 syscall::*stat*:entry,
 syscall::open:entry,

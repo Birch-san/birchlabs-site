@@ -212,12 +212,12 @@ juicysfplugin
 
 ### Don't mess up
 
-When relinking a library with `install_name_tool [-change old new] file`, beware: you must match **exactly**.  
-i.e. find the link matching `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dylib` and rewrite it.
+When relinking a library with `install_name_tool [-change old new] file`, beware: you must match **exactly**.
 
-You cannot match on leaf name `libglib-2.0.0.dylib` or library name, `glib`.
+To find the link matching `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dylib` and rewrite it…
 
-You cannot match on an equivalent symlink path `/usr/local/opt/glib/lib/libglib-2.0.0.dylib`
+- You cannot match on leaf name `libglib-2.0.0.dylib` or library name, `glib`.
+- You cannot match on an equivalent symlink path `/usr/local/opt/glib/lib/libglib-2.0.0.dylib`
 
 If your command matches nothing: there is no error message, and the exit code says success as usual.
 

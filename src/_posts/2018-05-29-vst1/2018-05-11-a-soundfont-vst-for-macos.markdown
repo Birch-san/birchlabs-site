@@ -230,52 +230,59 @@ Unfortunately, [Apple removed it](https://www.reddit.com/r/C_Programming/comment
 
 There is _some_ tracing you can enable in the runtime linker. You can see how it expands the variable @rpath, and whether that succeeded.
 
-```
-DYLD_PRINT_RPATHS=1 …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-RPATH successful expansion of @rpath/lib/libfluidsynth.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="k">DYLD_PRINT_RPATHS=1</span> …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<span class="nb">RPATH successful expansion of @rpath/lib/libfluidsynth.dylib</span>
 …
-
-DYLD_PRINT_LIBRARIES=1 …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-dyld: loaded: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib
+<span class="k">DYLD_PRINT_LIBRARIES=1</span> …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<span class="nb">dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+dyld: loaded: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib</span>
 …
-```
+</code></pre>
+  </div>
+</div>
 
 It will tell you which expansions of @rpath fail (here I deliberately wrote in a link to a non-existent file):
 
-```
-DYLD_PRINT_RPATHS=1 …/juicysfplugin.app/Contents/MacOS/juicysfplugin          
-RPATH failed to expanding     @rpath/lib/notlibfluidsynth.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/notlibfluidsynth.dylib
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="k">DYLD_PRINT_RPATHS=1</span> …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<span class="ne">RPATH failed to expanding     @rpath/lib/</span><span class="err">notlibfluidsynth.dylib</span>
 dyld: Library not loaded: @rpath/lib/notlibfluidsynth.dylib
   Referenced from: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
   Reason: image not found
-```
+</code></pre>
+  </div>
+</div>
 
 You can get _some_ feedback regarding how it searches _fallback locations_.  
 I copied `notlibfluidsynth.dylib` into `~/tmp` (a directory I specify as a fallback location), and it succeeds, and tells you which location it used:
 
-```
-DYLD_PRINT_LIBRARIES=1 DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH" …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code>DYLD_PRINT_LIBRARIES=1 <span class="se">\</span>
+<span class="k">DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH"</span> <span class="se">\</span>
+…/juicysfplugin.app/Contents/MacOS/juicysfplugin
 dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-dyld: loaded: ~/tmp/notlibfluidsynth.dylib
-…
-
-# and observe how it traces a failed rpath expansion, 
-# yet continues successfully
-DYLD_PRINT_RPATHS=1 DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH" …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-RPATH failed to expanding     @rpath/lib/notlibfluidsynth.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/notlibfluidsynth.dylib
-RPATH successful expansion of @rpath/lib/libgthread-2.0.0.dylib to: …/juicysfplugin.app/Contents/MacOS/../lib/libgthread-2.0.0.dylib
-…
-```
+<span class="nb">dyld: loaded: ~/tmp/notlibfluidsynth.dylib</span>
+</code></pre>
+  </div>
+</div>
 
 The linker provides other `DYLD_PRINT_*` variables, like `DYLD_PRINT_STATISTICS_DETAILS`, `DYLD_PRINT_ENV`, `DYLD_PRINT_OPTS`. I recommend you check them out in `man dyld`. You can see the environment and options with which your process is launched, or read statistics of how it spent its time before calling `main()`.
 
 ##### DTrace won't help here
 
-I wanted to trace the dylib lookups using [DTrace](http://dtrace.org/blogs/brendan/2011/10/10/top-10-dtrace-scripts-for-mac-os-x/):
+I wanted to trace the dylib lookups using [DTrace](http://dtrace.org/blogs/brendan/2011/10/10/top-10-dtrace-scripts-for-mac-os-x/).:
 
 ```bash
 sudo dtrace 2>/dev/null -n '
+// print file lookups and opens containing "dylib"
+// attempted by processes "juicysfplugin" or "dyld"
 syscall::*stat*:entry,
 syscall::open:entry,
 syscall::open_nocancel:entry,

@@ -237,8 +237,8 @@ There is _some_ tracing you can enable in the runtime linker. You can see how it
 <span class="nb">RPATH successful expansion of @rpath/lib/libfluidsynth.dylib</span>
 …
 <span class="k">DYLD_PRINT_LIBRARIES=1</span> …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-<span class="nb">dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
-dyld: loaded: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib</span>
+dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
+<span class="nb">dyld: loaded: …/juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.dylib</span>
 …
 </code></pre>
   </div>

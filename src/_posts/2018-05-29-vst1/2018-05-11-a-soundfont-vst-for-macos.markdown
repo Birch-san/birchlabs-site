@@ -115,8 +115,8 @@ Let's rewrite that link, to search relative to `@loader_path`:
 <span class="nb">@loader_path/../lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>    <span class="sb">`</span><span class="c"># to this</span><span class="sb">` \</span>
 ~/juicysfplugin.app/Contents/MacOS/juicysfplugin <span class="sb">`</span><span class="c"># in this obj file</span><span class="sb">`</span>
 
-<span class="c"># @loader_path points to our binary's location:</span>
-<span class="c"># juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
+<span class="c"># @loader_path points to our binary's directory:</span>
+<span class="c"># juicysfplugin.app/Contents/MacOS</span>
 </code></pre>
   </div>
 </div>

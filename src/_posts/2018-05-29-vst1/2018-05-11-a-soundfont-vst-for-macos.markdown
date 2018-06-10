@@ -176,9 +176,11 @@ type="image/svg+xml"></object>
 
 The chain of brew dependencies can go pretty deep. For example, libsndfile (which adds support for [SF3 soundfonts](https://musescore.org/en/node/151611)) introduces this many links:
 
-```
-juicysfplugin
-  libsndfile
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">juicysfplugin</span>
+  <span class="k">libsndfile</span>
     libFLAC
     libogg
     libvorbis
@@ -186,7 +188,9 @@ juicysfplugin
     libvorbisenc
       libvorbis
       libogg
-```
+</code></pre>
+  </div>
+</div>
 
 <!--
 Full list:

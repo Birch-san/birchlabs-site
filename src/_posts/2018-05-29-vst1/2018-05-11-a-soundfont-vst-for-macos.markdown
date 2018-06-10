@@ -350,7 +350,45 @@ export DYLD_FALLBACK_LIBRARY_PATH="$HOME/Downloads/juicysfplugin/lib:$DYLD_FALLB
 
 ### Fix the install name of the dependency before you link to it
 
+When we link against a brew library (`-lfluidsynth -L/usr/local/lib`), why is it that our link is an _absolute path_?
 
+It's because of the install_name of the .dylib.
+
+#### Find install_name
+
+We can see this with `otool -L`. It shows load commands in an object file's private headers.  
+Earlier we used it to see LC_LOAD_DYLIB ("what libraries does our binary link to"), but it also shows us LC_ID_DYLIB ("what does this library call itself"):
+
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">otool -L /usr/local/lib/libfluidsynth.dylib</span>
+/usr/local/lib/libfluidsynth.dylib:
+  <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
+  …
+
+<span class="c"># use lower-case otool -l for more detail</span>
+</code></pre>
+  </div>
+</div>
+
+What does this install_name tell us? It means that any object file linking to this dylib, will refer to it as `/usr/local/lib/libfluidsynth.1.7.2.dylib`.
+
+But that's just the suggested initial value. As demonstrated earlier, we can use install_name_tool to change the load commands in our juicysfplugin executable.
+
+We can fix the problem even earlier: **change the install_name.**
+
+#### Set install_name relative to juicysfplugin
+
+By setting libfluidsynth's install_name to `@loader_path/../lib/libfluidsynth.1.7.2.dylib`, the juicysfplugin binary we build will have a relative link from the very start. No post-build fiddling is necessary.
+
+Moreover, now that the library has a relative install_name, it's not environment-specific. It can be copied into our project folder and shared alongside our source code. We can add that project-local folder to our library search path.
+
+#### Multiple consumers of library
+
+We can clean this up even further. `@loader_path/../lib/` is too project-specific. It's best if we can support a variety of project structures.
+
+The install_name `@rpath/libfluidsynth.1.7.2.dylib` lets us invert control. Each project that consumes this library can specify a list of rpaths to search. juicysfplugin specifies a runtime search path of `../lib`., so @rpath expands to: `…juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.1.7.2.dylib`.
 
 <!--
 https://github.com/conda/conda-build/issues/279

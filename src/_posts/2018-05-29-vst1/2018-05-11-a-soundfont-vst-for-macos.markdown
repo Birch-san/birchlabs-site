@@ -230,7 +230,7 @@ If you are automating this in a parameterised way, don't be tempted to re-use ab
 #### There's no debugger
 
 There used to be a [helpful environment variable](https://nickdesaulniers.github.io/blog/2016/11/20/static-and-dynamic-libraries/), `LD_DEBUG`, which let you watch runtime link resolution.  
-Unfortunately, [Apple removed it](https://www.reddit.com/r/C_Programming/comments/5kypa9/ld_preload_support_removed_from_osx_10122s/). Probably [at source-level](https://stackoverflow.com/questions/17106383/ld-debug-on-freebsd).
+Unfortunately, [Apple removed it](https://www.reddit.com/r/C_Programming/comments/5kypa9/ld_preload_support_removed_from_osx_10122s/). Probably [removed a build option](https://stackoverflow.com/questions/17106383/ld-debug-on-freebsd).
 
 There is _some_ tracing you can enable in the runtime linker. You can see how it expands the variable @rpath, and whether that succeeded.
 

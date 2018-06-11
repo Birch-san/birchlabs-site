@@ -7,6 +7,10 @@ syntax_highlight: true
 author: Alex Birch
 ---
 
+{::nomarkdown}
+<input class="toggler" type="checkbox" id="cb">
+{:/}
+
 <style>
 {% capture blogstyle %}
   @charset 'utf-8';
@@ -28,7 +32,7 @@ author: Alex Birch
     .constrain-w {
       overflow-x: visible;
     }
-    input.toggler + label {
+    input.toggler ~ label {
       display: none;
     }
   }
@@ -36,30 +40,30 @@ author: Alex Birch
   input.toggler {
     display: none;
   }
-  input.toggler + label {
+  input.toggler ~ label {
     cursor: pointer;
     background-size: cover;
   }
   /*input.toggler + label:hover {
     text-decoration: underline;
   }*/
-  input.toggler:checked + label + div.constrain-w {
+  input.toggler:checked ~ label + div.constrain-w {
     overflow-x: visible;
   }
-  input.toggler:checked + label {
+  input.toggler:checked ~ label {
     background-image: url({{ relative }}glyph_contract.svg);
   }
-  input.toggler + label {
+  input.toggler ~ label {
     background-image: url({{ relative }}glyph_expand.svg);
   }
-  input.toggler + label:after {
+  input.toggler ~ label:after {
     content: "    ";
     white-space: pre-wrap;
   }
-  /*input.toggler:checked + label:after {
+  /*input.toggler:checked ~ label:after {
     content: "Make Narrow";
   }
-  input.toggler + label:after {
+  input.toggler ~ label:after {
     content: "Make Wide";
   }*/
 {% endcapture %}
@@ -123,7 +127,6 @@ I needed to dynamically link the fluidsynth library into my executable. Basic li
 But this creates a non-portable release:
 
 {::nomarkdown}
-<input class="toggler" type="checkbox" id="cb">
 <label for="cb"></label>
 <div class="constrain-w">
 <!-- nominally 800x400 -->
@@ -185,6 +188,8 @@ Let's rewrite that link, to search relative to `@loader_path`:
   </div>
 </div>
 
+{::nomarkdown}
+<label for="cb"></label>
 <div class="constrain-w">
 <object
 width="800"
@@ -192,6 +197,7 @@ height="400"
 data="{{ relative }}bundled1.svg"
 type="image/svg+xml"></object>
 </div>
+{:/}
 
 We read the object file again to verify that we successfully relinked:
 
@@ -222,6 +228,8 @@ We run our relinked .app on another computer. The first error is gone, but we're
 
 fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it:
 
+{::nomarkdown}
+<label for="cb"></label>
 <div class="constrain-w">
 <object
 width="800"
@@ -229,9 +237,12 @@ height="400"
 data="{{ relative }}part_bundled.svg"
 type="image/svg+xml"></object>
 </div>
+{:/}
 
 The bundle & relink dance must be done for all dependencies, _recursively_:
 
+{::nomarkdown}
+<label for="cb"></label>
 <div class="constrain-w">
 <object
 width="800"
@@ -239,6 +250,7 @@ height="400"
 data="{{ relative }}bundled_again.svg"
 type="image/svg+xml"></object>
 </div>
+{:/}
 
 [I automated it](https://github.com/Birch-san/juicysfplugin/blob/f8b354d1585dd2f615f2842079b384fd92c325e3/Builds/MacOSX/relink-build-for-distribution.sh). I am [not the only one](https://github.com/essandess/matryoshka-name-tool).
 

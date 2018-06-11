@@ -19,6 +19,7 @@ author: Alex Birch
     max-width: 100%;
     /*height: 400px;*/
     overflow-x: auto;
+    overflow-x: overlay;
   }
   
   $center-col-pad: $md-pad;

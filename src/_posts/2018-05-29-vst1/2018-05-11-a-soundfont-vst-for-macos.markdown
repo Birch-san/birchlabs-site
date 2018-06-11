@@ -8,14 +8,15 @@ author: Alex Birch
 ---
 
 {::nomarkdown}
-<input class="toggler" type="checkbox" id="cb">
+<input class="toggler" type="checkbox" id="diagramoverflow">
+<input class="toggler" type="checkbox" id="snippetwrap">
 {:/}
 
 <style>
 {% capture blogstyle %}
   @charset 'utf-8';
   @import 'marx/variables';
-  .constrain-w {
+  .diagram-container {
     max-width: 100%;
     /*height: 400px;*/
     overflow-x: auto;
@@ -29,11 +30,21 @@ author: Alex Birch
   $diagram-wider-noscroll: $large-breakpoint + $right-overflow * 2;
   /*$diagram-wider-noscroll: 878px;*/
   
+  /* if diagram fits without scrollbar, hide toggles and turn off scrollbar */
   @media screen and (min-width: $diagram-wider-noscroll + 1px) {
-    .constrain-w {
+    .diagram-container {
       overflow-x: visible;
     }
-    input.toggler ~ label {
+    label[for="diagramoverflow"] {
+      display: none;
+    }
+  }
+  /* if we are in full desktop width, snippet is at planned size, so it has intended wrapping already */
+  @media screen and (min-width: $diagram-wider-noscroll + 1px) {
+    div.wrap-me pre {
+      white-space: pre-wrap;
+    }
+    label[for="snippetwrap"] {
       display: none;
     }
   }
@@ -48,10 +59,16 @@ author: Alex Birch
   /*input.toggler + label:hover {
     text-decoration: underline;
   }*/
-  input.toggler:checked ~ label + div.constrain-w {
+  input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] + div.diagram-container {
     overflow-x: visible;
   }
-  input.toggler:checked ~ label {
+  input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] {
+    background-image: url({{ relative }}glyph_contract.svg);
+  }
+  input.toggler#snippetwrap:checked ~ label[for="snippetwrap"] + div.wrap-me pre {
+    white-space: pre;
+  }
+  input.toggler#snippetwrap:checked ~ label[for="snippetwrap"] {
     background-image: url({{ relative }}glyph_contract.svg);
   }
   input.toggler ~ label {
@@ -128,8 +145,8 @@ I needed to dynamically link the fluidsynth library into my executable. Basic li
 But this creates a non-portable release:
 
 {::nomarkdown}
-<label for="cb"></label>
-<div class="constrain-w">
+<label for="diagramoverflow"></label>
+<div class="diagram-container">
 <!-- nominally 800x400 -->
 <object
 width="800"
@@ -141,7 +158,9 @@ type="image/svg+xml"></object>
 
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="snippetwrap"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code>dyld: <span class="ne">Library not loaded:</span> <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>
@@ -150,6 +169,7 @@ Open juicysfplugin.app on another computer, and you get [this error](https://sta
 </code></pre>
   </div>
 </div>
+{:/}
 
 The fluidsynth library doesn't exist on their system. They never brew-installed it.
 
@@ -190,8 +210,8 @@ Let's rewrite that link, to search relative to `@loader_path`:
 </div>
 
 {::nomarkdown}
-<label for="cb"></label>
-<div class="constrain-w">
+<label for="diagramoverflow"></label>
+<div class="diagram-container">
 <object
 width="800"
 height="400"
@@ -230,8 +250,8 @@ We run our relinked .app on another computer. The first error is gone, but we're
 fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it:
 
 {::nomarkdown}
-<label for="cb"></label>
-<div class="constrain-w">
+<label for="diagramoverflow"></label>
+<div class="diagram-container">
 <object
 width="800"
 height="400"
@@ -243,8 +263,8 @@ type="image/svg+xml"></object>
 The bundle & relink dance must be done for all dependencies, _recursively_:
 
 {::nomarkdown}
-<label for="cb"></label>
-<div class="constrain-w">
+<label for="diagramoverflow"></label>
+<div class="diagram-container">
 <object
 width="800"
 height="400"

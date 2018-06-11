@@ -52,6 +52,10 @@ author: Alex Birch
   input.toggler + label {
     background-image: url({{ relative }}glyph_expand.svg);
   }
+  input.toggler + label:after {
+    content: "    ";
+    white-space: pre-wrap;
+  }
   /*input.toggler:checked + label:after {
     content: "Make Narrow";
   }
@@ -120,7 +124,7 @@ But this creates a non-portable release:
 
 <div>
 <input class="toggler" type="checkbox" id="cb">
-<label for="cb">&nbsp;&nbsp;&nbsp;&nbsp;</label>
+<label for="cb"></label>
 <div class="constrain-w">
 <!-- nominally 800x400 -->
 <object

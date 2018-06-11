@@ -40,7 +40,7 @@ author: Alex Birch
     }
   }
   /* if we are in full desktop width, snippet is at planned size, so it has intended wrapping already */
-  @media screen and (min-width: $diagram-wider-noscroll + 1px) {
+  @media screen and (min-width: $large-breakpoint + 1px) {
     div.wrap-me pre {
       white-space: pre-wrap;
     }

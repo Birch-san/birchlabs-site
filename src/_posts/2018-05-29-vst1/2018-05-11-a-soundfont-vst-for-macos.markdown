@@ -7,6 +7,32 @@ syntax_highlight: true
 author: Alex Birch
 ---
 
+<style>
+{% capture blogstyle %}
+  @charset 'utf-8';
+  @import 'marx/variables';
+  .constrain-w {
+    max-width: 100%;
+    /*height: 400px;*/
+    overflow-x: auto;
+  }
+  
+  $center-col-pad: $md-pad;
+  $center-col-max-wid: $large-breakpoint - $center-col-pad * 2;
+  $diagram-width: 800px;
+  $right-overflow: $diagram-width - $center-col-max-wid;
+  $diagram-wider-noscroll: $large-breakpoint + $right-overflow * 2;
+  /*$diagram-wider-noscroll: 878px;*/
+  
+  @media screen and (min-width: $diagram-wider-noscroll + 1px) {
+    .constrain-w {
+      overflow-x: visible;
+    }
+  }
+{% endcapture %}
+{{ blogstyle | scssify }}
+</style>
+
 Soundfonts are great for making music quickly. With no learning or configuration, you can play samples from a variety of instruments and not-instruments.
 
 I wanted to make soundfont music on FL Studio Mac.
@@ -54,7 +80,6 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
   - fluidsynth has its own clock, so it knows this block starts where the previous one ended
   - fluidsynth has its own sample rate, which we keep updated
 
-Summary:  
 MIDI messages go in. We render the MIDI messages through the fluidsynth synthesiser. Then we output audio.
 
 ## Integrating fluidsynth
@@ -62,14 +87,16 @@ MIDI messages go in. We render the MIDI messages through the fluidsynth synthesi
 I needed to dynamically link the fluidsynth library into my executable. Basic linker flags suffice:  
 `-lfluidsynth -L/usr/local/lib` (that's the brew libraries directory).
 
-But this creates a non-portable release.
+But this creates a non-portable release:
 
+<div class="constrain-w">
 <!-- nominally 800x400 -->
 <object
 width="800"
 height="400"
 data="{{ relative }}unbundled.svg"
 type="image/svg+xml"></object>
+</div>
 
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 
@@ -86,9 +113,9 @@ Open juicysfplugin.app on another computer, and you get [this error](https://sta
 The fluidsynth library doesn't exist on their system. They never brew-installed it.
 
 Rather than tell users to prepare their environment, let's _bundle_ the library into our .app.  
-We copy libfluidsynth into `juicysfplugin.app/Contents/lib` (using a shell script, or XCode's "copy files" build phase).
+We copy libfluidsynth into `juicysfplugin.app/Contents/lib` during XCode's "copy files" build phase.
 
-**We need to relink our binary to use the bundled libfluidsynth.**
+**Next, we must relink our binary to use the bundled libfluidsynth.**
 
 ### Relinking
 
@@ -121,11 +148,13 @@ Let's rewrite that link, to search relative to `@loader_path`:
   </div>
 </div>
 
+<div class="constrain-w">
 <object
 width="800"
 height="400"
 data="{{ relative }}bundled1.svg"
 type="image/svg+xml"></object>
+</div>
 
 We read the object file again to verify that we successfully relinked:
 
@@ -154,21 +183,25 @@ We run our relinked .app on another computer. The first error is gone, but we're
   </div>
 </div>
 
-fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it.
+fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it:
 
+<div class="constrain-w">
 <object
 width="800"
 height="400"
 data="{{ relative }}part_bundled.svg"
 type="image/svg+xml"></object>
+</div>
 
-The bundle & relink dance must be done for all dependencies, _recursively_.
+The bundle & relink dance must be done for all dependencies, _recursively_:
 
+<div class="constrain-w">
 <object
 width="800"
 height="400"
 data="{{ relative }}bundled_again.svg"
 type="image/svg+xml"></object>
+</div>
 
 [I automated it](https://github.com/Birch-san/juicysfplugin/blob/f8b354d1585dd2f615f2842079b384fd92c325e3/Builds/MacOSX/relink-build-for-distribution.sh). I am [not the only one](https://github.com/essandess/matryoshka-name-tool).
 

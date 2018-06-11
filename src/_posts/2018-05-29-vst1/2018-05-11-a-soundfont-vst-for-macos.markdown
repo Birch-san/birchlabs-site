@@ -122,7 +122,7 @@ I needed to dynamically link the fluidsynth library into my executable. Basic li
 
 But this creates a non-portable release:
 
-<div>
+{::nomarkdown}
 <input class="toggler" type="checkbox" id="cb">
 <label for="cb"></label>
 <div class="constrain-w">
@@ -133,7 +133,7 @@ height="400"
 data="{{ relative }}unbundled.svg"
 type="image/svg+xml"></object>
 </div>
-</div>
+{:/}
 
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 

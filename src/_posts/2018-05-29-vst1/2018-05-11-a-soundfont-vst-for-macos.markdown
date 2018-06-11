@@ -170,10 +170,11 @@ height="400"
 data="{{ relative }}bundled_again.svg"
 type="image/svg+xml"></object>
 
-[I automated it](https://github.com/Birch-san/juicysfplugin/blob/74012df2ed8bb5423f3bcc76bff054ac02823596/Builds/MacOSX/relink-build-for-distribution.sh). I am [not the only one](https://github.com/essandess/matryoshka-name-tool).
+[I automated it](https://github.com/Birch-san/juicysfplugin/blob/f8b354d1585dd2f615f2842079b384fd92c325e3/Builds/MacOSX/relink-build-for-distribution.sh). I am [not the only one](https://github.com/essandess/matryoshka-name-tool).
 
  <!-- Others have wondered [the same problem](https://stackoverflow.com/questions/9263256/why-is-install-name-tool-and-otool-necessary-for-mach-o-libraries-in-mac-os-x). -->
 
+<!--
 The chain of brew dependencies can go pretty deep. For example, libsndfile (which adds support for [SF3 soundfonts](https://musescore.org/en/node/151611)) introduces this many links:
 
 <div class="language-bash highlighter-rouge">
@@ -191,6 +192,7 @@ The chain of brew dependencies can go pretty deep. For example, libsndfile (whic
 </code></pre>
   </div>
 </div>
+-->
 
 <!--
 Full list:
@@ -213,6 +215,80 @@ juicysfplugin
       libvorbis…
       libogg
 -->
+
+### Removing the post-build complexity
+
+The relinked libraries can be version-controlled. The environment-specific `-L/usr/local/lib` library search path can be replaced with `-L$(PROJECT_DIR)/lib`.
+
+But we still rely on our post-build step to relink the juicysfplugin binary.
+
+Why does juicysfplugin look for fluidsynth at an environment-specific path, `/usr/local/lib/libfluidsynth.1.7.2.dylib`?
+
+It's because of fluidsynth's install_name.
+
+Earlier we used `otool -L` to see "what libraries does this link to".  
+But it also shows us "what's the install_name of this library":
+
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">otool -L /usr/local/lib/libfluidsynth.dylib</span>
+/usr/local/lib/libfluidsynth.dylib:
+  <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
+  …
+</code></pre>
+  </div>
+</div>
+
+Let's make a copy of fluidsynth (in `$(PROJECT_DIR)/lib`) with a binary-relative install_name:
+
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code>install_name_tool <span class="nt">-id</span>                            <span class="sb">`</span><span class="c"># set install_name</span><span class="sb">` \</span>
+<span class="nb">@loader_path/../lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span>    <span class="sb">`</span><span class="c"># to this</span><span class="sb">` \</span>
+$(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span class="c"># in this obj file</span><span class="sb">`</span>
+</code></pre>
+  </div>
+</div>
+
+We no longer need to do any relinking post-build. juicysfplugin will be built with a binary-relative link to fluidsynth.
+
+### More maintainable convention
+
+Really the libraries shouldn't be responsible for declaring "where will you find me at runtime". This forced us to make a project-specific copy of the library.
+
+Thankfully there's a way to invert the control.
+
+The library can set an install_name relative to _@rpath_.  
+This is a macro, expanded at runtime.
+
+A binary can specify what they want @rpath to expand to, and even specify fallbacks.
+
+Let's make fluidsynth @rpath-relative:
+
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code>install_name_tool <span class="nt">-id</span>                            <span class="sb">`</span><span class="c"># set install_name</span><span class="sb">` \</span>
+<span class="nb">@rpath/</span><span class="k">libfluidsynth.1.7.2.dylib</span>                 <span class="sb">`</span><span class="c"># to this</span><span class="sb">` \</span>
+$(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span class="c"># in this obj file</span><span class="sb">`</span>
+</code></pre>
+  </div>
+</div>
+
+Then we configure the juicysfplugin binary to use a "runtime search path" of `@loader_path/../lib`. This is an XCode build setting, equivalent to gcc's `-rpath` option.
+
+Now fluidsynth is environment-independent and project-independent.
+
+### Why not use @executable_path?
+
+We output a variety of build targets. In the standalone juicysfplugin.app, @loader_path and @executable_path are the same thing.
+
+The plugin targets (VST, VST3, AU) are designed to be hosted inside a different executable (e.g. Garageband, FL Studio).  
+Here @executable_path points to the plugin host (Garageband.app/Contents/MacOS), which is not what we want.
+
+We want to load libraries relative to the binary which contains the load command. Hence @loader_path is necessary.
 
 ### Don't mess up
 

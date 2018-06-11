@@ -28,7 +28,36 @@ author: Alex Birch
     .constrain-w {
       overflow-x: visible;
     }
+    input.toggler + label {
+      display: none;
+    }
   }
+  
+  input.toggler {
+    display: none;
+  }
+  input.toggler + label {
+    cursor: pointer;
+    background-size: cover;
+  }
+  /*input.toggler + label:hover {
+    text-decoration: underline;
+  }*/
+  input.toggler:checked + label + div.constrain-w {
+    overflow-x: visible;
+  }
+  input.toggler:checked + label {
+    background-image: url({{ relative }}glyph_contract.svg);
+  }
+  input.toggler + label {
+    background-image: url({{ relative }}glyph_expand.svg);
+  }
+  /*input.toggler:checked + label:after {
+    content: "Make Narrow";
+  }
+  input.toggler + label:after {
+    content: "Make Wide";
+  }*/
 {% endcapture %}
 {{ blogstyle | scssify }}
 </style>
@@ -89,6 +118,9 @@ I needed to dynamically link the fluidsynth library into my executable. Basic li
 
 But this creates a non-portable release:
 
+<div>
+<input class="toggler" type="checkbox" id="cb">
+<label for="cb">&nbsp;&nbsp;&nbsp;&nbsp;</label>
 <div class="constrain-w">
 <!-- nominally 800x400 -->
 <object
@@ -96,6 +128,7 @@ width="800"
 height="400"
 data="{{ relative }}unbundled.svg"
 type="image/svg+xml"></object>
+</div>
 </div>
 
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):

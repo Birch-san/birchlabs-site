@@ -9,7 +9,7 @@ author: Alex Birch
 
 {::nomarkdown}
 <input class="toggler" type="checkbox" id="diagramoverflow">
-<input class="toggler" type="checkbox" id="snippetwrap">
+<!-- <input class="toggler" type="checkbox" id="snippetwrap"> -->
 {:/}
 
 <style>
@@ -22,14 +22,6 @@ author: Alex Birch
     overflow-x: auto;
     overflow-x: overlay;
   }
-
-  .wrap-me div.highlight {
-    background: initial;
-  }
-
-  .wrap-me pre.highlight {
-    display: inline-block;
-  }
   
   $center-col-pad: $md-pad;
   $center-col-max-wid: $large-breakpoint - $center-col-pad * 2;
@@ -37,22 +29,30 @@ author: Alex Birch
   $right-overflow: $diagram-width - $center-col-max-wid;
   $diagram-wider-noscroll: $large-breakpoint + $right-overflow * 2;
   /*$diagram-wider-noscroll: 878px;*/
+
+  .wrap-me div.highlight {
+    background: initial;
+  }
+
+  .wrap-me pre.highlight {
+    display: inline-block;
+    margin-top: 0px;
+    min-width: 100%;
+  }
   
   /* if diagram fits without scrollbar, hide toggles and turn off scrollbar */
   @media screen and (min-width: $diagram-wider-noscroll + 1px) {
     .diagram-container {
       overflow-x: visible;
     }
-    label[for="diagramoverflow"] {
-      display: none;
-    }
-  }
-  /* if we are in full desktop width, snippet is at planned size, so it has intended wrapping already */
-  @media screen and (min-width: $large-breakpoint + 1px) {
+    /* if we are in full desktop width, snippet is at planned size, so it has intended wrapping already */
     div.wrap-me pre {
-      white-space: pre-wrap;
+      white-space: pre-wrap !important;
     }
-    label[for="snippetwrap"] {
+    .wrap-me pre.highlight {
+      margin-top: $md-pad;
+    }
+    label[for="diagramoverflow"] {
       display: none;
     }
   }
@@ -73,11 +73,11 @@ author: Alex Birch
   input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] {
     background-image: url({{ relative }}glyph_contract.svg);
   }
-  input.toggler#snippetwrap:checked ~ label[for="snippetwrap"] + div.wrap-me pre {
+  input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] + div.wrap-me pre {
     white-space: pre;
     overflow: initial;
   }
-  input.toggler#snippetwrap:checked ~ label[for="snippetwrap"] {
+  input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] {
     background-image: url({{ relative }}glyph_contract.svg);
   }
   input.toggler ~ label {
@@ -168,7 +168,7 @@ type="image/svg+xml"></object>
 Open juicysfplugin.app on another computer, and you get [this error](https://stackoverflow.com/a/19230699/5257399):
 
 {::nomarkdown}
-<label for="snippetwrap"></label>
+<label for="diagramoverflow"></label>
 <div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
@@ -191,7 +191,9 @@ We copy libfluidsynth into `juicysfplugin.app/Contents/lib` during XCode's "copy
 
 Where does `juicysfplugin.app/Contents/MacOS/juicysfplugin` currently look for libfluidsynth?
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
@@ -201,10 +203,13 @@ juicysfplugin.app/Contents/MacOS/juicysfplugin:
 </code></pre>
   </div>
 </div>
+{:/}
 
 Let's rewrite that link, to search relative to `@loader_path`:
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code>install_name_tool <span class="nt">-change</span> <span class="se">\</span>
@@ -217,6 +222,7 @@ Let's rewrite that link, to search relative to `@loader_path`:
 </code></pre>
   </div>
 </div>
+{:/}
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -231,7 +237,9 @@ type="image/svg+xml"></object>
 
 We read the object file again to verify that we successfully relinked:
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
@@ -241,12 +249,15 @@ juicysfplugin.app/Contents/MacOS/juicysfplugin:
 </code></pre>
   </div>
 </div>
+{:/}
 
 ### It goes deeper
 
 We run our relinked .app on another computer. The first error is gone, but we're onto a new error:
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code>dyld: <span class="ne">Library not loaded:</span> <span class="err">/usr/local/opt/glib/lib/</span><span class="k">libglib-2.0.0.dylib</span>
@@ -255,6 +266,7 @@ We run our relinked .app on another computer. The first error is gone, but we're
 </code></pre>
   </div>
 </div>
+{:/}
 
 fluidsynth needs glib. glib doesn't exist on their system. They never brew-installed it:
 
@@ -341,7 +353,9 @@ It's because of fluidsynth's install_name.
 Earlier we used `otool -L` to see "what libraries does this link to".  
 But it also shows us "what's the install_name of this library":
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code><span class="gu">otool -L /usr/local/lib/libfluidsynth.dylib</span>
@@ -351,10 +365,13 @@ But it also shows us "what's the install_name of this library":
 </code></pre>
   </div>
 </div>
+{:/}
 
 Let's make a copy of fluidsynth (in `$(PROJECT_DIR)/lib`) with a binary-relative install_name:
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code>install_name_tool <span class="nt">-id</span>                            <span class="sb">`</span><span class="c"># set install_name</span><span class="sb">` \</span>
@@ -363,6 +380,7 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 </code></pre>
   </div>
 </div>
+{:/}
 
 We no longer need to do any relinking post-build. juicysfplugin will be built with a binary-relative link to fluidsynth.
 
@@ -379,7 +397,9 @@ A binary can specify what they want @rpath to expand to, and even specify fallba
 
 Let's make fluidsynth @rpath-relative:
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code>install_name_tool <span class="nt">-id</span>                            <span class="sb">`</span><span class="c"># set install_name</span><span class="sb">` \</span>
@@ -388,6 +408,7 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 </code></pre>
   </div>
 </div>
+{:/}
 
 Then we configure the juicysfplugin binary to use a "runtime search path" of `@loader_path/../lib`. This is an XCode build setting, equivalent to gcc's `-rpath` option.
 
@@ -422,7 +443,9 @@ Unfortunately, [Apple removed it](https://www.reddit.com/r/C_Programming/comment
 
 There is _some_ tracing you can enable in the runtime linker. You can see how it expands the variable @rpath, and whether that succeeded.
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code><span class="k">DYLD_PRINT_RPATHS=1</span> …/juicysfplugin.app/Contents/MacOS/juicysfplugin
@@ -435,10 +458,13 @@ dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 </code></pre>
   </div>
 </div>
+{:/}
 
 It will tell you which expansions of @rpath fail (here I deliberately wrote in a link to a non-existent file):
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code><span class="k">DYLD_PRINT_RPATHS=1</span> …/juicysfplugin.app/Contents/MacOS/juicysfplugin
@@ -449,11 +475,14 @@ dyld: Library not loaded: @rpath/lib/notlibfluidsynth.dylib
 </code></pre>
   </div>
 </div>
+{:/}
 
 You can get _some_ feedback regarding how it searches _fallback locations_.  
 I copied `notlibfluidsynth.dylib` into `~/tmp` (a directory I specify as a fallback location), and it succeeds, and tells you which location it used:
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code>DYLD_PRINT_LIBRARIES=1 <span class="se">\</span>
@@ -464,6 +493,7 @@ dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 </code></pre>
   </div>
 </div>
+{:/}
 
 The linker provides other `DYLD_PRINT_*` variables, like `DYLD_PRINT_STATISTICS_DETAILS`, `DYLD_PRINT_ENV`, `DYLD_PRINT_OPTS`. I recommend you check them out in `man dyld`. You can see the environment and options with which your process is launched, or read statistics of how it spent its time before calling `main()`.
 
@@ -547,7 +577,9 @@ It's because of the install_name of the .dylib.
 We can see this with `otool -L`. It shows load commands in an object file's private headers.  
 Earlier we used it to see LC_LOAD_DYLIB ("what libraries does our binary link to"), but it also shows us LC_ID_DYLIB ("what does this library call itself"):
 
-<div class="language-bash highlighter-rouge">
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
 <code><span class="gu">otool -L /usr/local/lib/libfluidsynth.dylib</span>
@@ -559,6 +591,7 @@ Earlier we used it to see LC_LOAD_DYLIB ("what libraries does our binary link to
 </code></pre>
   </div>
 </div>
+{:/}
 
 What does this install_name tell us? It means that any object file linking to this dylib, will refer to it as `/usr/local/lib/libfluidsynth.1.7.2.dylib`.
 

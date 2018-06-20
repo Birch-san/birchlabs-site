@@ -294,7 +294,7 @@ type="image/svg+xml"></object>
 </div>
 {:/}
 
-[I automated it](https://github.com/Birch-san/juicysfplugin/blob/f8b354d1585dd2f615f2842079b384fd92c325e3/Builds/MacOSX/relink-build-for-distribution.sh). I am [not the only one](https://github.com/essandess/matryoshka-name-tool).
+[Something like this](https://github.com/Birch-san/juicysfplugin/blob/f8b354d1585dd2f615f2842079b384fd92c325e3/Builds/MacOSX/relink-build-for-distribution.sh). Tedious.
 
  <!-- Others have wondered [the same problem](https://stackoverflow.com/questions/9263256/why-is-install-name-tool-and-otool-necessary-for-mach-o-libraries-in-mac-os-x). -->
 
@@ -415,6 +415,12 @@ Then we configure the juicysfplugin binary to use a "runtime search path" of `@l
 Now fluidsynth is environment-independent and project-independent.
 
 To finish the job: replace all the `@loader_path` links we made earlier (i.e. fluidsynth to its brew dependencies) with @rpath. And (optionally) declare @rpath install_names upon each dylib, to help anybody who links to libraries you ship.
+
+## Generalizing the process
+
+I've captured this whole process into [a bash script](https://gist.github.com/Birch-san/e84cfa3b93ffa104af2bd9a047d14109). You can run `./make_portable.sh mycoolbinary` or `./make_portable.sh libcool.dylib` to make any mach-o object file portable. It follows the dependencies, copies them into a nearby `lib` folder, and relinks everything to use those local libraries.
+
+I am [not the only one](https://github.com/essandess/matryoshka-name-tool) to automate this.
 
 ### Why not use @executable_path?
 

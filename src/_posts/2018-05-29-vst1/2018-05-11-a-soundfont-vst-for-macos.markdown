@@ -235,7 +235,7 @@ type="image/svg+xml"></object>
 </div>
 {:/}
 
-We read the object file again to verify that we successfully relinked:
+Let's read the object file again to verify that we successfully relinked:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -351,15 +351,15 @@ Why does juicysfplugin look for fluidsynth at an environment-specific path, `/us
 It's because of fluidsynth's install_name.
 
 Earlier we used `otool -L` to see "what libraries does this link to".  
-But it also shows us "what's the install_name of this library":
+Here we'll use `otool -D` to see "what's the install_name of this library":
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
 <div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
-<code><span class="gu">otool -L /usr/local/lib/libfluidsynth.dylib</span>
-/usr/local/lib/libfluidsynth.dylib:
+<code><span class="gu">otool -D libfluidsynth.dylib</span>
+libfluidsynth.dylib:
   <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
   …
 </code></pre>
@@ -382,7 +382,7 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 </div>
 {:/}
 
-We no longer need to do any relinking post-build. juicysfplugin will be built with a binary-relative link to fluidsynth.
+We no longer need to relink juicysfplugin post-build; fluidsynth tells consumers to use a binary-relative link.
 
 ### More maintainable convention
 
@@ -390,12 +390,12 @@ Really the libraries shouldn't be responsible for declaring "where will you find
 
 Thankfully there's a way to invert the control.
 
-The library can set an install_name relative to _@rpath_.  
+Libraries may set an install_name relative to _@rpath_.  
 This is a macro, expanded at runtime.
 
-A binary can specify what they want @rpath to expand to, and even specify fallbacks.
+Binaries may specify what they want @rpath to expand to, and even specify fallbacks.
 
-Let's make fluidsynth @rpath-relative:
+Let's make fluidsynth's install_name @rpath-relative:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -413,6 +413,8 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 Then we configure the juicysfplugin binary to use a "runtime search path" of `@loader_path/../lib`. This is an XCode build setting, equivalent to gcc's `-rpath` option.
 
 Now fluidsynth is environment-independent and project-independent.
+
+To finish the job: replace all the `@loader_path` links we made earlier (i.e. fluidsynth to its brew dependencies) with @rpath. And (optionally) declare @rpath install_names upon each dylib, to help anybody who links to libraries you ship.
 
 ### Why not use @executable_path?
 

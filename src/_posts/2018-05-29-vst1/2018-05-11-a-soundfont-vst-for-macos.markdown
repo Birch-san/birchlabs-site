@@ -367,7 +367,10 @@ libfluidsynth.dylib:
 </div>
 {:/}
 
-Let's make a copy of fluidsynth (in `$(PROJECT_DIR)/lib`) with a binary-relative install_name:
+The install_name recommends that consumers of fluidsynth look for a dylib in `/usr/local`.
+
+Let's make a copy of fluidsynth (in `$(PROJECT_DIR)/lib`).  
+Give that copy a binary-relative install_name:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>

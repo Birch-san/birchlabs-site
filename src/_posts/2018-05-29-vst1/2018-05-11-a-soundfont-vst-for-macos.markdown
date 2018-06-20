@@ -22,6 +22,14 @@ author: Alex Birch
     overflow-x: auto;
     overflow-x: overlay;
   }
+
+  .wrap-me div.highlight {
+    background: initial;
+  }
+
+  .wrap-me pre.highlight {
+    display: inline-block;
+  }
   
   $center-col-pad: $md-pad;
   $center-col-max-wid: $large-breakpoint - $center-col-pad * 2;
@@ -67,6 +75,7 @@ author: Alex Birch
   }
   input.toggler#snippetwrap:checked ~ label[for="snippetwrap"] + div.wrap-me pre {
     white-space: pre;
+    overflow: initial;
   }
   input.toggler#snippetwrap:checked ~ label[for="snippetwrap"] {
     background-image: url({{ relative }}glyph_contract.svg);

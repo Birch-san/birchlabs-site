@@ -367,7 +367,7 @@ libfluidsynth.dylib:
 </div>
 {:/}
 
-The install_name recommends that consumers of fluidsynth look for a dylib in `/usr/local`.
+The install_name recommends that consumers of fluidsynth look for a dylib in `/usr/local`. We need to change that recommendation.
 
 Let's make a copy of fluidsynth (in `$(PROJECT_DIR)/lib`).  
 Give that copy a binary-relative install_name:

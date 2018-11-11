@@ -5,4 +5,4 @@ exec docker run -it --rm --init \
 -v "$PWD/src":/srv/jekyll:delegated \
 -v "$PWD/container_gem_cache":/usr/local/bundle:delegated \
 `#-v "$HOME/git/jekyll-postfiles":/jekyll-postfiles:delegated` \
-jekyll/jekyll:3.8.3 bundle
+jekyll/jekyll:3.8.4 bundle

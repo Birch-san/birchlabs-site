@@ -196,7 +196,7 @@ Where does `juicysfplugin.app/Contents/MacOS/juicysfplugin` currently look for l
 <div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
-<code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
+<span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
 juicysfplugin.app/Contents/MacOS/juicysfplugin:
   <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
   …
@@ -342,11 +342,14 @@ juicysfplugin
       libogg
 -->
 
-### Removing the post-build complexity
+### Simplifying the build
 
-Let's avoid redoing work on every build. Our libraries don't change between builds, so we could relink them just once, and save the relinked libraries under version-control.
+We've established that we'll want to have inside our .app: a copy of every .dylib. And we want to rewrite the load commands in every dylib, plus our juicysfplugin binary.
 
-Once we have our relinked libraries saved to `$(PROJECT_DIR)/lib`, we can change our environment-specific `-L/usr/local/lib` library search path to `-L$(PROJECT_DIR)/lib`.
+Our libraries don't change between builds, so if we do the relinking dance just once, we can save those relinked libraries to `$(PROJECT_DIR)/lib`.  
+This is a project-local copy of the dylib, which can be shared via version control.
+
+Next, we change our environment-specific `-L/usr/local/lib` library search path to `-L$(PROJECT_DIR)/lib`.
 
 We attempt a build of juicysfplugin with our new linker flags: `-lfluidsynth -L$(PROJECT_DIR)/lib`.
 
@@ -366,12 +369,10 @@ juicysfplugin.app/Contents/MacOS/juicysfplugin:
 </div>
 {:/}
 
-Why does juicysfplugin _still_ look for fluidsynth under the environment-specific `/usr/local`?
+Why does juicysfplugin _still_ load fluidsynth via the environment-specific `/usr/local`?
 
-It's because of fluidsynth's install_name.
-
-Often we've used `otool -L` to see "what libraries does this link to".  
-Here we'll use `otool -D` to see "what's the install_name of this library":
+It's because of what fluidsynth's install_name was, at the time we linked to it.  
+We can view a dylib's install name with `otool -D`:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -405,7 +406,7 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 </div>
 {:/}
 
-After a rebuild, we see that the linker now writes the correct load command into our binary:
+Next time we build juicysfplugin, we see that the linker now writes the correct load command into our binary:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -431,14 +432,15 @@ But there's an itch remaining.
 
 It's bad that our libraries are responsible for declaring "where can I be found at runtime". This forced us to make a project-specific copy of each library, with baked-in assumptions about juicysfplugin.app's directory layout.
 
-It's preferable to invert the control; the binary, juicysfplugin, should be in charge of "where will libraries be found at runtime".
+It's preferable to invert the control.  
+The binary, juicysfplugin, should be in charge of "where will libraries be found at runtime".
 
 Thankfully, there's a mechanism to accomplish this: @rpath expansion.
 
 Libraries may set an install_name relative to @rpath.  
-This is a macro, which the binary expands at runtime.
+This is a macro, which the _binary_ expands at runtime.
 
-Binaries may specify what they want @rpath to expand to, and may even specify fallbacks.
+Binaries may specify what they want @rpath to expand to (e.g. a 'lib' folder), and may even specify fallbacks.
 
 Let's make fluidsynth's install_name @rpath-relative:
 
@@ -558,6 +560,7 @@ dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 
 The linker provides other `DYLD_PRINT_*` variables, like `DYLD_PRINT_STATISTICS_DETAILS`, `DYLD_PRINT_ENV`, `DYLD_PRINT_OPTS`. I recommend you check them out in `man dyld`. You can see the environment and options with which your process is launched, or read statistics of how it spent its time before calling `main()`.
 
+<!--
 ##### DTrace won't help here
 
 I wanted to trace the dylib lookups using [DTrace](http://dtrace.org/blogs/brendan/2011/10/10/top-10-dtrace-scripts-for-mac-os-x/).:
@@ -582,6 +585,7 @@ syscall::open_extended:entry
 But sadly, dtrace doesn't seem to start tracing until after the process launches. Moreover, we cannot attach to dyld. Not just because of [System Integrity Protection](https://stackoverflow.com/questions/33476432/is-there-a-workaround-for-dtrace-cannot-control-executables-signed-with-restri), but also because dyld is not a user-land process. We do not see it in pgrep or execsnoop.
 
 And all of this is modulated with the fact that dyld has a cache, so it may not hit the filesystem. We can turn this off with `DYLD_SHARED_REGION=avoid`, but passing that environment to the dtrace cmd is difficult; `dtrace -c` is [very broken on macOS](https://8thlight.com/blog/colin-jones/2017/02/02/dtrace-gotchas-on-osx.html).
+-->
 
 ## Alternatives to manually rewriting dynamic links
 
@@ -633,6 +637,7 @@ So, you could provide a folder of libs and instruct the user to add that folder 
 export DYLD_FALLBACK_LIBRARY_PATH="$HOME/Downloads/juicysfplugin/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 ```
 
+<!--
 ### Fix the install name of the dependency before you link to it
 
 When we link against a brew library (`-lfluidsynth -L/usr/local/lib`), why is it that our link is an _absolute path_?
@@ -678,6 +683,7 @@ We can clean this up even further. `@loader_path/../lib/` is too project-specifi
 
 The install_name `@rpath/libfluidsynth.1.7.2.dylib` lets us invert control. Each project that consumes this library can specify a list of rpaths to search. juicysfplugin specifies a runtime search path of `../lib`., so @rpath expands to: `…juicysfplugin.app/Contents/MacOS/../lib/libfluidsynth.1.7.2.dylib`.
 
+-->
 <!--
 https://github.com/conda/conda-build/issues/279
 https://stackoverflow.com/questions/9263256/why-is-install-name-tool-and-otool-necessary-for-mach-o-libraries-in-mac-os-x

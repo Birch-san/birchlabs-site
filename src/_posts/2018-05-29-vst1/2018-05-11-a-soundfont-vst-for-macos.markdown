@@ -498,8 +498,6 @@ I copied `notlibfluidsynth.dylib` into `~/tmp` (a directory I specify as a fallb
     <pre class="highlight">
 <code>DYLD_PRINT_LIBRARIES=1 <span class="se">\</span>
 <span class="k">DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH"</span> <span class="se">\</span>
-<!-- <span class="k">DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:"</span><span class="se">\</span>
-<span class="k">"$DYLD_FALLBACK_LIBRARY_PATH"</span> <span class="se">\</span> -->
 …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 <span class="nb">dyld: loaded: ~/tmp/notlibfluidsynth.dylib</span>

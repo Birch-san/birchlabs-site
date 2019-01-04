@@ -205,7 +205,7 @@ juicysfplugin.app/Contents/MacOS/juicysfplugin:
 </div>
 {:/}
 
-Let's rewrite that link, to search relative to `@loader_path`:
+Let's rewrite the `/usr/local` link, to search relative to `@loader_path`:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -223,6 +223,8 @@ Let's rewrite that link, to search relative to `@loader_path`:
   </div>
 </div>
 {:/}
+
+Our linkage now looks like this:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -342,15 +344,33 @@ juicysfplugin
 
 ### Removing the post-build complexity
 
-The relinked libraries can be version-controlled. The environment-specific `-L/usr/local/lib` library search path can be replaced with `-L$(PROJECT_DIR)/lib`.
+Let's avoid redoing work on every build. Our libraries don't change between builds, so we could relink them just once, and save the relinked libraries under version-control.
 
-But we still rely on our post-build step to relink the juicysfplugin binary.
+Once we have our relinked libraries saved to `$(PROJECT_DIR)/lib`, we can change our environment-specific `-L/usr/local/lib` library search path to `-L$(PROJECT_DIR)/lib`.
 
-Why does juicysfplugin look for fluidsynth at an environment-specific path, `/usr/local/lib/libfluidsynth.1.7.2.dylib`?
+We attempt a build of juicysfplugin with our new linker flags: `-lfluidsynth -L$(PROJECT_DIR)/lib`.
+
+The linker correctly finds our project-local libfluidsynth, and links to it. But what's this?
+
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
+juicysfplugin.app/Contents/MacOS/juicysfplugin:
+  <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
+  …
+</code></pre>
+  </div>
+</div>
+{:/}
+
+Why does juicysfplugin _still_ look for fluidsynth under the environment-specific `/usr/local`?
 
 It's because of fluidsynth's install_name.
 
-Earlier we used `otool -L` to see "what libraries does this link to".  
+Often we've used `otool -L` to see "what libraries does this link to".  
 Here we'll use `otool -D` to see "what's the install_name of this library":
 
 {::nomarkdown}
@@ -367,10 +387,10 @@ libfluidsynth.dylib:
 </div>
 {:/}
 
-The install_name recommends that consumers of fluidsynth look for a dylib in `/usr/local`. We need to change that recommendation.
+The install_name recommends that consumers of libfluidsynth look for a dylib in `/usr/local`. We need to change that recommendation.
 
-Let's make a copy of fluidsynth (in `$(PROJECT_DIR)/lib`).  
-Give that copy a binary-relative install_name:
+Let's edit our project-local copy of libfluidsynth.  
+Give it a binary-relative install_name:
 
 {::nomarkdown}
 <label for="diagramoverflow"></label>
@@ -385,7 +405,7 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 </div>
 {:/}
 
-We no longer need to relink juicysfplugin post-build; fluidsynth tells consumers to use a binary-relative link.
+We no longer need to relink juicysfplugin post-build; libfluidsynth tells consumers to use a binary-relative link.
 
 ### More maintainable convention
 

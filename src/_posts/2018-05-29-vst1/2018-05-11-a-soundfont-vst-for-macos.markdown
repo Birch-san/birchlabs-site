@@ -30,14 +30,15 @@ author: Alex Birch
   $diagram-wider-noscroll: $large-breakpoint + $right-overflow * 2;
   /*$diagram-wider-noscroll: 878px;*/
 
-  .wrap-me div.highlight {
+  .highlighter-rouge div.highlight {
     background: initial;
   }
 
-  .wrap-me pre.highlight {
+  .highlighter-rouge pre.highlight {
     display: inline-block;
     margin-top: 0px;
     min-width: 100%;
+    word-break: break-all;
   }
   
   /* if diagram fits without scrollbar, hide toggles and turn off scrollbar */
@@ -46,11 +47,10 @@ author: Alex Birch
       overflow-x: visible;
     }
     /* if we are in full desktop width, snippet is at planned size, so it has intended wrapping already */
-    div.wrap-me pre {
+    div.highlighter-rouge pre.highlight {
       white-space: pre-wrap !important;
-    }
-    .wrap-me pre.highlight {
       margin-top: $md-pad;
+      word-break: initial;
     }
     label[for="diagramoverflow"] {
       display: none;
@@ -73,7 +73,7 @@ author: Alex Birch
   input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] {
     background-image: url({{ relative }}glyph_contract.svg);
   }
-  input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] + div.wrap-me pre {
+  input.toggler#diagramoverflow:checked ~ label[for="diagramoverflow"] + div.highlighter-rouge pre {
     white-space: pre;
     overflow: initial;
   }
@@ -97,9 +97,9 @@ author: Alex Birch
 {{ blogstyle | scssify }}
 </style>
 
-Soundfonts are great for making music quickly. With no learning or configuration, you can play samples from a variety of instruments and not-instruments.
+Soundfonts are great for making music quickly. With no learning or configuration, you can play samples from a variety of instruments.
 
-I wanted to make soundfont music on FL Studio Mac.
+I wanted to make soundfont music on [FL Studio](https://www.image-line.com/flstudio/) Mac.
 
 There was a nice soundfont plugin for FL Studio Windows, but the (third-party) source code was lost, and would not be ported.  
 
@@ -138,10 +138,10 @@ Additionally, we're given a buffer of MIDI messages each time this happens. In o
   - output param: AudioBuffer
   - must return within ~11.6ms
 2. We send the MidiBuffer to the JUCE Synthesiser (not fluidsynth)
-  - informs each note's "voice" of state changes
+  - updates the state of each 'voice' (for example: release the C key)
   - our voice implementation passes `startNote()`, `stopNote()` to fluidsynth
 3. We ask fluidsynth to output 512 samples of audio into AudioBuffer
-  - fluidsynth has its own clock, so it knows this block starts where the previous one ended
+  - fluidsynth has its own clock, so it knows this block starts where the previous block ended
   - fluidsynth has its own sample rate, which we keep updated
 
 MIDI messages go in. We render the MIDI messages through the fluidsynth synthesiser. Then we output audio.
@@ -498,6 +498,8 @@ I copied `notlibfluidsynth.dylib` into `~/tmp` (a directory I specify as a fallb
     <pre class="highlight">
 <code>DYLD_PRINT_LIBRARIES=1 <span class="se">\</span>
 <span class="k">DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:$DYLD_FALLBACK_LIBRARY_PATH"</span> <span class="se">\</span>
+<!-- <span class="k">DYLD_FALLBACK_LIBRARY_PATH="$HOME/tmp:"</span><span class="se">\</span>
+<span class="k">"$DYLD_FALLBACK_LIBRARY_PATH"</span> <span class="se">\</span> -->
 …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 dyld: loaded: …/juicysfplugin.app/Contents/MacOS/juicysfplugin
 <span class="nb">dyld: loaded: ~/tmp/notlibfluidsynth.dylib</span>
@@ -512,6 +514,9 @@ The linker provides other `DYLD_PRINT_*` variables, like `DYLD_PRINT_STATISTICS_
 
 I wanted to trace the dylib lookups using [DTrace](http://dtrace.org/blogs/brendan/2011/10/10/top-10-dtrace-scripts-for-mac-os-x/).:
 
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+{:/}
 ```bash
 sudo dtrace 2>/dev/null -n '
 // print lookups and opens of filepaths matching "dylib"
@@ -572,6 +577,9 @@ When resolution fails for `/usr/local/Cellar/glib/2.56.1/lib/libglib-2.0.0.dylib
 
 So, you could provide a folder of libs and instruct the user to add that folder to their DYLD_FALLBACK_LIBRARY_PATH.
 
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+{:/}
 ```bash
 # add to your .profile or similar
 export DYLD_FALLBACK_LIBRARY_PATH="$HOME/Downloads/juicysfplugin/lib:$DYLD_FALLBACK_LIBRARY_PATH"

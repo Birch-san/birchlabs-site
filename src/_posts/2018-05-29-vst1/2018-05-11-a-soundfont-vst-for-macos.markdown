@@ -378,7 +378,7 @@ Here we'll use `otool -D` to see "what's the install_name of this library":
 <div class="wrap-me language-bash highlighter-rouge">
   <div class="highlight">
     <pre class="highlight">
-<code><span class="gu">otool -D libfluidsynth.dylib</span>
+<code><span class="gu">otool -D $(PROJECT_DIR)/lib/libfluidsynth.dylib</span>
 libfluidsynth.dylib:
   <span class="err">/usr/local/lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
   …
@@ -405,11 +405,31 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 </div>
 {:/}
 
-We no longer need to relink juicysfplugin post-build; libfluidsynth tells consumers to use a binary-relative link.
+After a rebuild, we see that the linker now writes the correct load command into our binary:
 
-### More maintainable convention
+{::nomarkdown}
+<label for="diagramoverflow"></label>
+<div class="wrap-me language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+<code><span class="gu">otool -L ~/juicysfplugin.app/Contents/MacOS/juicysfplugin</span>
+juicysfplugin.app/Contents/MacOS/juicysfplugin:
+  <span class="nb">@loader_path/../lib/</span><span class="k">libfluidsynth.1.7.2.dylib</span> (compatibility version 1.0.0, current version 1.7.2)
+  …
+</code></pre>
+  </div>
+</div>
+{:/}
 
-Really the libraries shouldn't be responsible for declaring "where will you find me at runtime". This forced us to make a project-specific copy of the library.
+We no longer need to do any post-build relinking of juicysfplugin or its libraries.  
+juicysfplugin links to a project-local libfluidsynth, which has been configured to tell consumers to use a binary-relative link.
+
+### More project-agnostic convention
+
+Our binary-relative link, `@loader_path`, is successful in making our binaries portable. We could even stop here.  
+But there's an itch remaining.
+
+Really the libraries shouldn't be responsible for declaring "where will you find me at runtime". This forced us to make a project-specific copy of the library. We've told our libraries to assume a very specific directory layout inside juicysfplugin.app.
 
 Thankfully there's a way to invert the control.
 
@@ -435,7 +455,7 @@ $(PROJECT_DIR)/lib/libfluidsynth.dylib           <span class="sb">`</span><span 
 
 Then we configure the juicysfplugin binary to use a "runtime search path" of `@loader_path/../lib`. This is an XCode build setting, equivalent to gcc's `-rpath` option.
 
-Now fluidsynth is environment-independent and project-independent.
+Now the libfluidsynth that we saved under `$(PROJECT_DIR)/lib` is environment-independent and project-independent. Other open-source developers may like to grab this portable library and use it in their own project.
 
 To finish the job: replace all the `@loader_path` links we made earlier (i.e. fluidsynth to its brew dependencies) with @rpath. And (optionally) declare @rpath install_names upon each dylib, to help anybody who links to libraries you ship.
 

@@ -9,4 +9,4 @@ exec docker run -it --rm --init \
 -p 8087:4000 \
 -p 35729:35729 \
 -p 3000:3000 \
-jekyll/jekyll:3.8.4 jekyll serve --livereload -d /dist
+jekyll/jekyll:3.8.5 jekyll serve --livereload -d /dist

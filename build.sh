@@ -6,4 +6,4 @@ exec docker run -it --rm --init \
 -v "$PWD/container_gem_cache":/usr/local/bundle:delegated \
 `#-v "$HOME/git/jekyll-postfiles":/jekyll-postfiles:delegated` \
 -v "$PWD/dist":/dist:delegated \
-jekyll/jekyll:3.8.4 jekyll build -d /dist
+jekyll/jekyll:3.8.5 jekyll build -d /dist

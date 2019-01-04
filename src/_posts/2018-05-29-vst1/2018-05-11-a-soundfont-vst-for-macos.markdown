@@ -429,14 +429,16 @@ juicysfplugin links to a project-local libfluidsynth, which has been configured 
 Our binary-relative link, `@loader_path`, is successful in making our binaries portable. We could even stop here.  
 But there's an itch remaining.
 
-Really the libraries shouldn't be responsible for declaring "where will you find me at runtime". This forced us to make a project-specific copy of the library. We've told our libraries to assume a very specific directory layout inside juicysfplugin.app.
+It's bad that our libraries are responsible for declaring "where can I be found at runtime". This forced us to make a project-specific copy of each library, with baked-in assumptions about juicysfplugin.app's directory layout.
 
-Thankfully there's a way to invert the control.
+It's preferable to invert the control; the binary, juicysfplugin, should be in charge of "where will libraries be found at runtime".
 
-Libraries may set an install_name relative to _@rpath_.  
-This is a macro, expanded at runtime.
+Thankfully, there's a mechanism to accomplish this: @rpath expansion.
 
-Binaries may specify what they want @rpath to expand to, and even specify fallbacks.
+Libraries may set an install_name relative to @rpath.  
+This is a macro, which the binary expands at runtime.
+
+Binaries may specify what they want @rpath to expand to, and may even specify fallbacks.
 
 Let's make fluidsynth's install_name @rpath-relative:
 
@@ -461,9 +463,17 @@ To finish the job: replace all the `@loader_path` links we made earlier (i.e. fl
 
 ## Generalizing the process
 
-I've captured this whole process into [a bash script](https://gist.github.com/Birch-san/e84cfa3b93ffa104af2bd9a047d14109). You can run `./make_portable.sh mycoolbinary` or `./make_portable.sh libcool.dylib` to make any mach-o object file portable. It follows the dependencies, copies them into a nearby `lib` folder, and relinks everything to use those local libraries.
+There's some relatable use-cases here:
+
+- You link to some brew-installed library (e.g. libfluidsynth), and want to make a relinked project-local copy of that library
+- You produce some binary (e.g. `juicysfplugin.app/Contents/MacOS/juicysfplugin`), and want to bundle+link libraries into the app, for portable distribution
+
+I've automated both of these use-cases with [this bash script](https://gist.github.com/Birch-san/e84cfa3b93ffa104af2bd9a047d14109).  
+You can run `./make_portable.sh mycoolbinary` or `./make_portable.sh libcool.dylib` to make any mach-o object file portable. It follows the dependencies, copies them into a nearby `lib` folder, and relinks everything to use those local libraries.
 
 I am [not the only one](https://github.com/essandess/matryoshka-name-tool) to automate this.
+
+## Gotchas
 
 ### Why not use @executable_path?
 
@@ -571,7 +581,7 @@ syscall::open_extended:entry
 
 But sadly, dtrace doesn't seem to start tracing until after the process launches. Moreover, we cannot attach to dyld. Not just because of [System Integrity Protection](https://stackoverflow.com/questions/33476432/is-there-a-workaround-for-dtrace-cannot-control-executables-signed-with-restri), but also because dyld is not a user-land process. We do not see it in pgrep or execsnoop.
 
-And all of this is modulated by the fact that dyld has a cache, so it may not hit the filesystem. We can turn this off with `DYLD_SHARED_REGION=avoid`, but passing that environment to the dtrace cmd is difficult; `dtrace -c` is [very broken on macOS](https://8thlight.com/blog/colin-jones/2017/02/02/dtrace-gotchas-on-osx.html).
+And all of this is modulated with the fact that dyld has a cache, so it may not hit the filesystem. We can turn this off with `DYLD_SHARED_REGION=avoid`, but passing that environment to the dtrace cmd is difficult; `dtrace -c` is [very broken on macOS](https://8thlight.com/blog/colin-jones/2017/02/02/dtrace-gotchas-on-osx.html).
 
 ## Alternatives to manually rewriting dynamic links
 

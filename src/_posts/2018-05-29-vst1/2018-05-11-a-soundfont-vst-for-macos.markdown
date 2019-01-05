@@ -62,7 +62,8 @@ author: Alex Birch
   }
   input.toggler ~ label {
     cursor: pointer;
-    background-size: cover;
+    /*background-size: cover;*/
+    font-size: 0.8em;
   }
   /*input.toggler + label:hover {
     text-decoration: underline;
@@ -84,7 +85,7 @@ author: Alex Birch
     background-image: url({{ relative }}glyph_expand.svg);
   }
   input.toggler ~ label:after {
-    content: "    ";
+    content: "     ";
     white-space: pre-wrap;
   }
   /*input.toggler:checked ~ label:after {
@@ -437,10 +438,8 @@ The binary, juicysfplugin, should be in charge of "where will libraries be found
 
 Thankfully, there's a mechanism to accomplish this: @rpath expansion.
 
-Libraries may set an install_name relative to @rpath.  
-This is a macro, which the _binary_ expands at runtime.
-
-Binaries may specify what they want @rpath to expand to (e.g. a 'lib' folder), and may even specify fallbacks.
+Libraries may set an @rpath-relative install_name.  
+Binaries decide at runtime how to expand @rpath, and may even specify fallbacks.
 
 Let's make fluidsynth's install_name @rpath-relative:
 
@@ -461,7 +460,8 @@ Then we configure the juicysfplugin binary to use a "runtime search path" of `@l
 
 Now the libfluidsynth that we saved under `$(PROJECT_DIR)/lib` is environment-independent and project-independent. Other open-source developers may like to grab this portable library and use it in their own project.
 
-To finish the job: replace all the `@loader_path` links we made earlier (i.e. fluidsynth to its brew dependencies) with @rpath. And (optionally) declare @rpath install_names upon each dylib, to help anybody who links to libraries you ship.
+To finish the job: replace all the `@loader_path` links we made earlier (i.e. fluidsynth to its brew dependencies) with @rpath.  
+And (optionally) declare @rpath install_names upon each dylib, to help anybody who links directly to the libraries you ship.
 
 ## Generalizing the process
 
@@ -471,7 +471,8 @@ There's some relatable use-cases here:
 - You produce some binary (e.g. `juicysfplugin.app/Contents/MacOS/juicysfplugin`), and want to bundle+link libraries into the app, for portable distribution
 
 I've automated both of these use-cases with [this bash script](https://gist.github.com/Birch-san/e84cfa3b93ffa104af2bd9a047d14109).  
-You can run `./make_portable.sh mycoolbinary` or `./make_portable.sh libcool.dylib` to make any mach-o object file portable. It follows the dependencies, copies them into a nearby `lib` folder, and relinks everything to use those local libraries.
+Run `./make_portable.sh mycoolbinary` or `./make_portable.sh libcool.dylib` to make any mach-o object file portable.  
+It follows the dependencies, copies them into a nearby `lib` folder, and relinks everything to use those local libraries.
 
 I am [not the only one](https://github.com/essandess/matryoshka-name-tool) to automate this.
 

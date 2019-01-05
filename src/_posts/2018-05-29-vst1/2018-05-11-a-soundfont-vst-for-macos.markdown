@@ -476,18 +476,18 @@ It follows the dependencies, copies them into a nearby `lib` folder, and relinks
 
 I am [not the only one](https://github.com/essandess/matryoshka-name-tool) to automate this.
 
-## Gotchas
+## Further hints
 
 ### Why not use @executable_path?
 
 We output a variety of build targets. In the standalone juicysfplugin.app, @loader_path and @executable_path are the same thing.
 
-The plugin targets (VST, VST3, AU) are designed to be hosted inside a different executable (e.g. Garageband, FL Studio).  
+The plugin targets (VST, VST3, AU), however, are designed to be hosted inside a different executable (e.g. Garageband, FL Studio).  
 Here @executable_path points to the plugin host (Garageband.app/Contents/MacOS), which is not what we want.
 
 We want to load libraries relative to the binary which contains the load command. Hence @loader_path is necessary.
 
-### Don't mess up
+### install_name_tool gotchas
 
 When relinking a library with `install_name_tool [-change old new] file`, beware: you must match **exactly**.
 
@@ -611,13 +611,13 @@ That said, static linking is fiddly. You would compile the source of libfluidsyn
 
 The problem is the "and so on". Eventually there's a dependency in the tree which **cannot be statically linked**. macOS [does not provide static versions of libSystem.dylib](https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x#846194). GNU libc [is not designed to be statically linked](https://stackoverflow.com/a/26306630/5257399).
 
-Mercifully, the user is guaranteed to have system libraries, so we can link to those dynamically. But for anything else: we would have to change the way we build objects in libfluidsynth.a (i.e. omit unused dependencies, or configure alternatives which can be statically linked).
+Mercifully, the user is guaranteed to have system libraries, so we can link to those dynamically. But for anything else: we would have to change the way we build objects in libfluidsynth.a (i.e. omit unused dependencies, use alternative libraries which can be statically linked, or use a mixture of static/dynamic linking).
 
 Supposing you succeed, you still have a new problem: licensing. By statically linking, you've created a derivative work in your name, instead of distributing the original artefact.  
 If you statically link to a GPL library, you must release under GPL license: the source for both your work and the library. Statically linking to LGPL: you may instead release just the compiled object code for your work.  
 Note: I am not a lawyer, and I inferred the above from [this discussion](https://stackoverflow.com/questions/10130143/gpl-lgpl-and-static-linking).
 
-### Provide a runtime fallback for dynamic linking
+### Reconfigure the runtime linker
 
 Don't actually do this, but you can abuse the dynamic linker, [dyld](https://www.unix.com/man-page/osx/1/dyld/).
 
@@ -637,6 +637,12 @@ So, you could provide a folder of libs and instruct the user to add that folder 
 # add to your .profile or similar
 export DYLD_FALLBACK_LIBRARY_PATH="$HOME/Downloads/juicysfplugin/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 ```
+
+This isn't very deterministic though. Our bundled libraries would only be used as a last resort.
+
+More prescriptive is to use `DYLD_INSERT_LIBRARIES`. This has higher precedence; the bundled libraries are checked as a _first_ resort.
+
+
 
 <!--
 ### Fix the install name of the dependency before you link to it
@@ -697,11 +703,24 @@ https://stackoverflow.com/questions/194485/how-do-i-create-a-dynamic-library-dyl
 
 ## Reflection
 
-Maybe there's a more idiomatic way to do this. But I've seen [others](https://stackoverflow.com/questions/17535604/deploying-cocoa-application-and-its-c-dylib-how-to-pack-them) do [the same](https://stackoverflow.com/questions/637081/how-can-i-link-a-dynamic-library-in-xcode).
+It was fun to deep-dive into dynamic linking. The non-intuitive bits were:
 
-I get the impression that "bundling software for distribution" is not well-supported on macOS.
+- install_name_tool has a bad API for rewriting links
+  - To rewrite a link: you must state the current link's fully-qualified path
+  - I would rather specify the library's leaf name
+- The linker writes load commands based on a library's install_name
+  - My intuition was that it'd use the current filesystem path of the library
+- `otool -L` has a weird output format
+  - various load commands are displayed, but their 'type' is hidden
+  - `otool -l` is more specific, but hard to parse
+- @rpath expansion seems far more sane than distributing project-specific libraries, but it is underused
 
+I'm surprised by how fiddly this was. I'd thought software bundling would be a really solved problem on macOS. The .app format is a nice attempt at making applications portable, but the dream falls flat if dynamic linking is difficult.
 
+The Windows version of juicysfplugin was far easier to link. If the library is not found in the primary location, the runtime linker will search for it in a few fallback directories. These are pretty convenient; you can place the .dll alongside your application, or into the system folder (an installer can help with this).
 
+It would be nice if Brew libraries were built with @rpath-relative install_names. For my application, this would've removed any need for relinking. But redistributability of libraries requires [solving more problems than just linking](https://github.com/Homebrew/brew/issues/4371). And if you distribute your own software via the brew ecosystem, then library paths are well-known anyway.
 
+Still, the journey was educational. The concepts are transferable (it's helped me resolve linking problems on Linux), but I can see that there are ecosystems (JVM, NodeJS) that have a totally different approach to libraries. A developer could build a career on JVM/JS and never have to battle with native code linking. Docker is another way to solve the portability problem for native code, since it gives you a reproducible environment.
 
+I feel like native code linking is in danger of becoming a lost art, but at the same time I have confidence that WebAssembly (which enables native code to target the browser) and GraalVM (which enables LLVM-compatible source code to target the JVM) will generate new interest.

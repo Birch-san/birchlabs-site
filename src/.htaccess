@@ -14,6 +14,16 @@ Header set Cache-Control "max-age=172800, public"
 Header set Cache-Control "max-age=600, public"
 </filesMatch>
 
+# spare webserver from having to compress .wasm every time
+# strip .gz from .wasm.gz
+Options +Multiviews
+RemoveType .gz
+AddEncoding x-gzip .gz
+
+# set MIME type for WebAssembly
+# https://kripken.github.io/emscripten-site/docs/compiling/WebAssembly.html#web-server-setup
+AddType application/wasm .wasm
+
 # Compression:
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html
@@ -34,6 +44,7 @@ Header set Cache-Control "max-age=600, public"
   AddOutputFilterByType DEFLATE application/x-font-otf
   AddOutputFilterByType DEFLATE application/x-font-opentype
   AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+  AddOutputFilterByType DEFLATE application/wasm
   AddOutputFilterByType DEFLATE font/ttf
   AddOutputFilterByType DEFLATE font/otf
   AddOutputFilterByType DEFLATE font/opentype

@@ -23,8 +23,8 @@ AddEncoding x-gzip .gz
 # set MIME type for WebAssembly
 # https://kripken.github.io/emscripten-site/docs/compiling/WebAssembly.html#web-server-setup
 AddType application/wasm .wasm
-# go with format detected by file --mime-type -b
-AddType text/plain .data
+# https://kripken.github.io/emscripten-site/docs/compiling/Deploying-Pages.html
+AddType application/octet-stream .data
 
 # Compression:
 <IfModule mod_deflate.c>

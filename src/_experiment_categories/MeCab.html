@@ -10,19 +10,14 @@ img_alt: "MeCab cross-compilation to WebAssembly"
 ---
 
 <p>
-  <a href="http://taku910.github.io/mecab/">MeCab</a> is a Part-of-Speech and Morphological Analyzer for the Japanese language.
+  <a href="http://taku910.github.io/mecab/">MeCab</a> is a Part-of-Speech and Morphological Analyzer for the Japanese language.<br>
+  This experiment uses MeCab (and other language technologies) to make it easier to read Japanese, by adding adding spaces and phonetics.
 </p>
 <p>
-  Originally written in C++, here I have used <a href="https://github.com/kripken/emscripten">Emscripten</a> and <a href="https://github.com/WebAssembly/binaryen">Binaryen</a> to compile it to WebAssembly. This webpage acquires and executes a .wasm binary.
-</p>
-<p>
+  Originally written in C++, here I have used <a href="http://emscripten.org/">Emscripten</a> to compile MeCab to <em>WebAssembly</em>.<br>
   WebAssembly is a low-level assembly-like language for web browsers. It parses faster than JavaScript.
 </p>
-<p>
-  I built this before WebAssembly stabilised. <strong>It does not work in current implementations of WebAssembly</strong>.
 </p>
-	
-</p>
-	<a href="https://github.com/Birch-san/mecab-wasm">GitHub</a><br>
-	<a href="{{ "/wasm/index.html" | relative_url }}">Demo</a>
+	<a href="https://github.com/Birch-san/mecab">GitHub</a><br>
+	<a href="{{ "/mecab-web/index.html" | relative_url }}">Demo</a>
 </p>

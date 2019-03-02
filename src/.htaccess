@@ -26,6 +26,11 @@ AddType application/wasm .wasm
 # https://kripken.github.io/emscripten-site/docs/compiling/Deploying-Pages.html
 AddType application/octet-stream .data
 
+# edict2 distribution
+AddCharset EUC-JP .eucjp.txt
+AddCharset UTF-8 .utf8.txt
+AddCharset UTF-16LE .utf16le.txt
+
 # Compression:
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html

@@ -1,0 +1,20 @@
+---
+layout: none
+name: "Lunar Survey"
+supertitle: "Lunar Survey"
+title: ""
+category_ix: -3
+has_content: true
+img_path: "lunar-survey.gif"
+img_alt: "Lunar Survey"
+---
+
+<p>Explore a fruity galaxy. Try to reach escape velocity. Powered by <a href="#box2d-in-webassembly">box2d-wasm</a>.</p>
+<p>This is a maturation of the <a href="#orbit">Orbit</a> experiment below. I wanted to implement it with a full physics engine. Now you can bounce, accelerate, and somersault. You can orbit a planet, and &mdash; if you can overcome <em>drag</em> &mdash; escape gravity's pull altogether.</p>
+<p>I also wanted to model dynamic gravity in more detail. There are 3 types of gravitational field: circular, rectangular, and Bézier (a curve where you will be pulled toward the closest point). All will pull you according to inverse-square law. Circular fields sum together (which makes for a smooth transition between planets).</p>
+<p>For the keyboard controls to make sense, I needed a standard orientation. The controls align with the direction of gravity, and so too does the camera. Eased camera rotation was difficult to calculate (handling the transition from positive to negative radians).</p>
+<p>Converting between coordinate systems was a challenge &mdash; the mouse's position is given in pixels, but you point at a rotated, scaled, translated canvas… at a game world measured in metres.</p>
+
+</p>
+  <a href="https://birchlabs.co.uk/lunar-survey/">Play</a>
+</p>

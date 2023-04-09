@@ -2,7 +2,7 @@
 layout: none
 category: "Research"
 within_category_ix: 0
-title:  "Dynamic thresholding in latent space"
+title:  "Dynamic thresholding latents"
 ---
 
 <details>
@@ -20,7 +20,7 @@ title:  "Dynamic thresholding in latent space"
   <p>
     <strong>Imagen-style thresholding, enabled if latent values exceed arbitrary upper-limit.</strong><br>
     We unscale each latent channel (÷0.18215), center each channel on its mean. If any channel has a max exceeding 42: threshold by 99.95%.<br>
-    This is effective because it tames high/mid sigmas, and ceases once we're past the most of the danger zone (CFG seems to do most of its damage at the start of the schedule — perhaps this indicates that cond and uncond denoising predictions only agree later in the schedule, as noise is removed).<br>We also avoid clamping as aggressively as ±1 (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
+    This is effective because it tames high/mid sigmas, and ceases once we're past the most of the danger zone (<abbr title="classifier-free guidance">CFG</abbr> seems to do most of its damage at the start of the schedule — perhaps this indicates that cond and uncond denoising predictions only agree later in the schedule, as noise is removed).<br>We also avoid clamping as aggressively as ±1 (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
   </p>
   <ul>
     <li>Original <a href="https://twitter.com/Birchlabs/status/1582165379832348672">Twitter thread</a></li>
@@ -31,8 +31,8 @@ title:  "Dynamic thresholding in latent space"
 <details>
   <summary>Heuristic scaling (compare n%ile with known-good n%ile)</summary>
   <p>
-    <strong>Refer to known-good CFG, scale latents in ratio between our 99.95%iles</strong><br>
-    We compute a known-good (CFG7.5) output, center channels on means, measure their 99.95%ile latent values. We do the same for our desired (CFG20) output. We divide CFG20's output by the ratio between those 99.95%ile results.<br>We do not apply Imagen-style clamping (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
+    <strong>Refer to known-good <abbr title="classifier-free guidance">CFG</abbr>, scale latents in ratio between our 99.95%iles</strong><br>
+    We compute a known-good (<abbr title="classifier-free guidance">CFG</abbr>7.5) output, center channels on means, measure their 99.95%ile latent values. We do the same for our desired (<abbr title="classifier-free guidance">CFG</abbr>20) output. We divide <abbr title="classifier-free guidance">CFG</abbr>20's output by the ratio between those 99.95%ile results.<br>We do not apply Imagen-style clamping (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
   </p>
   <ul>
     <li>Original <a href="https://twitter.com/Birchlabs/status/1583984004864172032">Twitter thread</a></li>
@@ -53,11 +53,11 @@ title:  "Dynamic thresholding in latent space"
 </details>
 
 <details>
-  <summary>Threshold in pixel space via VAE roundtrip</summary>
+  <summary>Threshold in pixel space via <abbr title="variational autoencoder">VAE</abbr> roundtrip</summary>
   <p>
     <strong>Decode latents to pixel-space, threshold Imagen-style</strong><br>
-    Every sampling step: we decode the latents to pixels via VAE, dynthresh them Imagen-style, then re-encode back to latents.<br>
-    Results in a good dynamic range, but the VAE round-trips are lossy, slow and introduce colour-banding.<br>Could still make sense to do this at the <em>start</em> of the denoising schedule though (combat the worst of the CFG, then resume as normal to fill in final details).
+    Every sampling step: we decode the latents to pixels via <abbr title="variational autoencoder">VAE</abbr>, dynthresh them Imagen-style, then re-encode back to latents.<br>
+    Results in a good dynamic range, but the <abbr title="variational autoencoder">VAE</abbr> round-trips are lossy, slow and introduce colour-banding.<br>Could still make sense to do this at the <em>start</em> of the denoising schedule though (combat the worst of the <abbr title="classifier-free guidance">CFG</abbr>, then resume as normal to fill in final details).
   </p>
   <ul>
     <li>Original <a href="https://twitter.com/Birchlabs/status/1578542324350521344">Twitter thread</a></li>
@@ -70,7 +70,7 @@ title:  "Dynamic thresholding in latent space"
   <summary>Threshold in pixel space, backprop difference</summary>
   <p>
     <strong>Decode latents, threshold pixels, compare pixels, guide by backprop difference</strong><br>
-    Similar idea to CLIP guidance. We decode latents to pixels via VAE, dynthresh them Imagen-style. But we don't want to re-encode them (previous technique showed us that VAE roundtrips are lossy). So we compare the unthresholded pixels with our thresholded pixels, compute MSE loss, compute <em>gradient</em> of loss, then apply that difference (scaled by a learning rate) to our original latents.<br>
+    Similar idea to CLIP guidance. We decode latents to pixels via <abbr title="variational autoencoder">VAE</abbr>, dynthresh them Imagen-style. But we don't want to re-encode them (previous technique showed us that <abbr title="variational autoencoder">VAE</abbr> roundtrips are lossy). So we compare the unthresholded pixels with our thresholded pixels, compute MSE loss, compute <em>gradient</em> of loss, then apply that difference (scaled by a learning rate) to our original latents.<br>
     Results weren't super. Was pretty fiddly, and very few ranges of values did anything other than producing more artifacts.
   </p>
   <ul>
@@ -80,10 +80,10 @@ title:  "Dynamic thresholding in latent space"
 </details>
 
 <details>
-  <summary>Threshold in pixel space via approx VAE roundtrip</summary>
+  <summary>Threshold in pixel space via approx <abbr title="variational autoencoder">VAE</abbr> roundtrip</summary>
   <p>
     <strong>Decode latents <em>approximately</em> to pixel-space, threshold Imagen-style</strong><br>
-    Addresses the performance issue of doing a full VAE roundtrip, by distilling a fast encoder and decoder (just a couple of dense layers trained on real VAE inputs/outputs).<br>The approx VAE suffices to do color-space conversion between latents to pixels. It doesn't perform any resampling, which I hoped could help make the roundtrip less lossy.<br>Ultimately it turned out that the approx VAE was too lossy to use on the entire denoising schedule, but we can combat the worst effects of CFG by dynthreshing during high/mid sigmas, then resume without dynthresh to preserve high-frequency details.
+    Addresses the performance issue of doing a full <abbr title="variational autoencoder">VAE</abbr> roundtrip, by distilling a fast encoder and decoder (just a couple of dense layers trained on real <abbr title="variational autoencoder">VAE</abbr> inputs/outputs).<br>The approx <abbr title="variational autoencoder">VAE</abbr> suffices to do color-space conversion between latents to pixels. It doesn't perform any resampling, which I hoped could help make the roundtrip less lossy.<br>Ultimately it turned out that the approx <abbr title="variational autoencoder">VAE</abbr> was too lossy to use on the entire denoising schedule, but we can combat the worst effects of <abbr title="classifier-free guidance">CFG</abbr> by dynthreshing during high/mid sigmas, then resume without dynthresh to preserve high-frequency details.
   </p>
   <ul>
     <li>Original <a href="https://twitter.com/Birchlabs/status/1640820343924314114">Twitter thread</a></li>

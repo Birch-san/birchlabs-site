@@ -5,4 +5,30 @@ within_category_ix: 10
 title:  "Multi-cond guidance"
 ---
 
-CFG is a special case of multi-cond guidance
+<p>
+  I independently discovered <a href="https://energy-based-model.github.io/Compositional-Visual-Generation-with-Composable-Diffusion-Models/">Composable Diffusion</a>, and the idea that classifier-free guidance is a <a href="https://twitter.com/Birchlabs/status/1627286152087478272">special case of a wider concept</a> (mixing multiple diffusion predictions).
+</p>
+<p>
+  <a href="https://arxiv.org/abs/2207.12598">Classifier-free guidance</a> shows we can take a weighted mix of denoising predictions (cond and uncond). I took this idea further by mixing <em>multiple</em> conditions.<br>
+</p>
+<p>
+  I took the concept further by playing with the ability to tweak the weighting of each denoising prediction. This unlocked a novel way to transition between conditions. Animated, it looks similar to a latent walk but it is a visual rather than semantic traversal.
+</p>
+Animations:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1627382040730501120">High-fidelity Touhou Project character cycle</a></li>
+<li><a href="https://twitter.com/Birchlabs/status/1576693919667998722">Touhou Project character cycle</a></li>
+<li><a href="https://twitter.com/Birchlabs/status/1576698050667765760">Marisa/Reimu character cycle</a></li>
+<li><a href="https://twitter.com/Birchlabs/status/1571623902924734465">Wanderer to vaporwave</a></li>
+<li><a href="https://twitter.com/Birchlabs/status/1571629448708898817">Face transitions</a></li>
+</ul>
+Stills:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1567665555313672197">De-impressionism of Starry Night</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1567676949677457411">Starry Night as an ukiyo-e</a></li>
+</ul>
+Meta:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1627286152087478272"><abbr title="classifier-free guidance">CFG</abbr> as a special case of Multi-cond guidance</a></li>
+  <li><a href="https://github.com/Birch-san/stable-diffusion/blob/693c8a336aa3453d30ce403f48eb545689a679e5/scripts/txt2img_fork.py#L62-L81">Implementation</a></li>
+</ul>

@@ -7,6 +7,7 @@
 	{{ include.supertitle }}
 	<small>{{ include.title }}</small>
 </{{ include.heading_level }}>
+{% if include.img_path %}
 <aside>
 	{% assign src = "/assets/" | append: project.assets_subdir | append: "/" | append: include.img_path | relative_url %}
 	{% assign alt = include.supertitle | default:include.title %}
@@ -22,6 +23,9 @@
 	class="jsonly"
 	{% if include.img_id %}id="{{ include.img_id }}"{% endif %}>
 </aside>
+<article class="has-aside">
+{% else %}
 <article>
+{% endif %}
 {{ include.content }}
 </article>

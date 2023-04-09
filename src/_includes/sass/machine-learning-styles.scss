@@ -1,0 +1,26 @@
+// @import 'birchlabs/details';
+
+// details {
+//   margin-left: -1.25em;
+// }
+
+details > summary {
+  cursor: pointer;
+  // font-style: italic;
+  list-style-type: "[+] ";
+  user-select: none;
+}
+
+details[open] > summary {
+  list-style-type: "[−] ";
+  margin-bottom: 0;
+}
+
+details > summary::marker {
+  font-style: initial;
+}
+
+details > p {
+  margin-left: 1.25em;
+  background-color: ghostwhite;
+}

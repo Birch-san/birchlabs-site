@@ -29,7 +29,7 @@ footer a {
       // display: block;
       // width: 100%
     }
-    article {
+    article.has-aside {
       float: left;
       max-width: calc(60% - 1rem);
       // clear: left;
@@ -101,4 +101,8 @@ nav > ul {
   //   margin-right: 0em;
   // }
   // justify-content: 
+}
+
+summary {
+  display: list-item;
 }

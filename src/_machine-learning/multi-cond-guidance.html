@@ -1,15 +1,13 @@
 ---
 layout: none
 category: "Research"
-within_category_ix: 10
+within_category_ix: 0
 title:  "Multi-cond guidance"
 ---
 
 <p>
-  I independently discovered <a href="https://energy-based-model.github.io/Compositional-Visual-Generation-with-Composable-Diffusion-Models/">Composable Diffusion</a>, and the idea that classifier-free guidance is a <a href="https://twitter.com/Birchlabs/status/1627286152087478272">special case of a wider concept</a> (mixing multiple diffusion predictions).
-</p>
-<p>
-  <a href="https://arxiv.org/abs/2207.12598">Classifier-free guidance</a> shows we can take a weighted mix of denoising predictions (cond and uncond). I took this idea further by mixing <em>multiple</em> conditions.<br>
+  Can we mix <em>multiple</em> denoising predictions? <a href="https://arxiv.org/abs/2207.12598">Classifier-free guidance</a> shows that we can mix a cond and uncond.<br>
+  I tried mixing multiple conditions and even negating them — it turns out I had independently discovered <a href="https://energy-based-model.github.io/Compositional-Visual-Generation-with-Composable-Diffusion-Models/">Composable Diffusion</a>.
 </p>
 <p>
   I took the concept further by playing with the ability to tweak the weighting of each denoising prediction. This unlocked a novel way to transition between conditions. Animated, it looks similar to a latent walk but it is a visual rather than semantic traversal.

@@ -5,4 +5,17 @@ within_category_ix: 50
 title:  "Diffusion sampling in 4 steps"
 ---
 
-through hand-picked sigmas
+<p>
+  Inferencing from diffusion models is slow on Mac, so I was keen to cut down the number of steps required for sampling.
+</p>
+<p>
+  Facial details are found at about sigma 0.1. If we are rationing steps, then it <a href="https://github.com/crowsonkb/k-diffusion/pull/23">suffices to end our denoising schedule here</a>, rather than going all the way down to stable-diffusion's minimum of 0.0292.
+</p>
+<p>I managed some 4-step samples as well; hand-picked sigmas were able to get better results than the Karras schedule, by optimizing for where the timesteps the Unet was most effective at.<br>
+I wonder whether the yield could be made more consistent by training an <a href="https://arxiv.org/abs/2211.01324">ensemble of expert denoisers</a>, specialized at each of those 4 sigmas!</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1564792349221330944">7-step Heun/Karras sample by elevating <code>sigma_min</code></a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1564792349221330944">5-step DPM-Solver++(2M)/Karras sample by bending rho and limiting <code>sigma_{max,min}</code></a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1614794909717876736">Hi-res 5-step DPM-Solver++(2M)/Karras sample by bending rho and limiting <code>sigma_{max,min}</code></a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1597393825261301760">4-step DPM-Solver++(2M) sample via hand-picked sigma schedule</a></li>
+</ul>

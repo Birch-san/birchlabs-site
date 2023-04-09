@@ -1,6 +1,16 @@
 ---
 layout: none
 category: "Research"
-within_category_ix: 30
+within_category_ix: 5
 title:  "VAE distillation"
 ---
+
+<p>Stable-diffusion's latents can — to a good approximation — be decoded to RGB using a <a href="https://discuss.huggingface.co/t/decoding-latents-to-rgb-without-upscaling/23204">simple matrix multiplication</a>.</p>
+<p>I took further keturn's idea of "approximate decoding", and erucipe's idea of "learning from blue loss" by training with more discerning loss functions on a larger dataset, and making the network slightly deeper.</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1604661680142553088">Twitter: Linear-layer decoder with L1 loss</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1604977035868266497">Twitter: Approx decode creates great pixel art</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1638680623110864898">Twitter: Linear-layer decoder with L2 loss + bias</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1640824768415842304">Twitter: 3-layer decoder with L2 loss</a></li>
+  <li><a href="https://github.com/Birch-san/diffusers-play/blob/better-decoder/scripts/decode.py">Decoder trainer</a></li>
+</ul>

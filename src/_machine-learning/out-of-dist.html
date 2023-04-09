@@ -4,3 +4,13 @@ category: "Research"
 within_category_ix: 60
 title:  "Out-of-distribution generation"
 ---
+
+<p>Stable-diffusion is poor at generating images smaller or larger than those in its training distribution. I wondered how much of that could be attributed to the <a href="https://github.com/lllyasviel/ControlNet/discussions/12">impact of an unexpected key length</a> on self-attention's softmax averaging.</p>
+<p>My hypothesis was that if we could adjust the magnitude of the softmax denominator to be in-distribution: we may be able to correctly generate images at out-of-distribution sizes without retraining.</p>
+<p>If our image is too small: our self-attention key length will be small, our softmax denominator will be small, our attention probabilities will be large. Vice-versa for "too large".</p>
+<p>Can we bring a larger-than-usual image into distribution by computing softmax denominator from a subset of attention scores?<br>Can we bring a smaller-than-usual image into distribution by extrapolating "more attention scores" in our denominator by sampling from those available?</p>
+<p>This was a research collaboration I pursued with Kharr and tpapp157 at <a href="https://www.eleuther.ai/">EleutherAI</a>. I am currently writing up our findings, to publish as an EleutherAI blog post.</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1642680652377075712">Fixing a smaller-than-usual image by subtracting representative attention scores from denominator</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1643020670912045057">Fixing a larger-than-usual image by computing denominator from topk attention scores</a></li>
+</ul>

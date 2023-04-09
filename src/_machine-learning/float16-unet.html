@@ -6,5 +6,14 @@ title:  "Denoise in fp16, sample in fp32"
 ---
 
 <p>
-  Why hello there
+  A float16 Unet can produce samples competitive with those from a float32 Unet. So long as we <strong>sample</strong> in float32.
+</p>
+<p>
+  Everything inside the Unet (except computing timestep embedding) can be float16. Everything outside (e.g. noised latents, k-diffusion sampling) should be float32.
+</p>
+<p>
+  Tero Karras even <a href="https://github.com/NVlabs/edm/blob/b2a26c921c5776cb52f7498248761d60649007a8/generate.py#L50">samples in float64!</a>
+</p>
+<p>
+  Thanks to marunine from LAION for this idea.
 </p>

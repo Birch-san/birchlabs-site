@@ -15,6 +15,9 @@ title:  "Fusing attention scaling"
   The einsum can be <a href="https://github.com/huggingface/diffusers/commit/5adb0a7bf7fee1732f307dfda9013bf2cf7b0ff9">reformulated as a batched matmul</a>, and scale factors can be fused into the matmul by expressing it as a <a href="https://github.com/huggingface/diffusers/pull/371"><code>baddbmm</code></a>. We can even fuse <a href="https://github.com/huggingface/diffusers/issues/1891">the addition of attention bias</a> whilst we're at it.
 </p>
 <p>
+  Thanks to Patil Suraj for showing how to reformulate the attention einsums as matmuls, and to Nouamane Tazi for showing how to fuse scale factors into matmuls.
+</p>
+<p>
   The significance for CUDA users is lessened now that Flash Attention is widely available. But this remains a welcome speedup on Mac.
 </p>
 <p>

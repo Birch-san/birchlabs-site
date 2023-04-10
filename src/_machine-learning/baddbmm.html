@@ -5,6 +5,14 @@ within_category_ix: 0
 title:  "Fusing attention scaling"
 ---
 
+<figure class="center-fig article-fig">
+  <a href="/assets/machine-learning/baddbmm/diff.jpg">
+    <!-- nominally 1294x678 -->
+    <img src="/assets/machine-learning/baddbmm/diff.jpg" width="647px" height="339px" loading="lazy">
+  </a>
+  <figcaption>Swapping einsums for batched matmuls with fused scaling</figcaption>
+</figure>
+
 <p>
   With a two-line change: I made stable-diffusion 19% faster on Mac (and up to 12% faster on CUDA).
 </p>

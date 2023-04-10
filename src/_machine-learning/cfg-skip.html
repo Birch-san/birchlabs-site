@@ -5,6 +5,32 @@ within_category_ix: 70
 title:  "When to skip CFG for speedup"
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Full CFG</th>
+        <th>Partial CFG</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/cfg-skip/usual.png">
+            <img src="/assets/machine-learning/cfg-skip/usual.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/cfg-skip/skipped.png">
+            <img src="/assets/machine-learning/cfg-skip/skipped.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Skipping CFG for half the denoising schedule saves compute, and image looks similar</figcaption>
+</figure>
+
 <p>
   <abbr title="classifier-free guidance">CFG</abbr> isn't free. It doubles our batch size. Yet we rely on it for generating relevant images.<br>
   Do we need <abbr title="classifier-free guidance">CFG</abbr> for the entire denoising schedule though?
@@ -13,7 +39,8 @@ title:  "When to skip CFG for speedup"
   I hypothesize that we only need <abbr title="classifier-free guidance">CFG</abbr> for establishing the composition. Denoising a highly-noised image is a different problem (detail invention) to denoising a lightly-noised image (gap-filling). Perhaps a gap-filling problem is easy enough that we can make a correct denoising prediction without the help of <abbr title="classifier-free guidance">CFG</abbr>?
 </p>
 <p>
-  I found that we could turn off <abbr title="classifier-free guidance">CFG</abbr> for the second half of the denoising schedule (sigmas below 1.1), and get approximately the same picture.<br>This <strong>sped up image generation by 21%</strong>, and is <strong>applicable to any diffusion model</strong>.
+  I found that we could turn off <abbr title="classifier-free guidance">CFG</abbr> for the second half of the denoising schedule (sigmas below 1.1), and get approximately the same picture.<br>This <strong>sped up image generation by 21%</strong>, and is <strong>applicable to any diffusion model</strong>.<br>
+  The reason it saves so much compute, is because it effectively halves the batch size for half of the denoising process.
 </p>
 <p>
   I had originally hoped that for low-sigma denoising we could turn off both self-attention and cross-attention, and regard it as a gap-filling problem for convolutions to solve. I wasn't able to remove attention from stable-diffusion without adverse effect. But perhaps an <a href="https://arxiv.org/abs/2211.01324">ensemble of expert denoisers</a> could include a fine-detail expert for low sigmas, which operates without attention (e.g. <a href="https://github.com/dome272/Paella">Paella</a>).

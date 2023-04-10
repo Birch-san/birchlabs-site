@@ -5,6 +5,32 @@ within_category_ix: 40
 title:  "Reporting bugs with ML on Mac"
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>PyTorch MPS bug</th>
+        <th>Expected image</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/bug-reports/tensor-striding.png">
+            <img src="/assets/machine-learning/bug-reports/tensor-striding.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/bug-reports/happy-fumo.png">
+            <img src="/assets/machine-learning/bug-reports/happy-fumo.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>PyTorch's MPS backend encounters tensor striding issues in all sorts of places</figcaption>
+</figure>
+
 <p>
   I started my machine learning journey on an M1 Max. The 64GB of unified memory is useful, but performance and software support are far away from what CUDA offers.
 </p>

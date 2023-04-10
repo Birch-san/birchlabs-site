@@ -9,7 +9,7 @@ title:  "Attention fast-paths"
   There is an optimization employed by PyTorch's <code>torch.nn.MultiheadAttention</code>, which has not made it into diffusers' or CompVis's attention implementations.
 </p>
 <p>
-  `q_proj`, `k_proj` and `v_proj` are computed separately. but if their weights were concatenated: it would be possible to perform q,k,v projections simultaneously for self-attention, or q and kv for cross-attention.
+  <code>q_proj</code>, <code>k_proj</code> and <code>v_proj</code> are computed separately. but if their weights were concatenated: it would be possible to perform q,k,v projections simultaneously for self-attention, or q and kv for cross-attention.
 </p>
 <p>
   On M1 Max, this didn't result in any measurable difference. Mac performance varies a lot with system temperature, and there are not profiling tools for PyTorch MPS backend, which makes it hard to benchmark small phenomena.

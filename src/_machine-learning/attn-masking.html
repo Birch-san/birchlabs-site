@@ -4,3 +4,22 @@ category: "Technique Implementations"
 within_category_ix: 30
 title:  "Attention masking"
 ---
+
+<p>
+  <a href="https://arxiv.org/abs/1706.03762">Attention</a> supports an optional bias parameter. Most often, it's used as a mask (applying a highly negative bias to attention scores at given indices).<br>The mask can (e.g. in language models) be a "causal" mask (hide future information in the sequence). It can also be used to hide padding tokens when data of varying sequence lengths have to coexist in the same batch.
+</p>
+<p>
+  I wondered what would happen if we conditioned stable-diffusion on a <a href="https://arxiv.org/abs/2103.00020"><abbr title="Contrastive Language–Image Pre-training">CLIP</abbr></a> embedding with most of its tokens masked-out.<br>
+  <a href="https://arxiv.org/abs/2212.05032">Structured Diffusion</a> explains that the "high-level semantic" of a text prompt gets pooled into the <abbr title="Contrastive Language–Image Pre-training">CLIP</abbr> <code>EOS</code> word embedding.<br>
+  If we mask out every word embedding except for <code>EOS</code>: would it look similar to the unmasked condition?
+</p>
+<p>
+  Turns out yes: a lot of the semantic survives. You need to keep the <code>BOS</code> embedding also (every condition in stable-diffusion's training set has the same <code>BOS</code>, so hiding it throws the inference out-of-distribution).
+</p>
+<p>
+  I have submitted my <a href="https://github.com/huggingface/diffusers/pull/2634">implementation of cross-attention bias</a> to diffusers, and explained <a href="https://github.com/huggingface/diffusers/issues/1891">how to fuse</a> the application of bias into the attention scores matmul.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1627468197782749185">Twitter thread</a></li>
+  <li><a href="https://github.com/huggingface/diffusers/pull/2634">Diffusers contribution</a></li>
+</ul>

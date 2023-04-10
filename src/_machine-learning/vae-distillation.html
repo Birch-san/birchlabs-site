@@ -6,6 +6,27 @@ title:  "VAE distillation"
 above_fold: true
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Latent channels</th>
+        <th>Approx decode</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <img src="/assets/machine-learning/vae-distillation/wd15-latents.png" width="194px" height="128px" loading="lazy">
+        </td>
+        <td>
+          <img src="/assets/machine-learning/vae-distillation/wd15-decoded.png" width="194px" height="128px" loading="lazy">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Approx decode (single linear layer with L2 loss + bias)</figcaption>
+</figure>
 <p>Stable-diffusion's latents can — to a good approximation — be decoded to RGB using a <a href="https://discuss.huggingface.co/t/decoding-latents-to-rgb-without-upscaling/23204">simple matrix multiplication</a>.</p>
 <p>I took further keturn's idea of "approximate decoding", and erucipe's idea of "learning from blue loss" by training with more discerning loss functions on a larger dataset, and making the network slightly deeper.</p>
 <ul>

@@ -6,6 +6,15 @@ title:  "Multi-cond guidance"
 above_fold: true
 ---
 
+<aside>
+  <figure class="center-fig">
+    <a href="{{ "/assets/machine-learning/multi-cond-guidance/touhou-wd15.mp4" | relative_url }}">
+      <!-- nominally 776x1024 -->
+      <video src="{{ "/assets/machine-learning/multi-cond-guidance/touhou-wd15.mp4" | relative_url }}" width="242.5px" height="320px" autoplay muted loop/>
+    </a>
+    <figcaption>Multi-cond guidance interpolating between conditions</figcaption>
+  </figure>
+</aside>
 <p>
   Can we mix <em>multiple</em> denoising predictions? <a href="https://arxiv.org/abs/2207.12598">Classifier-free guidance</a> shows that we can mix a cond and uncond.<br>
   I tried mixing multiple conditions and even negating them — it turns out I had independently discovered <a href="https://energy-based-model.github.io/Compositional-Visual-Generation-with-Composable-Diffusion-Models/">Composable Diffusion</a>.

@@ -5,6 +5,31 @@ within_category_ix: 30
 title:  "Attention masking"
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Usual</th>
+        <th>BOS+EOS only</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/attn-masking/no-mask.png">
+            <img src="/assets/machine-learning/attn-masking/no-mask.png" width="194px" height="128px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/attn-masking/bos-eos-only.png">
+            <img src="/assets/machine-learning/attn-masking/bos-eos-only.png" width="194px" height="128px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Masking out all word embeddings except for BOS and EOS</figcaption>
+</figure>
 <p>
   <a href="https://arxiv.org/abs/1706.03762">Attention</a> supports an optional bias parameter. Most often, it's used as a mask (applying a highly negative bias to attention scores at given indices).<br>The mask can (e.g. in language models) be a "causal" mask (hide future information in the sequence). It can also be used to hide padding tokens when data of varying sequence lengths have to coexist in the same batch.
 </p>

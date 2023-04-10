@@ -5,3 +5,28 @@ within_category_ix: 40
 title:  "Attention fast-paths"
 ---
 
+<p>
+  There is an optimization employed by PyTorch's <code>torch.nn.MultiheadAttention</code>, which has not made it into diffusers' or CompVis's attention implementations.
+</p>
+<p>
+  `q_proj`, `k_proj` and `v_proj` are computed separately. but if their weights were concatenated: it would be possible to perform q,k,v projections simultaneously for self-attention, or q and kv for cross-attention.
+</p>
+<p>
+  On M1 Max, this didn't result in any measurable difference. Mac performance varies a lot with system temperature, and there are not profiling tools for PyTorch MPS backend, which makes it hard to benchmark small phenomena.
+</p>
+<p>
+  I also played with reshaping q,k,v together in one operation, and eliminating the double-reshape of the key tensor. Once again: no measurable difference on Mac.
+</p>
+<p>
+  A fun thing you can do is eliminate the <code>scale</code> factor from the attention calculation entirely, by fusing it into the q,k projection weights. I got this idea from a footnote in <a href="https://arxiv.org/abs/1911.02150">One Write-Head is All You Need</a>.<br>I didn't measure any speed difference compared to fusing the scale into the <a href="#fusing-attention-scaling"><code>baddbmm</code> matmul</a> though.
+</p>
+<p>
+  More fun: it's possible to <a href="https://github.com/Birch-san/stable-diffusion/pull/4">replace CompVis' CrossAttention class</a> or <a href="https://github.com/Birch-san/diffusers-play/blob/c5a50486f64c4b1cdbbe5993d7c8bef944fe1728/scripts/play.py#L148-L149">diffusers' Attention class</a> entirely with PyTorch's <code>torch.nn.MultiheadAttention</code>.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1606070152851853313">Twitter thread on simultaneous q,k,v proj</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1598111869348503552">Twitter thread on fusing scale into weights</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1588329817925115906">Twitter thread on replacing CompVis CrossAttention with <code>torch.nn.MultiheadAttention</code></a>.</li>
+  <li><a href="https://github.com/Birch-san/stable-diffusion/pull/4">GitHub PR on replacing CompVis CrossAttention with <code>torch.nn.MultiheadAttention</code></a>.</li>
+  <li><a href="https://github.com/Birch-san/diffusers-play/blob/main/scripts/play.py#L148-L149">GitHub implementation of replacing diffusers Attention with <code>torch.nn.MultiheadAttention</code></a>.</li>
+</ul>

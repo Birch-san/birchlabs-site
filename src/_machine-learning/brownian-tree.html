@@ -5,6 +5,31 @@ within_category_ix: 0
 title:  "Brownian tree noise sampling"
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <tbody>
+      <tr>
+        <td>Usual</td>
+        <td>
+          <a href="/assets/machine-learning/brownian-tree/usual.jpg">
+            <!-- 1040x540 -->
+            <img src="/assets/machine-learning/brownian-tree/usual.jpg" width="780px" height="405px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>Brownian Tree</td>
+        <td>
+          <a href="/assets/machine-learning/brownian-tree/brownian.jpg">
+            <!-- 1038x540 -->
+            <img src="/assets/machine-learning/brownian-tree/brownian.jpg" width="778.5px" height="405px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Increasing step count with and without Brownian tree noise sampling</figcaption>
+</figure>
 <p>
   One problem with <a href="#diffusion-sampling-in-4-steps">few-step sampling</a> is that after you find an image that has potential: you may find that it completely changes if you master with more steps.<br>This is why we could want stable convergence (the idea that image structure won't change drastically during the denoising process).
 </p>
@@ -14,3 +39,7 @@ title:  "Brownian tree noise sampling"
 <p>
   I further evaluated how to achieve comparable results with <em>adaptive</em> samplers (e.g. which seek to give you a convergence guarantee). Raising <code>eta</code> to 0.75 and reducing <code>rtol</code> to 0.025 <a href="https://github.com/crowsonkb/k-diffusion/issues/25#issuecomment-1355942961">seemed to help</a>, but I didn't manage to convince myself I'd found a dependable configuration.
 </p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1590410727122407426">Twitter thread</a></li>
+  <li><a href="https://github.com/crowsonkb/k-diffusion/issues/25#issuecomment-1309182009">GitHub evaluation</a></li>
+</ul>

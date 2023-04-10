@@ -5,6 +5,25 @@ within_category_ix: 30
 title:  "Multi-Unet guidance"
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/multi-unet-guidance/torii0.png">
+            <img src="/assets/machine-learning/multi-unet-guidance/torii0.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/multi-unet-guidance/torii1.png">
+            <img src="/assets/machine-learning/multi-unet-guidance/torii1.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Denoising high sigmas with a background expert, mid/low sigmas with a character expert</figcaption>
+</figure>
 <p>
   <a href="https://arxiv.org/abs/2211.01324">eDiff-I</a> shows us that an ensemble of expert denoisers can specialize in different parts of the denoising schedule. I wanted to try mixing a "scene specialist" and a "character" specialist, by swapping stable-diffusion checkpoint during the denoising process.
 </p>

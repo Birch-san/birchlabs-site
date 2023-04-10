@@ -4,3 +4,25 @@ category: "Paper Implementations"
 within_category_ix: 10
 title:  "ToMe token merging"
 ---
+
+<p>
+  Facebook Research published <a href="https://arxiv.org/abs/2210.09461">ToMe token-merging</a>, which reduces the memory/computation requirements of diffusion models by merging similar tokens together.
+</p>
+<p>
+  I <a href="https://github.com/facebookresearch/ToMe/issues/4">collaborated with</a> one of the authors (Daniel Bolya) and a GitHub contributor (lalalune) to get this technique working for CompVis stable-diffusion.<br>
+  <em>The paper already had a preliminary stable-diffusion implementation, but it was not included in the initial release (as further evaluation was required).</em>
+</p>
+<p>
+  There's now an <a href="https://arxiv.org/abs/2303.17604">official implementation</a>, which applies the token merging earlier than where I did.
+</p>
+<p>
+  ToMe does result in lower fidelity, so I think it needs to be used judiciously.<br>
+  I reckon it should be applied during early parts (e.g. sigma>1) of the denoising schedule (then disable it thereafter, to let remaining denoising steps fill in fine detail). It should only be used when you're pinched for compute — e.g. in the Unet blocks where the sequence length is largest.
+</p>
+<p>
+  ToMe may have an unexpected extra use: fixing softmax averaging when producing <a href="#out-of-distribution-generation">images larger than those in the training distribution</a>. We can use it to diminish our self-attention key and value to an in-distribution sequence length.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1585782506384941056">Twitter thread</a></li>
+  <li><a href="https://github.com/Birch-san/stable-diffusion/pull/3">CompVis-style implementation</a></li>
+</ul>

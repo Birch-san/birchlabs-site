@@ -9,14 +9,14 @@ title:  "Stable-diffusion on Apple Neural Engine"
   Before Apple released their official <a href="https://machinelearning.apple.com/research/stable-diffusion-coreml-apple-silicon">Stable Diffusion for CoreML</a> implementation: I was implementing the same thing myself, with reference to their whitepaper <a href="https://machinelearning.apple.com/research/neural-engine-transformers">Deploying Transformers on the Apple Neural Engine</a>.
 </p>
 <p>
-  Compiling stable-diffusion for CoreML was already a solved problem, but getting it to schedule work on the Apple Neural Engine had not yet been achieved.
+  Compiling stable-diffusion for CoreML was already a solved problem (thanks to <a href="https://gist.github.com/madebyollin/86b9596ffa4ab0fa7674a16ca2aeab3d">initial investigations</a> by contributors such as <a href="https://twitter.com/wattmaller1">Matt Waller</a>, <a href="https://twitter.com/madebyollin">Ollin Boer Bohan</a> and the <a href="https://github.com/huggingface/diffusers/issues/443">diffusers team</a>), but getting it to schedule work on the Apple Neural Engine had not yet been achieved.
 </p>
 <p>
-  Based on their <em><a href="https://machinelearning.apple.com/research/neural-engine-transformers">whitepaper</a></em>: I assumed that the reason the Neural Engine was unutilized, was because the tensor operations were not in the Neural Engine's preferred format.
+  Based on Apple's <em><a href="https://machinelearning.apple.com/research/neural-engine-transformers">whitepaper</a></em>: I assumed that the reason the Neural Engine was unutilized, was because the tensor operations were not in the Neural Engine's preferred format.
 </p>
 <p>
   The Unet was originally optimized for GPU, with 3D tensors in channels-last format (<code>[Batch, Tokens, Channels]</code>).<br>
-  I changed each layer of diffusers' stable-diffusion Unet to provide tensors in <code>[Batch, Channels, 1, Tokens]</code> format (4D, channels-first).
+  I changed each layer of diffusers' stable-diffusion Unet to use tensors in <code>[Batch, Channels, 1, Tokens]</code> format (4D, channels-first).
 </p>
 <p>
   I had to make changes to the coremltools compiler (describe unsupported operations differently) to get it to compile the model.<br>

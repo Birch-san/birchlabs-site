@@ -71,7 +71,7 @@ title:  "Dynamic thresholding latents"
   <summary>Threshold in pixel space, backprop difference</summary>
   <p>
     <strong>Decode latents, threshold pixels, compare pixels, guide by backprop difference</strong><br>
-    Similar idea to CLIP guidance. We decode latents to pixels via <abbr title="variational autoencoder">VAE</abbr>, dynthresh them Imagen-style. But we don't want to re-encode them (previous technique showed us that <abbr title="variational autoencoder">VAE</abbr> roundtrips are lossy). So we compare the unthresholded pixels with our thresholded pixels, compute MSE loss, compute <em>gradient</em> of loss, then apply that difference (scaled by a learning rate) to our original latents.<br>
+    Similar idea to <a href=""><abbr title="#clip-guided-diffusion">CLIP</abbr> guidance</a>. We decode latents to pixels via <abbr title="variational autoencoder">VAE</abbr>, dynthresh them Imagen-style. But we don't want to re-encode them (previous technique showed us that <abbr title="variational autoencoder">VAE</abbr> roundtrips are lossy). So we compare the unthresholded pixels with our thresholded pixels, compute MSE loss, compute <em>gradient</em> of loss, then apply that difference (scaled by a learning rate) to our original latents.<br>
     Results weren't super. Was pretty fiddly, and very few ranges of values did anything other than producing more artifacts.
   </p>
   <ul>

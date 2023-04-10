@@ -18,7 +18,7 @@ title:  "Fusing attention scaling"
   Thanks to <a href="https://github.com/patil-suraj">Suraj Patil</a> for showing how to reformulate the attention einsums as matmuls, and to <a href="https://github.com/NouamaneTazi">Nouamane Tazi</a> for showing how to fuse scale factors into matmuls.
 </p>
 <p>
-  The significance for CUDA users is lessened now that Flash Attention is widely available. But this remains a welcome speedup on Mac.
+  The significance for CUDA users is lessened now that <a href="https://arxiv.org/abs/2205.14135">Flash Attention</a> is widely available. But this remains a welcome speedup on Mac.
 </p>
 <p>
   I sped up LLaMA_MPS <a href="https://github.com/jankais3r/LLaMA_MPS/pull/5">by <strong>4.7%</strong></a> with this same technique.

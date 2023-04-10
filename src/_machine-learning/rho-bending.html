@@ -1,0 +1,20 @@
+---
+layout: none
+category: "Explorations"
+within_category_ix: 10
+title:  "Rho-bending"
+---
+
+<p>
+  When <a href="#diffusion-sampling-in-4-steps">few-step sampling</a>, you may find that your image is moreorless good, but has some errors in fine detail or composition.
+</p>
+<p>
+  You can change the <code>rho</code> parameter of a <a href="https://arxiv.org/abs/2206.00364">Karras schedule</a> to bend the denoising schedule to allocate more sigmas to the highly-noised or lightly-noised part of the schedule.
+</p>
+<p>
+  <code>rho</code> is typically 7, but decreasing it (e.g. to 5) will sample more from high sigmas (>2), expending more effort on high-level composition.<br>
+  Conversely: increasing it (e.g. to 10) will sample more from low sigmas (<1), expending more effort on fine detail.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1576705558177935361">Twitter thread</a></li>
+</ul>

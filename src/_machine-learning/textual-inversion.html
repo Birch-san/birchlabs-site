@@ -4,3 +4,19 @@ category: "Technique Implementations"
 within_category_ix: 20
 title:  "Textual inversion"
 ---
+
+<p>
+  I ported Rinon Gal's <a href="https://arxiv.org/abs/2208.01618">Textual Inversion</a> for use in <a href="https://github.com/Birch-san/stable-diffusion/pull/1"> CompVis-style stable-diffusion repositories</a>, referring to <a href="https://github.com/Oceanswave">Sean McLellan</a>'s <a href="https://github.com/invoke-ai/InvokeAI/pull/55">InvokeAI integration</a>.
+</p>
+<p>
+  I <a href="https://github.com/invoke-ai/InvokeAI/issues/517">collaborated with</a> other GitHub contributors (<a href="https://github.com/tmm1">Aman Gupta Karmani</a>, <a href="https://github.com/Any-Winter-4079">Any-Winter-4079</a>) to get it working on Mac (e.g. fixing tensor striding issues, NaN loss issues).
+</p>
+<p>
+  It's interesting how the semantic that Textual Inversion learns from a fumo plushie (big head, stubby limbs) works even in stable-diffusion checkpoints which forgot the photoreal style. The result is a graphic very similar to a chibi illustration.
+</p>
+<ul>
+  <li><a href="https://github.com/Birch-san/stable-diffusion/pull/1">Clean diff for CompVis-style stable-diffusion repositories</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1574729319464968195">Original fumo plushie created from textual inversion embedding</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1579937213617680385">More original fumo plushies</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1579969879079538690">Applying fumo embedding to a non-photoreal stable-diffusion checkpoint</a></li>
+</ul>

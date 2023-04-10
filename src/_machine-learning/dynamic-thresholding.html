@@ -99,3 +99,29 @@ title:  "Dynamic thresholding latents"
     <li><a href="https://github.com/Birch-san/stable-diffusion/compare/555ff5c2289e20200e4459d3a9bfaee29f2a4107...8e440287efded13d4804225d240ae63bf1f7cab6">Implementation</a></li>
   </ul>
 </details>
+
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Unthresholded</th>
+        <th>Dynamic thresholded</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-approx/un.png">
+            <img src="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-approx/un.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-approx/dyn.png">
+            <img src="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-approx/dyn.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption><abbr title="classifier-free guidance">CFG</abbr> scale=30: Threshold in pixel space via approx <abbr title="variational autoencoder">VAE</abbr> roundtrip</figcaption>
+</figure>

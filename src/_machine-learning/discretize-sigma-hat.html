@@ -4,3 +4,19 @@ category: "Paper Implementations"
 within_category_ix: 40
 title:  "Fixing churn in Karras samplers"
 ---
+
+<p>
+  By default, k-diffusion's CompVis denoiser wrappers do <a href="https://github.com/crowsonkb/k-diffusion/blob/b43db16749d51055f813255eea2fdf1def801919/k_diffusion/external.py#L134"><strong>not</strong> discretize the sigma schedule</a>. I didn't know about that convenient boolean! So I tried to fix this the hard way, and found something interesting along the way.
+</p>
+<p>
+  I compared k-diffusion's <a href="https://github.com/crowsonkb/k-diffusion/blob/b43db16749d51055f813255eea2fdf1def801919/k_diffusion/sampling.py#L159"><code>sample_heun</code></a> code with the algorithm from the <a href="https://arxiv.org/abs/2206.00364">EDM paper</a>, and further scrutinized it against the "iDDPM practical considerations" from section C.3.4 of said paper.
+</p>
+<p>
+  I found that the <code>sigma_hat</code> parameter was not being discretized (even when <code>quantize=True</code> was enabled). This means that the Unet may be asked to denoise a sigma outside of the <a href="https://gist.github.com/Birch-san/6cd1574e51871a5e2b88d59f0f3d4fd3">discrete sigmas in its training distribution</a>.
+</p>
+<p>
+  This parameter is only referenced when churn is enabled, so the damage is minimal.<br>I still haven't seen anybody play with churn, but it's a parameter which injects noise; I believe the effect should be similar to the "creativity" with which <code>euler_ancestral</code> is credited.
+</p>
+<ul>
+  <li><a href="https://github.com/crowsonkb/k-diffusion/pull/23">Disclosure of the issue and fix to the k-diffusion repository</a></li>
+</ul>

@@ -1,3 +1,4 @@
 container_gem_cache
 container_gem_cache_*
 dist
+.DS_Store

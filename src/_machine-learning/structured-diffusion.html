@@ -1,0 +1,51 @@
+---
+layout: none
+category: "Paper Implementations"
+within_category_ix: 20
+title:  "Structured diffusion"
+---
+
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Standard</th>
+        <th>Structured Diffusion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/structured-diffusion/abstract.png">
+            <img src="/assets/machine-learning/structured-diffusion/abstract.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/structured-diffusion/photoreal.png">
+            <img src="/assets/machine-learning/structured-diffusion/photoreal.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Whilst I did not reproduce the promises of the paper: some images changed drastically</figcaption>
+</figure>
+
+<p>
+  I implemented (some of the algorithms from) <a href="https://arxiv.org/abs/2212.05032">Structured Diffusion</a>.
+</p>
+<p>
+  I did not manage to reproduce the best results of the paper, but the author <a href="https://github.com/weixi-feng/Structured-Diffusion-Guidance/issues/2#issuecomment-1350519368">confirmed</a> that my results may still be consistent with what they'd expect, and that my implementation could be correct.
+</p>
+<p>
+  I believe I found some mistakes in how the reference implementation splices structures together. The natural language processing that they use to split text prompts into noun-phrases (<a href="https://www.nltk.org/">nltk</a>+<a href="https://stanfordnlp.github.io/stanza/">stanza</a>), employs a different tokenizer than <a href="https://arxiv.org/abs/2103.00020"><abbr title="Contrastive Language–Image Pre-training">CLIP</abbr></a>.<br>In my implementation: I use regex to solve each noun-phrase's insertion point in the prompt.
+</p>
+<p>
+  My implementation also takes care to do more work in parallel, and especially optimizes attention.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1602105002448805891">Twitter thread</a></li>
+  <li><a href="https://github.com/Birch-san/diffusers/compare/fc94c60c8373862c509e388f3f4065d98cedf589...58a5f7d3252f5c967ee2225987b5ec093d63c766">Changes to diffusers</a></li>
+  <li><a href="https://github.com/Birch-san/diffusers-play/compare/5d0492cf7c2711157702824537f6904295aa6a7a...7ff06988631bce4a17eb08799e5c9ab67f226a0a">Changes to diffusers-play (invokes diffusers)</a></li>
+  <li><a href="https://github.com/weixi-feng/Structured-Diffusion-Guidance/issues/2">Sharing results with author</a></li>
+</ul>

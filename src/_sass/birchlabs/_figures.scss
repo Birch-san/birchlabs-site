@@ -1,0 +1,38 @@
+figure {
+  padding-left: initial;
+}
+
+figure > figcaption {
+  padding-left: initial;
+}
+
+figure.article-fig {
+  margin-top: 0.75em;
+}
+
+figure.center-fig {
+  text-align: center;
+}
+
+figure.table-fig table {
+  display: inline-table;
+  margin-bottom: 0;
+  border-top-style: none;
+  border-bottom-style: none;
+}
+figure.table-fig table th {
+  text-align: center;
+  border-bottom: none;
+  padding-bottom: 8px;
+}
+figure.table-fig table th, figure.table-fig table td {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+}
+figure.table-fig table td {
+  padding-bottom: 0;
+}
+figure.table-fig table tbody tr td {
+  border-bottom: none;
+}

@@ -1,0 +1,43 @@
+---
+layout: none
+category: "Research"
+within_category_ix: 0
+title:  "Multi-cond guidance"
+above_fold: true
+---
+
+<aside>
+  <figure class="center-fig">
+    <a href="/assets/machine-learning/multi-cond-guidance/touhou-wd15.mp4">
+      <!-- nominally 776x1024 -->
+      <video src="/assets/machine-learning/multi-cond-guidance/touhou-wd15.mp4" width="242.5px" height="320px" autoplay muted loop/>
+    </a>
+    <figcaption>Multi-cond guidance interpolating between conditions</figcaption>
+  </figure>
+</aside>
+<p>
+  Can we mix <em>multiple</em> denoising predictions? <a href="https://arxiv.org/abs/2207.12598">Classifier-free guidance</a> shows that we can mix a cond and uncond.<br>
+  I tried mixing multiple conditions and even negating them — it turns out I had independently discovered <a href="https://energy-based-model.github.io/Compositional-Visual-Generation-with-Composable-Diffusion-Models/">Composable Diffusion</a>.
+</p>
+<p>
+  I took the concept further by playing with the ability to tweak the weighting of each denoising prediction. This unlocked a novel way to transition between conditions. Animated, it looks similar to a <a href="#latent-walks">latent walk</a> but it is a visual rather than semantic traversal.
+</p>
+Animations:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1627382040730501120">High-fidelity Touhou Project character cycle</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1629687791578673156">Latent walk vs multi-cond guidance</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1576693919667998722">Touhou Project character cycle</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1576698050667765760">Marisa/Reimu character cycle</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1571623902924734465">Wanderer to vaporwave</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1571629448708898817">Face transitions</a></li>
+</ul>
+Stills:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1567665555313672197">De-impressionism of Starry Night</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1567676949677457411">Starry Night as an ukiyo-e</a></li>
+</ul>
+Meta:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1627286152087478272"><abbr title="classifier-free guidance">CFG</abbr> as a special case of Multi-cond guidance</a></li>
+  <li><a href="https://github.com/Birch-san/stable-diffusion/blob/693c8a336aa3453d30ce403f48eb545689a679e5/scripts/txt2img_fork.py#L62-L81">Implementation</a></li>
+</ul>

@@ -1,0 +1,50 @@
+---
+layout: none
+category: "Paper Implementations"
+within_category_ix: 30
+title:  "Stable-diffusion on Apple Neural Engine"
+---
+
+<p>
+  Before Apple released their official <a href="https://machinelearning.apple.com/research/stable-diffusion-coreml-apple-silicon">Stable Diffusion for CoreML</a> implementation: I was implementing the same thing myself, with reference to their whitepaper <a href="https://machinelearning.apple.com/research/neural-engine-transformers">Deploying Transformers on the Apple Neural Engine</a>.
+</p>
+<p>
+  Compiling stable-diffusion for CoreML was already a solved problem (thanks to <a href="https://gist.github.com/madebyollin/86b9596ffa4ab0fa7674a16ca2aeab3d">initial investigations</a> by contributors such as <a href="https://twitter.com/wattmaller1">Matt Waller</a>, <a href="https://twitter.com/madebyollin">Ollin Boer Bohan</a> and the <a href="https://github.com/huggingface/diffusers/issues/443">diffusers team</a>), but getting it to schedule work on the Apple Neural Engine had not yet been achieved.
+</p>
+<p>
+  Based on Apple's <em><a href="https://machinelearning.apple.com/research/neural-engine-transformers">whitepaper</a></em>: I assumed that the reason the Neural Engine was unutilized, was because the tensor operations were not in the Neural Engine's preferred format.
+</p>
+<p>
+  The Unet was originally optimized for GPU, with 3D tensors in channels-last format (<code>[Batch, Tokens, Channels]</code>).<br>
+  I changed each layer of diffusers' stable-diffusion Unet to use tensors in <code>[Batch, Channels, 1, Tokens]</code> format (4D, channels-first).
+</p>
+<p>
+  I had to make changes to the coremltools compiler (describe unsupported operations differently) to get it to compile the model.<br>
+  I also tried compiling the sampler (which invokes the model) to CoreML, which required me to fix some bugs in coremltools.
+</p>
+<p>
+  Neural Engine only supports float16. Ordinarily, coremltools advises to trace the model in float32, and rely on their conversion to cast operations to float16 (and optimize the casts out).<br>
+  I didn't want noisy casts in the IR code (since I was debugging the IR whenever the compiler had bugs), so I modified coremltools to <a href="https://github.com/apple/coremltools/pull/1802">prefer float16</a> as its default float type, and traced the Unet in float16 via MPS backend.
+</p>
+<p>
+  I managed to release before Apple did, but it turns out I was missing one crucial piece to target Neural Engine: I needed a macOS public beta. After Apple explained this in their release announcement, I was able to benchmark my model.
+</p>
+<p>
+  Compared to Apple's, my model:
+</p>
+<ul>
+  <li>Predicted 0.6% faster</li>
+  <li>Loaded 13% faster</li>
+  <li>Compiled 39% faster</li>
+  <li>Ran 17.6% fewer operations</li>
+  <li><strong>However</strong> it utilized the <abbr title="Apple Neural Engine">ANE</abbr> less (56% vs 66%)</li>
+</ul>
+Links:
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1599051866637148160">Benchmarking my model against Apple's</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1591598747909226498">Milestone 1: self-attention optimized for <abbr title="Apple Neural Engine">ANE</abbr></a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1592313542208024576">Compiling the Unet <strong>and</strong> the sampler to CoreML</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1592935233925836800">Milestone 2: cross-attention optimized for <abbr title="Apple Neural Engine">ANE</abbr></a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1595231600903692288">Milestone 3: every layer optimized for <abbr title="Apple Neural Engine">ANE</abbr></a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1599085003429642240">Profiling my model end-to-end in PyTorch</a></li>
+</ul>

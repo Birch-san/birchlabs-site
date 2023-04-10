@@ -1,0 +1,31 @@
+---
+layout: none
+category: "Paper Implementations"
+within_category_ix: 0
+title:  "Memory-efficient attention"
+---
+
+<p>
+  <a href="https://arxiv.org/abs/1706.03762">Attention</a> — the revolutionary algorithm that ushered in the transformer era — relies on large matrix multiplications and softmax operations. Even a modest stable-diffusion image (512x512) can require self-attention buffers as large as <a href="https://gist.github.com/Birch-san/0a35d1d7ae88c46b551bf60cf0ae0a1e">512MB</a>, growing quadratically with sequence length.
+</p>
+<p>
+  <a href="https://arxiv.org/abs/2112.05682v2">Self-attention Does Not Need O(n²) Memory</a> showed how to carve the matmul into chunks, and 
+  produce the softmax denominator by accumulating per-chunk maxima rather than requiring all attention scores in-memory simultaneously.
+</p>
+<p>
+  <a href="https://github.com/AminRezaei0x443/memory-efficient-attention">Prior art</a> existed, but I wished to add a few optimizations:
+</p>
+<ul>
+  <li>batched matmuls</li>
+  <li><a href="#fusing-attention-scaling">fused multiplication</a> of <code>scale</code> factor</li>
+  <li>fast-paths to prefer regular attention when we are not memory-constrained</li>
+</ul>
+<p>
+  The significance for CUDA users is lessened now that <a href="https://arxiv.org/abs/2205.14135">Flash Attention</a> is widely available. But this remains a welcome memory-saver on Mac.
+</p>
+<ul>
+  <li><a href="https://github.com/AminRezaei0x443/memory-efficient-attention/issues/7">Comparison</a> with <a href="https://github.com/AminRezaei0x443/memory-efficient-attention">Amin Rezaei</a>'s implementation, which I used as reference</li>
+  <li><a href="https://github.com/Birch-san/diffusers/pull/1">Diffusers pull request</a></li>
+  <li><a href="https://github.com/huggingface/diffusers/issues/1892">Diffusers issue</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1607503573906063362">Twitter thread</a> (demonstrating generation of a high-res image).</li>
+</ul>

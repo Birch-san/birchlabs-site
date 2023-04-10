@@ -37,6 +37,8 @@ collections:
   - project_types
   - experiments
   - experiment_categories
+  - machine-learning
+  - machine-learning_categories
   - authors
 
 # Exclude from processing.

@@ -1,0 +1,49 @@
+---
+layout: none
+category: "Engineering"
+within_category_ix: 10
+title:  "Denoise in fp16, sample in fp32"
+---
+
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>fp32 Unet + fp32 sampling</th>
+        <th>fp16 Unet + fp32 sampling</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/float16-unet/float32-unet.png">
+            <img src="/assets/machine-learning/float16-unet/float32-unet.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/float16-unet/float16-unet.png">
+            <img src="/assets/machine-learning/float16-unet/float16-unet.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>A float16 Unet is sufficient, so long as you sample in float32.</figcaption>
+</figure>
+
+<p>
+  A float16 Unet can produce samples competitive with those from a float32 Unet. So long as we <strong>sample</strong> in float32.
+</p>
+<p>
+  Everything inside the Unet (except computing timestep embedding) can be float16. Everything outside (e.g. noised latents, k-diffusion sampling) should be float32.
+</p>
+<p>
+  Tero Karras even <a href="https://github.com/NVlabs/edm/blob/b2a26c921c5776cb52f7498248761d60649007a8/generate.py#L50">samples in float64!</a>
+</p>
+<p>
+  Thanks to marunine from <a href="https://discord.com/invite/eq3cAMZtCC">LAION Discord</a> for this idea.
+</p>
+
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1599903883278663681">Twitter thread</a></li>
+</ul>

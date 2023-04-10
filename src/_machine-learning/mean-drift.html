@@ -1,0 +1,70 @@
+---
+layout: none
+category: "Research"
+within_category_ix: 20
+title:  "Combating mean drift in CFG"
+---
+
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Standard</th>
+        <th>Centered</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/mean-drift/shrine-standard.png">
+            <img src="/assets/machine-learning/mean-drift/shrine-standard.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/mean-drift/shrine-centered.png">
+            <img src="/assets/machine-learning/mean-drift/shrine-centered.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Latent values centered on channel means</figcaption>
+</figure>
+<p>
+Stable-diffusion's Unet returns denoised latents with per-channel means of about 0.
+</p>
+<p>
+This slight deviation from 0 is amplified when <abbr title="classifier-free guidance">CFG</abbr> is applied. The result then goes back into the Unet, or is decoded by the <abbr title="variational autoencoder">VAE</abbr>.<br>
+I wondered whether either the Unet or <abbr title="variational autoencoder">VAE</abbr> was trained to expect standardized inputs (e.g. mean of 0, and variance of 1).
+</p>
+<p>Prior to applying <abbr title="classifier-free guidance">CFG</abbr>: I shift the denoised latents to be centered on their per-channel means.<br>The effect was interesting: high-frequency details increase, especially foliage.<br>A bit of grain is created too (perhaps this can be avoided by ceasing the technique late in the denoising process).</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1632539251890966529">Twitter thread</a></li>
+  <li><a href="https://github.com/Birch-san/diffusers-play/commit/0428b318b5109d8481440dd0ad4fd83453f3ac21#diff-72591aba13e30c41fbf8163641ae1bd4cf84287942e6dfcdfb1ee1e09c855711R169-R173">Implementation</a></li>
+</ul>
+
+<!-- <figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Standard</th>
+        <th>Centered</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/mean-drift/standard.png">
+            <img src="/assets/machine-learning/mean-drift/standard.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/mean-drift/centered.png">
+            <img src="/assets/machine-learning/mean-drift/centered.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Latent values centered on channel means</figcaption>
+</figure> -->

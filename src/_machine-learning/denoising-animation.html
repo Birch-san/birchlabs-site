@@ -1,0 +1,26 @@
+---
+layout: none
+category: "Explorations"
+within_category_ix: 40
+title:  "Denoising"
+---
+
+<aside>
+  <figure class="center-fig">
+    <a href="/assets/machine-learning/denoising-animation/overkill.mp4">
+      <!-- nominally 388x512 -->
+      <video src="/assets/machine-learning/denoising-animation/overkill.mp4" width="232.8px" height="307.2px" autoplay muted loop/>
+    </a>
+    <figcaption>Denoising process visualized with approx decoder</figcaption>
+  </figure>
+</aside>
+<p>
+  I made some animations to illustrate how stable-diffusion's denoising process works. We can use k-diffusion's callback to log intermediate latents from each sampling step.
+</p>
+<p>
+  At first I visualized this via stable-diffusion's <abbr title="variational autoencoder">VAE</abbr>. But noised latents are outside of its training distribution, so I wanted to do a simpler decode (just a colour-space conversion) to avoid inventing detail or upsampling. So for my second attempt I used my <a href="#vae-distillation">approximate decoder</a>.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1638710927754424320">Diffusion process (visualized via approx <abbr title="variational autoencoder">VAE</abbr>)</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1578903663644327936">Diffusion process (visualized via <abbr title="variational autoencoder">VAE</abbr>)</a></li>
+</ul>

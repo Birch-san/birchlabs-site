@@ -1,0 +1,54 @@
+---
+layout: none
+category: "Engineering"
+within_category_ix: 40
+title:  "Reporting bugs with ML on Mac"
+---
+
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>PyTorch MPS bug</th>
+        <th>Expected image</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/bug-reports/tensor-striding.png">
+            <img src="/assets/machine-learning/bug-reports/tensor-striding.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/bug-reports/happy-fumo.png">
+            <img src="/assets/machine-learning/bug-reports/happy-fumo.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>PyTorch's MPS backend encounters tensor striding issues in all sorts of places</figcaption>
+</figure>
+
+<p>
+  I started my machine learning journey on an M1 Max. The 64GB of unified memory is useful, but performance and software support are far away from what CUDA offers.
+</p>
+<p>
+  I've spent a lot of time debugging errors in the PyTorch MPS backend, and I try to report these and provide minimal repros as often as I can.<br>In particular I was able to prevent a <a href="https://github.com/pytorch/pytorch/issues/87010">42x <code>einsum()</code> performance regression</a> from being included in the 1.13.0 release.
+</p>
+  Frequently I am able to find workarounds (e.g. copying tensors, using different operations, falling back to CPU). The most common problems are with tensor-striding or indexing. Symptoms usually manifest as a black image, or one with a repeating grid pattern.
+</p>
+<p>
+  Backwards pass is a lot harder (issues include NaN loss or autograd crashes), but I got <a href="#textual-inversion">textual inversion</a> working and <a href="#clip-guided-diffusion"><abbr title="Contrastive Language–Image Pre-training">CLIP</abbr></a> guidance working despite that.
+</p>
+<p>
+  I maintain a <a href="https://github.com/crowsonkb/k-diffusion/compare/master...Birch-san:k-diffusion:mps">fork of k-diffusion</a> with Mac-specific fixes.
+</p>
+Here are some of the Mac-compatibility bugs I've reported with machine learning libraries/frameworks:
+<ul>
+  <li><a href="https://github.com/pytorch/pytorch/issues?q=is%3Aissue+author%3ABirch-san">PyTorch</a></li>
+  <li><a href="https://github.com/google/jax/issues/11166">JAX</a></li>
+  <li><a href="https://github.com/openxla/iree/issues?q=is%3Aissue+author%3ABirch-san">IREE</a></li>
+  <li><a href="https://github.com/Lightning-AI/lightning/issues/13991">PyTorch Lightning</a></li>
+</ul>

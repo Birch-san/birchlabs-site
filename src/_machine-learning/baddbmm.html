@@ -1,0 +1,37 @@
+---
+layout: none
+category: "Engineering"
+within_category_ix: 0
+title:  "Fusing attention scaling"
+---
+
+<figure class="center-fig article-fig">
+  <a href="/assets/machine-learning/baddbmm/diff.jpg">
+    <!-- nominally 1294x678 -->
+    <img src="/assets/machine-learning/baddbmm/diff.jpg" width="647px" height="339px" loading="lazy">
+  </a>
+  <figcaption>Swapping einsums for batched matmuls with fused scaling</figcaption>
+</figure>
+
+<p>
+  With a two-line change: I made stable-diffusion 19% faster on Mac (and up to 12% faster on CUDA).
+</p>
+<p>
+  stable-diffusion's original CompVis/<a href="https://github.com/lucidrains/perceiver-pytorch/blob/d6e3cda8abfbadfc24c3092bb9babfaa97dca8cd/perceiver_pytorch/perceiver_pytorch.py#L106">lucidrains<a> implementation of <a href="https://arxiv.org/abs/1706.03762">multi-head attention</a> computed scaled attention scores via <code>einsum()*scale</code>. This multiplied the <code>scale</code> factor over (for example) <a href="https://gist.github.com/Birch-san/0a35d1d7ae88c46b551bf60cf0ae0a1e">512MB</a> of attention scores. <a href="https://arxiv.org/abs/2205.14135">I/O is the bottleneck</a> in attention, so repeating this large read is harmful.
+</p>
+<p>
+  The einsum can be <a href="https://github.com/huggingface/diffusers/commit/5adb0a7bf7fee1732f307dfda9013bf2cf7b0ff9">reformulated as a batched matmul</a>, and scale factors can be fused into the matmul by expressing it as a <a href="https://github.com/huggingface/diffusers/pull/371"><code>baddbmm</code></a>. We can even fuse <a href="https://github.com/huggingface/diffusers/issues/1891">the addition of attention bias</a> whilst we're at it.
+</p>
+<p>
+  Thanks to <a href="https://github.com/patil-suraj">Suraj Patil</a> for showing how to reformulate the attention einsums as matmuls, and to <a href="https://github.com/NouamaneTazi">Nouamane Tazi</a> for showing how to fuse scale factors into matmuls.
+</p>
+<p>
+  The significance for CUDA users is lessened now that <a href="https://arxiv.org/abs/2205.14135">Flash Attention</a> is widely available. But this remains a welcome speedup on Mac.
+</p>
+<p>
+  I sped up LLaMA_MPS <a href="https://github.com/jankais3r/LLaMA_MPS/pull/5">by <strong>4.7%</strong></a> with this same technique.
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1588703520433541120">Twitter thread</a></li>
+  <li><a href="https://github.com/huggingface/diffusers/pull/1203">Diffusers contribution</a></li>
+</ul>

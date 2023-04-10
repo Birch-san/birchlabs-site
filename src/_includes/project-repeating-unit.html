@@ -18,14 +18,7 @@
 	{% if include.img_alt %}
 		{% assign alt = include.img_alt %}
 	{% endif %}
-	<noscript>
-		<img src="{{ src }}" alt="{{ alt }}" {% if include.img_id %}id="{{ include.img_id }}"{% endif %}>
-	</noscript>
-	<img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-	data-src="{{ src }}"
-	alt="{{ alt }}"
-	class="jsonly"
-	{% if include.img_id %}id="{{ include.img_id }}"{% endif %}>
+	<img src="{{ src }}" alt="{{ alt }}" {% if include.img_id %}id="{{ include.img_id }}"{% endif %} loading="{% if include.above_fold %}eager{% else %}lazy{% endif %}">
 </aside>
 <article class="has-aside">
 {% else %}

@@ -42,6 +42,7 @@ layout: default
 			img_alt = proj.img_alt
 			href = proj.href
 			smol_headings = project.smol_headings
+			above_fold = proj.above_fold
 		%}
   	{% endfor %}
   	{% if category.has_content %}
@@ -56,11 +57,13 @@ layout: default
 			supertitle = category.supertitle
 			href = category.href
 			smol_headings = project.smol_headings
+			above_fold = category.above_fold
 		%}
 	{% endif %}
 {% endfor %}
 </div>
 
+{% comment %}
 <script type="text/javascript">
 (window.requestAnimationFrame
 	|| window.mozRequestAnimationFrame
@@ -76,6 +79,7 @@ var imgDefer = document.getElementsByTagName('img');
 	}
 });
 </script>
+{% endcomment %}
 
 {% include /elevator.html %}
 {% include /scrollspy.html %}

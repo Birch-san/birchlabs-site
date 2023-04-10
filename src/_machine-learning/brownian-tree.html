@@ -1,0 +1,16 @@
+---
+layout: none
+category: "Explorations"
+within_category_ix: 0
+title:  "Brownian tree noise sampling"
+---
+
+<p>
+  One problem with <a href="#diffusion-sampling-in-4-steps">few-step sampling</a> is that after you find an image that has potential: you may find that it completely changes if you master with more steps.<br>This is why we could want stable convergence (the idea that image structure won't change drastically during the denoising process).
+</p>
+<p>
+  Katherine Crowson added <a href="https://github.com/crowsonkb/k-diffusion/issues/25#issuecomment-1305104374">Brownian Tree noise sampling</a> to k-diffusion. I <a href="https://github.com/crowsonkb/k-diffusion/issues/25#issuecomment-1309182009">evaluated it</a>, and found that it succeeded in giving a 10-step sample the same high-level composition as a 100-step (i.e. converged) sample.
+</p>
+<p>
+  I further evaluated how to achieve comparable results with <em>adaptive</em> samplers (e.g. which seek to give you a convergence guarantee). Raising <code>eta</code> to 0.75 and reducing <code>rtol</code> to 0.025 <a href="https://github.com/crowsonkb/k-diffusion/issues/25#issuecomment-1355942961">seemed to help</a>, but I didn't manage to convince myself I'd found a dependable configuration.
+</p>

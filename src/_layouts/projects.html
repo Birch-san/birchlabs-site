@@ -41,6 +41,7 @@ layout: default
 			heading_level = "h3"
 			img_alt = proj.img_alt
 			href = proj.href
+			smol_headings = project.smol_headings
 		%}
   	{% endfor %}
   	{% if category.has_content %}
@@ -54,6 +55,7 @@ layout: default
 			img_alt = category.img_alt
 			supertitle = category.supertitle
 			href = category.href
+			smol_headings = project.smol_headings
 		%}
 	{% endif %}
 {% endfor %}

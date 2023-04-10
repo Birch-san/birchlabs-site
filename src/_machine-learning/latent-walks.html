@@ -4,3 +4,21 @@ category: "Technique Implementations"
 within_category_ix: 10
 title:  "Latent walks"
 ---
+
+<p>
+  Diffusion models can use a text condition for generating an image. How would we transition between two conditions?
+</p>
+<p>
+  Stable-diffusion is conditioned on <a href="https://arxiv.org/abs/2103.00020"><abbr title="Contrastive Language–Image Pre-training">CLIP</abbr></a> text embeddings: sequences of word embeddings. Similar concepts are embedded to similar locations in space. Consequently, by interpolating between word embedding coordinates we can do a <em>semantic</em> transition between concepts.
+</p>
+<p>
+  CLIP word embeddings have positions <a href="https://arxiv.org/abs/2203.03897">in a many-dimensional (e.g. 768) hyperspace</a>. They are Gaussian-distributed, so we can treat them as points on a unit hypersphere. Thus the correct way to interpolate between them is with a <a href="https://minibatchai.com/sampling/2022/04/24/Slerp.html"><em>spherical</em></a> (as opposed to linear) interpolation.
+</p>
+<p>
+  Special thanks to <a href="https://twitter.com/cafeai_labs">Cafe</a> from the <a href="https://discord.gg/touhouai">Touhou Project AI Discord</a> for sponsoring this open-source research (long animations became possible thanks to new hardware).
+</p>
+<ul>
+  <li><a href="https://twitter.com/Birchlabs/status/1629924271613984776">Animation: A latent walk to the office</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1629687791578673156">Animation: Latent walk vs multi-cond guidance</a></li>
+  <li><a href="https://gist.github.com/Birch-san/230ac46f99ec411ed5907b0a3d728efa">PyTorch implementation of <code>slerp</code></a></li>
+</ul>

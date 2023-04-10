@@ -5,7 +5,11 @@
 
 <{{ include.heading_level }} id="{{ head_id | slugify }}">
 	{{ include.supertitle }}
+	{% if include.smol_headings %}
 	<small>{{ include.title }}</small>
+	{% else %}
+	{{ include.title }}
+	{% endif %}
 </{{ include.heading_level }}>
 {% if include.img_path %}
 <aside>

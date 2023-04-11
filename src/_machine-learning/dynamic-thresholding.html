@@ -56,7 +56,7 @@ title:  "Dynamic thresholding latents"
     This is effective because it tames high/mid sigmas, and ceases once we're past the most of the danger zone (<abbr title="classifier-free guidance">CFG</abbr> seems to do most of its damage at the start of the schedule — perhaps this indicates that cond and uncond denoising predictions only agree later in the schedule, as noise is removed).<br>We also avoid clamping as aggressively as ±1 (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
   </p>
   <ul>
-    <li>Original <a href="https://twitter.com/Birchlabs/status/1582165379832348672">Twitter thread</a></li>
+    <li><a href="https://twitter.com/Birchlabs/status/1582165379832348672">Twitter thread</a></li>
     <li><a href="https://github.com/Birch-san/stable-diffusion/blob/dynamic-thresholding-5/scripts/txt2img.ipynb">Implementation</a> (search for <code>dynamic_threshold</code> function)</li>
   </ul>
 </details>
@@ -93,7 +93,7 @@ title:  "Dynamic thresholding latents"
     We compute a known-good (<abbr title="classifier-free guidance">CFG</abbr>7.5) output, center channels on means, measure their 99.95%ile latent values. We do the same for our desired (<abbr title="classifier-free guidance">CFG</abbr>20) output. We divide <abbr title="classifier-free guidance">CFG</abbr>20's output by the ratio between those 99.95%ile results.<br>We do not apply Imagen-style clamping (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
   </p>
   <ul>
-    <li>Original <a href="https://twitter.com/Birchlabs/status/1583984004864172032">Twitter thread</a></li>
+    <li><a href="https://twitter.com/Birchlabs/status/1583984004864172032">Twitter thread</a></li>
     <li><a href="https://github.com/Birch-san/stable-diffusion/blob/2260d8070f550373ea3a18cbf0a1d7adeb0f7a4b/scripts/txt2img.ipynb">Implementation</a> (search for <code>mimic_scale</code> parameter)</li>
   </ul>
 </details>
@@ -130,9 +130,9 @@ title:  "Dynamic thresholding latents"
     Similar to previous, except extends the dynamic range by considering our "known-good"'s max to also be fine. This retains a bit more subtlety in shadows and highlights.
   </p>
   <ul>
-    <li>Original <a href="https://twitter.com/Birchlabs/status/1589319159443488768">Twitter thread</a></li>
+    <li><a href="https://twitter.com/Birchlabs/status/1589319159443488768">Twitter thread</a></li>
     <li><a href="https://twitter.com/Birchlabs/status/1632185133435437057">Animation: effect of dynthresh as CFG increases</a></li>
-    <li><a href="https://gist.github.com/Birch-san/e995e76b42bb8c27d16e992398f5cf4b">Implementation</a><li>
+    <li><a href="https://gist.github.com/Birch-san/e995e76b42bb8c27d16e992398f5cf4b">Implementation</a></li>
   </ul>
 </details>
 
@@ -169,7 +169,7 @@ title:  "Dynamic thresholding latents"
     Results in a good dynamic range, but the <abbr title="variational autoencoder">VAE</abbr> round-trips are lossy, slow and introduce colour-banding.<br>Could still make sense to do this at the <em>start</em> of the denoising schedule though (combat the worst of the <abbr title="classifier-free guidance">CFG</abbr>, then resume as normal to fill in final details).
   </p>
   <ul>
-    <li>Original <a href="https://twitter.com/Birchlabs/status/1578542324350521344">Twitter thread</a></li>
+    <li><a href="https://twitter.com/Birchlabs/status/1578542324350521344">Twitter thread</a></li>
   </ul>
 </details>
 
@@ -208,7 +208,7 @@ title:  "Dynamic thresholding latents"
     Results weren't super. Was pretty fiddly, and very few ranges of values did anything other than producing more artifacts.
   </p>
   <ul>
-    <li>Original <a href="https://twitter.com/Birchlabs/status/1579238726399848448">Twitter thread</a></li>
+    <li><a href="https://twitter.com/Birchlabs/status/1579238726399848448">Twitter thread</a></li>
     <li><a href="https://github.com/Birch-san/stable-diffusion/compare/555ff5c2289e20200e4459d3a9bfaee29f2a4107...8e440287efded13d4804225d240ae63bf1f7cab6">Implementation</a></li>
   </ul>
 </details>
@@ -220,7 +220,7 @@ title:  "Dynamic thresholding latents"
     Addresses the performance issue of doing a full <abbr title="variational autoencoder">VAE</abbr> roundtrip, by distilling a fast encoder and decoder (just a couple of dense layers trained on real <abbr title="variational autoencoder">VAE</abbr> inputs/outputs).<br>The approx <abbr title="variational autoencoder">VAE</abbr> suffices to do color-space conversion between latents to pixels. It doesn't perform any resampling, which I hoped could help make the roundtrip less lossy.<br>Ultimately it turned out that the approx <abbr title="variational autoencoder">VAE</abbr> was too lossy to use on the entire denoising schedule, but we can combat the worst effects of <abbr title="classifier-free guidance">CFG</abbr> by dynthreshing during high/mid sigmas, then resume without dynthresh to preserve high-frequency details.
   </p>
   <ul>
-    <li>Original <a href="https://twitter.com/Birchlabs/status/1640820343924314114">Twitter thread</a></li>
+    <li><a href="https://twitter.com/Birchlabs/status/1640820343924314114">Twitter thread</a></li>
     <li><a href="https://github.com/Birch-san/stable-diffusion/compare/555ff5c2289e20200e4459d3a9bfaee29f2a4107...8e440287efded13d4804225d240ae63bf1f7cab6">Implementation</a></li>
   </ul>
 </details>

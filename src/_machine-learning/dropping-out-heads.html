@@ -5,6 +5,32 @@ within_category_ix: 50
 title:  "Dropping out attention heads"
 ---
 
+<figure class="table-fig center-fig article-fig">
+  <table>
+    <thead>
+      <tr>
+        <th>Standard</th>
+        <th>Head dropout</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="/assets/machine-learning/dropping-out-heads/usual.png">
+            <img src="/assets/machine-learning/dropping-out-heads/usual.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+        <td>
+          <a href="/assets/machine-learning/dropping-out-heads/dropout.png">
+            <img src="/assets/machine-learning/dropping-out-heads/dropout.png" width="256px" height="256px" loading="lazy">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <figcaption>Image different but still coherent after dropping a value head</figcaption>
+</figure>
+
 <p>
   I was discussing <a href="https://arxiv.org/abs/1911.02150">One Write-Head is All You Need</a> with Aditya Ramesh (OpenAI), who explained that diffusion models sometimes learn to drop out attention heads.
 </p>
@@ -18,6 +44,6 @@ title:  "Dropping out attention heads"
   I'd love to see a large-scale model evaluate the One Write-Head paper. It's a bit harder now that we're accustomed to Flash Attention - a bespoke CUDA kernel or Triton implementation would need to be created to get performance parity.
 </p>
 <ul>
-  <li><a href="https://twitter.com/Birchlabs/status/1609592913947955200">Good result: Dropping out one cross-attention value head</a></li>
+  <li><a href="https://twitter.com/Birchlabs/status/1609600492283232257">Good result: Dropping out one cross-attention value head</a></li>
   <li><a href="https://twitter.com/Birchlabs/status/1609592913947955200">Tenuous result: Dropping out one cross-attention value head</a></li>
 </ul>

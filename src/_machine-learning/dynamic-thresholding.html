@@ -25,6 +25,31 @@ title:  "Dynamic thresholding latents"
 
 <details>
   <summary>Gated</summary>
+  <figure class="table-fig center-fig article-fig">
+    <table>
+      <thead>
+        <tr>
+          <th>Unthresholded</th>
+          <th>Thresholded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/gated/un.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/gated/un.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/gated/dyn.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/gated/dyn.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <figcaption><abbr title="classifier-free guidance">CFG</abbr> scale=30: gated thresholding</figcaption>
+  </figure>
   <p>
     <strong>Imagen-style thresholding, enabled if latent values exceed arbitrary upper-limit.</strong><br>
     We unscale each latent channel (÷0.18215), center each channel on its mean. If any channel has a max exceeding 42: threshold by 99.95%.<br>
@@ -38,6 +63,31 @@ title:  "Dynamic thresholding latents"
 
 <details>
   <summary>Heuristic scaling (compare n%ile with known-good n%ile)</summary>
+  <figure class="table-fig center-fig article-fig">
+    <table>
+      <thead>
+        <tr>
+          <th>Unthresholded</th>
+          <th>Thresholded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/scaling-pile/un.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/scaling-pile/un.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/scaling-pile/dyn.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/scaling-pile/dyn.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <figcaption><abbr title="classifier-free guidance">CFG</abbr> scale=30: heuristic scaling (n%ile comparison)</figcaption>
+  </figure>
   <p>
     <strong>Refer to known-good <abbr title="classifier-free guidance">CFG</abbr>, scale latents in ratio between our 99.95%iles</strong><br>
     We compute a known-good (<abbr title="classifier-free guidance">CFG</abbr>7.5) output, center channels on means, measure their 99.95%ile latent values. We do the same for our desired (<abbr title="classifier-free guidance">CFG</abbr>20) output. We divide <abbr title="classifier-free guidance">CFG</abbr>20's output by the ratio between those 99.95%ile results.<br>We do not apply Imagen-style clamping (latents are <a href="https://github.com/LuChengTHU/dpm-solver#suggestions-for-choosing-the-hyperparameters">unbounded</a>, so it is damaging to clamp them into ±1 range).
@@ -50,6 +100,31 @@ title:  "Dynamic thresholding latents"
 
 <details>
   <summary>Heuristic scaling (compare n%ile with known-good max)</summary>
+  <figure class="table-fig center-fig article-fig">
+    <table>
+      <thead>
+        <tr>
+          <th>Unthresholded</th>
+          <th>Thresholded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/scaling-pile-max/un.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/scaling-pile-max/un.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/scaling-pile-max/dyn.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/scaling-pile-max/dyn.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <figcaption><abbr title="classifier-free guidance">CFG</abbr> scale=30: heuristic scaling (n%ile vs max)</figcaption>
+  </figure>
   <p>
     <strong>Scale latents in ratio between our 99.95%ile and known-good's max</strong><br>
     Similar to previous, except extends the dynamic range by considering our "known-good"'s max to also be fine. This retains a bit more subtlety in shadows and highlights.
@@ -63,6 +138,31 @@ title:  "Dynamic thresholding latents"
 
 <details>
   <summary>Threshold in pixel space via <abbr title="variational autoencoder">VAE</abbr> roundtrip</summary>
+  <figure class="table-fig center-fig article-fig">
+    <table>
+      <thead>
+        <tr>
+          <th>Unthresholded</th>
+          <th>Thresholded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/vae-roundtrip/un.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/vae-roundtrip/un.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/vae-roundtrip/dyn.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/vae-roundtrip/dyn.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <figcaption><abbr title="classifier-free guidance">CFG</abbr> scale=30: <abbr title="variational autoencoder">VAE</abbr> roundtrip</figcaption>
+  </figure>
   <p>
     <strong>Decode latents to pixel-space, threshold Imagen-style</strong><br>
     Every sampling step: we decode the latents to pixels via <abbr title="variational autoencoder">VAE</abbr>, dynthresh them Imagen-style, then re-encode back to latents.<br>
@@ -77,6 +177,31 @@ title:  "Dynamic thresholding latents"
 
 <details>
   <summary>Threshold in pixel space, backprop difference</summary>
+  <figure class="table-fig center-fig article-fig">
+    <table>
+      <thead>
+        <tr>
+          <th>Unthresholded</th>
+          <th>Thresholded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-backprop/un.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-backprop/un.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+          <td>
+            <a href="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-backprop/dyn.png">
+              <img src="/assets/machine-learning/dynamic-thresholding/vae-roundtrip-backprop/dyn.png" width="256px" height="256px" loading="lazy">
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <figcaption><abbr title="classifier-free guidance">CFG</abbr> scale=30: <abbr title="variational autoencoder">VAE</abbr> roundtrip backprop</figcaption>
+  </figure>
   <p>
     <strong>Decode latents, threshold pixels, compare pixels, guide by backprop difference</strong><br>
     Similar idea to <a href=""><abbr title="#clip-guided-diffusion">CLIP</abbr> guidance</a>. We decode latents to pixels via <abbr title="variational autoencoder">VAE</abbr>, dynthresh them Imagen-style. But we don't want to re-encode them (previous technique showed us that <abbr title="variational autoencoder">VAE</abbr> roundtrips are lossy). So we compare the unthresholded pixels with our thresholded pixels, compute MSE loss, compute <em>gradient</em> of loss, then apply that difference (scaled by a learning rate) to our original latents.<br>

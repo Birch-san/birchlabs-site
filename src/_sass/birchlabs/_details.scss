@@ -13,7 +13,6 @@ details > summary::marker {
   font-style: initial;
 }
 
-details > p {
+details > summary ~ * {
   margin-left: 1.25em;
-  background-color: ghostwhite;
 }
